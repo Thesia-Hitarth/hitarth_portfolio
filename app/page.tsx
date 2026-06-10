@@ -17,6 +17,7 @@ import { ProjectsSection } from '@/components/sections/ProjectsSection';
 import { GitHubSection } from '@/components/sections/GitHubSection';
 import { BlogSection } from '@/components/sections/BlogSection';
 import { ContactSection } from '@/components/sections/ContactSection';
+import { TestimonialsSection } from '@/components/sections/TestimonialsSection';
 import { projects, featuredProjects } from '@/data/projects';
 import { skillCategories } from '@/data/skills';
 import { experiences } from '@/data/experience';
@@ -40,6 +41,7 @@ export default function HomePage(): ReactElement {
       <GitHubSection />
       <BlogSection />
       <ContactSection />
+      <TestimonialsSection />
     </>
   );
 }

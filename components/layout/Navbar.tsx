@@ -8,6 +8,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { useTheme } from 'next-themes';
 import { Sun, Moon, Menu, X, Download } from 'lucide-react';
+import { usePathname, useRouter } from 'next/navigation';
 import type { ReactElement } from 'react';
 import { siteConfig } from '@/config/site';
 import { cn } from '@/lib/utils';
@@ -24,6 +25,8 @@ export function Navbar(): ReactElement {
   const [mounted, setMounted] = useState(false);
   const { theme, setTheme } = useTheme();
   const prefersReduced = useReducedMotion();
+  const pathname = usePathname();
+  const router = useRouter();
 
   useEffect(() => { setMounted(true); }, []);
 
@@ -34,6 +37,7 @@ export function Navbar(): ReactElement {
   }, []);
 
   useEffect(() => {
+    if (pathname !== '/') return;
     const observers: IntersectionObserver[] = [];
     SECTION_IDS.forEach((id) => {
       const el = document.getElementById(id);
@@ -46,7 +50,7 @@ export function Navbar(): ReactElement {
       observers.push(observer);
     });
     return () => observers.forEach((o) => o.disconnect());
-  }, []);
+  }, [pathname]);
 
   useEffect(() => {
     const onResize = (): void => { if (window.innerWidth >= 768) setMobileOpen(false); };
@@ -62,10 +66,16 @@ export function Navbar(): ReactElement {
   const handleNavClick = useCallback((href: string) => {
     setMobileOpen(false);
     if (href.startsWith('#')) {
-      const el = document.getElementById(href.slice(1));
-      el?.scrollIntoView({ behavior: 'smooth' });
+      if (pathname !== '/') {
+        router.push(`/${href}`);
+      } else {
+        const el = document.getElementById(href.slice(1));
+        el?.scrollIntoView({ behavior: 'smooth' });
+      }
+    } else {
+      router.push(href);
     }
-  }, []);
+  }, [pathname, router]);
 
   const toggleTheme = (): void => { setTheme(theme === 'dark' ? 'light' : 'dark'); };
 

@@ -1,0 +1,105 @@
+---
+title: "Using MongoDB aggregation pipelines to rank Q&A answers by score"
+excerpt: "How I built the answer ranking system for Querious — a developer Q&A platform — using aggregation pipelines instead of performing expensive application-level computations."
+date: "2025-01-18"
+tags: ["mongodb", "backend", "node.js", "database"]
+published: true
+featured: false
+coverImage: ""
+---
+
+While building **Querious**, a Stack Overflow-style Q&A hub for developers, one of our key performance challenges was ranking answers dynamically. An answer's relevance is determined by its vote differential (upvotes minus downvotes) joined with its publish date.
+
+Initially, we loaded all answers for a question, computed vote margins in Node.js application memory, sorted the array, and sent it back. This worked fine with 3 answers, but with 50+ answers per question, it bottlenecked our server event loop.
+
+Here is how we refactored our query layer to use MongoDB Aggregation pipelines.
+
+## 1. The Challenge with Simple Queries
+
+Our database schema represents votes as a separate collection to enforce user constraints (each developer can vote once).
+
+A standard `find()` query on answers returns rows, but leaves the server to query the `votes` collection separately for each answer. Running database fetches in nested loops is an anti-pattern.
+
+## 2. Refactoring to the Aggregation Pipeline
+
+Instead of loading data first, we offload aggregation pipelines to MongoDB. The database engine optimization layer excels at grouping and sorting collections inside memory buffers.
+
+Here is the pipeline I designed:
+
+```javascript
+const getRankedAnswers = async (questionId) => {
+  return await Answer.aggregate([
+    // Step 1: Match answers corresponding to the question ID
+    {
+      $match: { questionId: new mongoose.Types.ObjectId(questionId) }
+    },
+    // Step 2: Join with Votes collection to compile margins
+    {
+      $lookup: {
+        from: 'votes',
+        localField: '_id',
+        foreignField: 'answerId',
+        as: 'voteDocuments'
+      }
+    },
+    // Step 3: Compute fields on the fly
+    {
+      $addFields: {
+        upvotes: {
+          $size: {
+            $filter: {
+              input: '$voteDocuments',
+              as: 'v',
+              cond: { $eq: ['$$v.type', 'upvote'] }
+            }
+          }
+        },
+        downvotes: {
+          $size: {
+            $filter: {
+              input: '$voteDocuments',
+              as: 'v',
+              cond: { $eq: ['$$v.type', 'downvote'] }
+            }
+          }
+        }
+      }
+    },
+    // Step 4: Add computed score field
+    {
+      $addFields: {
+        score: { $subtract: ['$upvotes', '$downvotes'] }
+      }
+    },
+    // Step 5: Sort by score descending, then date descending
+    {
+      $sort: { score: -1, createdAt: -1 }
+    }
+  ]);
+};
+```
+
+## 3. Explaining the Pipeline Stages
+
+- **`$match`**: Filters documents immediately. This stage uses index pipelines, limiting calculations to a small subset.
+- **`$lookup`**: Performs a left-outer join. It pulls matching vote records into an array named `voteDocuments`.
+- **`$addFields`**: Filters the joined array. It counts occurrences where vote type is `upvote` vs `downvote` and calculates `score = upvotes - downvotes`.
+- **`$sort`**: Rearranges documents. It bubbles top scores to the top, showing the community's best answers first.
+
+## 4. Performance Tuning: Index Constraints
+
+Aggregation pipelines can easily trigger full collection scans if they aren't backed by indexes.
+
+To keep query speeds under 10ms, I created compound indexes on our key filtering fields:
+
+```javascript
+// Ensure fast match lookups
+AnswerSchema.index({ questionId: 1, createdAt: -1 });
+
+// Ensure fast lookup checks on votes
+VoteSchema.index({ answerId: 1, type: 1 });
+```
+
+## Results
+
+After refactoring, our endpoint response time fell from **420ms to 12ms** under load. Application server CPU utilization dropped, allowing our database to cache hot query routes. Offloading data processing to aggregation pipelines is a pattern we now enforce across all our backend modules.
