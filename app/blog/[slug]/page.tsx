@@ -267,7 +267,7 @@ export default async function BlogPostPage({ params }: Props) {
                 <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
                   {relatedPosts.map((relatedPost) => (
                     <div key={relatedPost.slug} className="h-full">
-                      <BlogPostCard post={relatedPost} />
+                      <BlogPostCard post={relatedPost} layout="vertical" />
                     </div>
                   ))}
                 </div>

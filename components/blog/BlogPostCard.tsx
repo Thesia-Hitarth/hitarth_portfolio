@@ -13,20 +13,24 @@ import { cn } from '@/lib/utils';
 
 interface BlogPostCardProps {
   post: PostMeta;
+  layout?: 'horizontal' | 'vertical';
 }
 
-export function BlogPostCard({ post }: BlogPostCardProps): ReactElement {
+export function BlogPostCard({ post, layout = 'horizontal' }: BlogPostCardProps): ReactElement {
   const formattedDate = new Date(post.date).toLocaleDateString('en-US', {
     month: 'short',
     day: 'numeric',
     year: 'numeric',
   });
 
+  const isHorizontal = layout === 'horizontal';
+
   return (
     <Link href={`/blog/${post.slug}`} className="block group">
       <article
         className={cn(
-          'relative flex flex-col md:flex-row overflow-hidden rounded-2xl border border-border bg-card',
+          'relative flex flex-col overflow-hidden rounded-2xl border border-border bg-card',
+          isHorizontal && 'md:flex-row md:h-[260px]',
           'hover:border-primary/40 hover:-translate-y-0.5 hover:shadow-sm',
           'transition-all duration-200 cursor-pointer h-full'
         )}
@@ -40,18 +44,28 @@ export function BlogPostCard({ post }: BlogPostCardProps): ReactElement {
 
         {/* Cover Image Area */}
         {post.coverImage ? (
-          <div className="relative aspect-video md:aspect-square w-full md:w-48 overflow-hidden shrink-0 border-b md:border-b-0 md:border-r border-border">
+          <div
+            className={cn(
+              'relative aspect-video overflow-hidden shrink-0 border-b border-border',
+              isHorizontal && 'md:aspect-auto md:w-[35%] md:h-full md:border-b-0 md:border-r'
+            )}
+          >
             <Image
               src={post.coverImage}
               alt={post.title}
               fill
               className="object-cover transition-transform duration-300 group-hover:scale-102"
-              sizes="(max-width: 768px) 100vw, 192px"
+              sizes={isHorizontal ? '(max-width: 768px) 100vw, 35vw' : '(max-width: 768px) 100vw, 500px'}
             />
           </div>
         ) : (
           // Dynamic gradient placeholder if cover image isn't specified
-          <div className="relative aspect-video md:aspect-square w-full md:w-48 shrink-0 border-b md:border-b-0 md:border-r border-border bg-gradient-to-br from-primary/10 via-primary/5 to-muted flex items-center justify-center p-4">
+          <div
+            className={cn(
+              'relative aspect-video shrink-0 border-b border-border bg-gradient-to-br from-primary/10 via-primary/5 to-muted flex items-center justify-center p-4',
+              isHorizontal && 'md:aspect-auto md:w-[35%] md:h-full md:border-b-0 md:border-r'
+            )}
+          >
             <span className="font-mono text-2xl font-bold tracking-widest text-primary/10 select-none">
               MDX
             </span>

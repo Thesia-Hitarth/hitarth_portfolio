@@ -12,6 +12,7 @@ import { ArrowRight } from 'lucide-react';
 import { SectionHeader } from '@/components/ui/SectionHeader';
 import { BlogPostCard } from '@/components/blog/BlogPostCard';
 import { getFeaturedPosts } from '@/lib/mdx';
+import { cn } from '@/lib/utils';
 
 export function BlogSection(): ReactElement | null {
   const posts = getFeaturedPosts();
@@ -36,12 +37,10 @@ export function BlogSection(): ReactElement | null {
           align="left"
         />
 
-        {/* Featured Posts Grid */}
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 mt-12">
+        {/* Featured Posts Vertical Stack */}
+        <div className="flex flex-col gap-6 mt-12 max-w-4xl mx-auto">
           {posts.map((post) => (
-            <div key={post.slug} className="h-full">
-              <BlogPostCard post={post} />
-            </div>
+            <BlogPostCard key={post.slug} post={post} layout="horizontal" />
           ))}
         </div>
 
