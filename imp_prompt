@@ -1,0 +1,530 @@
+You are an expert Next.js 15 UI engineer and interaction designer. Phase 1
+is complete — the folder structure, data files, types, and config are all
+in place. Your task now is Phase 2: build every core section component with
+pixel-perfect UI, smooth animations, and recruiter-optimized content layout.
+
+This is the part recruiters actually see. Every spacing decision, every
+animation timing, every typographic choice must feel intentional and
+premium. No Bootstrap defaults. No template clones. This is a bespoke,
+handcrafted portfolio that signals senior taste.
+
+═══════════════════════════════════════════════════════════
+GROUND RULES — enforce throughout every component
+═══════════════════════════════════════════════════════════
+
+TYPESCRIPT
+- Zero `any`. Every prop, state, ref, and event handler is fully typed.
+- All component props have explicit interfaces defined above the component.
+- Use React.FC<Props> or function syntax with explicit return type.
+
+SERVER VS CLIENT COMPONENTS
+- Default to React Server Components (RSC). No 'use client' unless the
+  component uses: useState, useEffect, useRef, event handlers,
+  browser APIs, or Framer Motion animations.
+- Animated wrappers get 'use client'. Their data-fetching parents stay server.
+- Pattern: ServerSection fetches/passes data → ClientAnimatedShell renders it.
+
+TAILWIND
+- Use CSS custom properties (var(--primary), var(--muted), etc.) from
+  globals.css for all colors. Never hardcode hex values in className.
+- All spacing via Tailwind scale. No arbitrary values except for precise
+  measurements that cannot be expressed otherwise (e.g. h-[1px]).
+- Mobile-first: every component works at 375px before adding md: lg: xl:
+
+ANIMATIONS (Framer Motion)
+- All entrance animations use a shared variants object — not inline.
+- Standard entrance: fadeInUp — opacity 0→1, y 24→0, duration 0.5,
+  ease: [0.21, 0.47, 0.32, 0.98] (custom cubic bezier, feels physical).
+- Stagger children: staggerChildren: 0.08 on the container.
+- Scroll-triggered: use whileInView, viewport: { once: true, amount: 0.2 }
+  so animations fire once and don't repeat on scroll-back.
+- NO animations on layout-critical elements (nav, headings above the fold).
+- Respect prefers-reduced-motion: wrap all motion components with a check.
+
+ACCESSIBILITY
+- Every section has a semantic <section> tag with aria-labelledby pointing
+  to its heading id.
+- All interactive elements are keyboard navigable with visible focus rings
+  (use ring-2 ring-primary ring-offset-2).
+- Images: next/image with descriptive alt text always.
+- Icon-only buttons: aria-label always.
+- Color contrast: text must meet WCAG AA (4.5:1) in both light and dark mode.
+
+SECTION ANATOMY
+Every section follows this pattern:
+  <section id="{name}" aria-labelledby="{name}-heading" className="py-24 lg:py-32">
+    <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-6xl">
+      <SectionHeader id="{name}-heading" label="..." title="..." subtitle="..." />
+      {/* content */}
+    </div>
+  </section>
+
+═══════════════════════════════════════════════════════════
+SHARED COMPONENTS — build these first, used by all sections
+═══════════════════════════════════════════════════════════
+
+── components/ui/SectionHeader.tsx ────────────────────────
+
+Props:
+  id: string
+  label: string       // small eyebrow text e.g. "01 / About"
+  title: string       // large section heading
+  subtitle?: string   // optional muted paragraph below title
+  align?: 'left' | 'center'   // default 'left'
+
+Layout:
+  - label: uppercase, tracking-widest, text-xs, text-primary, font-mono
+  - title: text-3xl md:text-4xl lg:text-5xl, font-bold, tracking-tight,
+           leading-[1.1], text-foreground
+  - subtitle: text-base md:text-lg, text-muted-foreground, max-w-2xl,
+              leading-relaxed, mt-4
+  - Spacing: label → title gap: mt-3. Title → subtitle gap: mt-4.
+  - Bottom margin of the whole header before section content: mb-12 lg:mb-16
+  - Animate label and title separately with staggered fadeInUp.
+
+── components/ui/TechBadge.tsx ────────────────────────────
+
+Props: name: string, variant?: 'default' | 'outline' | 'ghost'
+
+A small pill showing a technology name. Examples: "Next.js", "TypeScript".
+- default: bg-primary/10 text-primary border border-primary/20
+- outline: border border-border text-muted-foreground bg-transparent
+- ghost: bg-muted text-muted-foreground no border
+- Size: text-xs px-2.5 py-1 rounded-full font-medium
+- Subtle hover: hover:bg-primary/20 transition-colors duration-150
+- No icon needed (keeps it clean and fast to render in lists)
+
+── components/ui/AnimatedSection.tsx ──────────────────────
+
+'use client'
+A wrapper that provides scroll-triggered fadeInUp for any section content.
+Props: children, className?, delay?: number
+
+Uses Framer Motion motion.div with:
+  initial: { opacity: 0, y: 24 }
+  whileInView: { opacity: 1, y: 0 }
+  viewport: { once: true, amount: 0.15 }
+  transition: { duration: 0.5, ease: [0.21, 0.47, 0.32, 0.98], delay }
+
+Check useReducedMotion() — if true, render children directly without motion.
+
+── components/ui/GradientText.tsx ─────────────────────────
+
+'use client'
+Wraps text in a CSS gradient using the primary color.
+  className="bg-gradient-to-r from-primary to-primary/60 bg-clip-text
+             text-transparent"
+Used sparingly — only for the name in Hero and 1–2 section titles max.
+
+── lib/animations.ts ──────────────────────────────────────
+
+Export all shared Framer Motion variants so every component imports from
+one place. Never define variants inline in components.
+
+Export:
+  fadeInUp         — standard entrance (opacity+y as above)
+  fadeIn           — opacity only, no y movement
+  staggerContainer — staggerChildren: 0.08, delayChildren: 0.1
+  slideInLeft      — for timeline items: x: -20 → 0
+  scaleIn          — for cards on hover: scale 0.97 → 1
+  containerVariants — combines staggerContainer with fadeIn for lists
+
+═══════════════════════════════════════════════════════════
+1. NAVBAR — components/layout/Navbar.tsx
+═══════════════════════════════════════════════════════════
+
+'use client' (needs scroll detection + active section state)
+
+BEHAVIOR:
+- On mount: transparent background, no border.
+- After scrolling past 60px: backdrop-blur-md bg-background/80 border-b
+  border-border/50 — smooth transition duration-300.
+- Active nav link: determined by which section is in viewport using
+  IntersectionObserver watching all section[id] elements.
+- Mobile: hamburger menu. On open, full-screen overlay slides down with
+  all nav links stacked vertically. Closes on link click or outside tap.
+- Theme toggle button: sun/moon icon, smooth icon swap animation.
+  Uses useTheme() from next-themes. Position: right of nav links.
+- Resume button: outlined button with download icon. href="/resume.pdf"
+  download attribute. Slightly highlighted — this is a CTA.
+
+DESKTOP LAYOUT:
+  [Logo/Name]                [nav links]          [theme toggle] [Resume ↓]
+  Left                       Center                              Right
+
+ACTIVE LINK STYLE:
+  text-primary + a small dot indicator (w-1 h-1 rounded-full bg-primary)
+  centered below the link text. Animate dot entrance with Framer Motion
+  layoutId="activeIndicator" for smooth sliding between links.
+
+LOGO:
+  Your name in font-mono font-bold. Hover: text-primary transition.
+  Optional: a small SVG monogram (just the initials, 28×28px) to the left.
+
+═══════════════════════════════════════════════════════════
+2. HERO SECTION — components/sections/HeroSection.tsx
+═══════════════════════════════════════════════════════════
+
+This is the MOST IMPORTANT section. A recruiter decides in 3 seconds
+whether to scroll. It must be bold, clear, and immediately communicative.
+
+LAYOUT (full viewport height, centered content, slight left-align):
+  min-h-screen flex flex-col justify-center
+  pt-20 (to clear fixed navbar)
+
+CONTENT ORDER (top to bottom, left to right on desktop):
+
+  1. AVAILABILITY BADGE
+     If siteConfig.openToWork === true, show a pill:
+     "● Available for work"
+     Green pulsing dot (animate-pulse) + text. Background:
+     bg-green-500/10 text-green-600 dark:text-green-400 border
+     border-green-500/20 rounded-full px-3 py-1 text-sm font-medium
+     Animate: fadeIn, delay 0.1s
+
+  2. NAME
+     Large, bold, GradientText on first name only.
+     text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold tracking-tight
+     Line height: leading-[0.95] — tight, premium feel.
+     Animate: fadeInUp, delay 0.2s
+
+  3. TITLE LINE
+     "Full-Stack Developer" with a subtle animated cursor blinking at end.
+     text-2xl sm:text-3xl md:text-4xl text-muted-foreground font-light
+     Animate: fadeInUp, delay 0.3s
+
+  4. TAGLINE
+     From siteConfig.tagline. Max 12 words. Direct, confident tone.
+     text-lg md:text-xl text-muted-foreground max-w-xl leading-relaxed
+     Animate: fadeInUp, delay 0.4s
+
+  5. CTA BUTTONS (horizontal row, gap-4, flex-wrap)
+     Primary: "View my work" → scrolls to #projects
+       Solid primary color, py-3 px-6, rounded-lg, font-medium
+       Arrow icon → that animates right on hover (translateX 4px)
+     Secondary: "Download resume" → siteConfig.resumeUrl, download
+       Ghost/outline style, same sizing
+     Tertiary: social icon buttons (GitHub, LinkedIn)
+       Icon only, rounded-full, 40×40px, border border-border
+       hover:border-primary hover:text-primary
+     Animate: fadeInUp, delay 0.5s, stagger 0.07s between buttons
+
+  6. SCROLL INDICATOR
+     At bottom of hero, centered:
+     "Scroll to explore" text-xs text-muted-foreground tracking-widest
+     + animated ChevronDown that bounces (animate-bounce, 2s loop)
+     Fades out once user scrolls past 100px (useEffect scroll listener)
+
+DESKTOP TWO-COLUMN OPTION:
+  On lg+: Left column has items 1-5. Right column shows a code snippet
+  card — a fake terminal/code block showing something like:
+
+```typescript
+  const developer = {
+    name: "Your Name",
+    role: "Full-Stack Developer",
+    stack: ["Next.js", "TypeScript", "Node.js"],
+    status: "open_to_work",
+    location: "Vadodara, India",
+    passion: "Building products people love",
+  }
+```
+
+  Style this as a dark terminal card (even in light mode):
+  bg-zinc-900 rounded-xl border border-zinc-700 p-5
+  With a fake window chrome: three colored dots (red/yellow/green)
+  and a filename tab "developer.ts" in the header.
+  Syntax highlight the code with distinct colors for keys vs values.
+  Animate card: fadeIn + subtle float animation (y: -6px loop, 3s ease).
+
+BACKGROUND (subtle, not distracting):
+  A very faint grid pattern using CSS:
+    background-image: linear-gradient(var(--border) 1px, transparent 1px),
+                      linear-gradient(90deg, var(--border) 1px, transparent 1px)
+    background-size: 64px 64px
+    opacity: 0.4 in light mode, 0.15 in dark mode
+  Radial gradient overlay from center fading to background color so grid
+  fades at edges. This is the only gradient allowed.
+
+═══════════════════════════════════════════════════════════
+3. ABOUT SECTION — components/sections/AboutSection.tsx
+═══════════════════════════════════════════════════════════
+
+SectionHeader: label="02 / About", title="A bit about me"
+
+TWO-COLUMN LAYOUT (lg: grid-cols-5, left col: 3fr, right col: 2fr)
+
+LEFT COLUMN (spans 3):
+  - 3–4 paragraphs from siteConfig.description (split into array if needed).
+    text-muted-foreground leading-relaxed text-base md:text-lg
+    First paragraph: text-foreground (slightly more prominent).
+  - "When I'm not coding" paragraph — personal touch, 2 sentences.
+    (Placeholder: mention interests like open source, reading, etc.)
+  - STATS ROW (3 numbers in a horizontal flex):
+    [X+ Projects built]  [X+ Technologies]  [X+ Months experience]
+    Each: large bold number in primary color + small muted label below.
+    Separated by vertical dividers (border-l border-border).
+  - Social links row: GitHub, LinkedIn, Twitter — icon + label, inline.
+
+RIGHT COLUMN (spans 2):
+  - Profile photo: next/image, rounded-2xl, aspect-square.
+    Placeholder: use a div with initials if no image.
+    Image container: relative, with a decorative border-offset trick:
+      A div absolutely positioned at -8px -8px, same size, rounded-2xl,
+      border-2 border-primary/30, z-index -1. Creates a subtle frame.
+  - Below photo: small card (bg-muted rounded-xl p-4) listing:
+    📍 Location from siteConfig
+    💼 Open to: Full-time / Remote
+    🎓 Degree / field if applicable
+    Use Lucide icons (MapPin, Briefcase, GraduationCap), not emojis.
+
+ANIMATION: Left column slides in from left, right column from right.
+Use slideInLeft and its mirror (x: 20 → 0) with whileInView.
+
+═══════════════════════════════════════════════════════════
+4. SKILLS SECTION — components/sections/SkillsSection.tsx
+═══════════════════════════════════════════════════════════
+
+SectionHeader: label="03 / Skills", title="What I work with"
+               subtitle="Technologies and tools I use to build things."
+
+Props: categories: SkillCategory[] (from data/skills.ts)
+
+LAYOUT: Responsive grid of category cards.
+  grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6
+
+CATEGORY CARD (for each SkillCategory):
+  bg-card border border-border rounded-2xl p-6
+  hover:border-primary/40 hover:shadow-sm transition-all duration-300
+
+  Card header:
+    - Lucide icon (from category.icon) at 24px in a small colored square:
+      bg-primary/10 rounded-lg p-2 text-primary
+    - Category name: text-lg font-semibold mt-3
+
+  Skills list (inside each card):
+    Wrap of TechBadge components (variant="default").
+    Grouped with flex flex-wrap gap-2 mt-4.
+
+    SKILL LEVEL INDICATOR: Do NOT use progress bars (they look fake and
+    unmaintainable). Instead, on hover of each TechBadge, show a tooltip
+    with the level text: "Expert", "Proficient", "Comfortable", "Learning".
+    Tooltip: shadcn/ui Tooltip component.
+
+  "Currently learning" category gets a special treatment:
+    Border: border-dashed border-primary/30
+    Header: "Currently exploring" with a Sparkles icon
+    Badges: variant="outline" with a subtle color tint
+
+ENTRANCE: staggerContainer on the grid, stagger 0.06s per card.
+Each card uses scaleIn (scale 0.96 → 1) + fadeInUp combined.
+
+═══════════════════════════════════════════════════════════
+5. EXPERIENCE SECTION — components/sections/ExperienceSection.tsx
+═══════════════════════════════════════════════════════════
+
+SectionHeader: label="04 / Experience", title="Where I've worked"
+
+Props: experiences: Experience[] (from data/experience.ts)
+
+LAYOUT: Vertical timeline. This is the signature design element.
+
+TIMELINE STRUCTURE:
+  Outer: relative flex flex-col gap-0
+  Left edge: absolute vertical line
+    left-[19px] top-0 bottom-0 w-[1px] bg-border
+    (on md+: left-[27px])
+
+  Each ExperienceCard:
+    flex gap-6 md:gap-8 relative
+
+    LEFT: Timeline node
+      A circle: w-10 h-10 rounded-full flex-shrink-0
+      Work: bg-primary/10 border-2 border-primary text-primary
+      Education: bg-muted border-2 border-border text-muted-foreground
+      Inside: Briefcase or GraduationCap icon (16px)
+      This circle sits ON the vertical line (positioned to overlap it).
+
+    RIGHT: Content card
+      bg-card border border-border rounded-2xl p-5 md:p-6 flex-1
+      hover:border-primary/30 transition-colors duration-200
+      Bottom margin mb-6 (gap between cards)
+
+      CARD CONTENT:
+        Row 1 (flex justify-between items-start flex-wrap gap-2):
+          Left: Role title (font-semibold text-foreground text-lg)
+                Company name (text-primary font-medium) with optional
+                external link icon if companyUrl exists
+          Right: Date range badge + location type pill
+                 e.g. "Jun 2023 – Present" | "Remote"
+                 Both: text-xs bg-muted text-muted-foreground rounded-full
+                 px-2.5 py-1
+
+        Row 2: Location (MapPin icon, text-sm text-muted-foreground, mt-1)
+
+        Row 3: Description paragraph (mt-3, text-sm text-muted-foreground
+               leading-relaxed)
+
+        Row 4: Bullet points (mt-3, space-y-1.5)
+          Each: flex gap-2, items-start
+          Bullet: w-1.5 h-1.5 rounded-full bg-primary mt-2 flex-shrink-0
+          Text: text-sm text-muted-foreground
+
+        Row 5: Technology tags (mt-4, flex flex-wrap gap-1.5)
+          TechBadge variant="ghost" for each technology
+
+ANIMATION: Each card slides in from left (slideInLeft) with stagger 0.1s.
+Timeline line draws itself: scaleY 0 → 1 from top, triggered by viewport.
+
+═══════════════════════════════════════════════════════════
+6. PROJECTS SECTION — components/sections/ProjectsSection.tsx
+═══════════════════════════════════════════════════════════
+
+SectionHeader: label="05 / Projects", title="Things I've built"
+               subtitle="A selection of projects that show my range."
+
+Props: projects: Project[] (full list), featured: Project[]
+
+TWO-PART LAYOUT:
+
+PART A — FEATURED SPOTLIGHT (for projects where featured: true)
+  A large horizontal card: grid grid-cols-1 lg:grid-cols-2 gap-0
+  rounded-2xl overflow-hidden border border-border
+  hover:border-primary/40 transition-all duration-300
+
+  Left half: Project image (next/image, fill, object-cover)
+    Aspect ratio: aspect-video on mobile, full height on desktop
+    On hover: image scales to 1.03 (overflow hidden on parent)
+    A gradient overlay at bottom: from-transparent to-background/60
+
+  Right half: bg-card p-8 flex flex-col justify-between
+    Top:
+      Status badge: "Live" (green) / "In Progress" (amber) / "Archived" (gray)
+      Title: text-2xl font-bold mt-2
+      Tagline: text-muted-foreground mt-1
+      Description: text-sm text-muted-foreground mt-4 leading-relaxed
+      Highlights: mt-4 space-y-2, each with a CheckCircle2 icon in primary
+
+    Tech stack: flex flex-wrap gap-2 mt-6
+      TechBadge variant="default" for each
+
+    Bottom (mt-auto pt-6 flex gap-3):
+      "Live demo" button: primary style, ExternalLink icon
+      "View code" button: outline style, Github icon
+      "Case study →" link: ghost, arrow, links to /projects/[slug]
+
+PART B — PROJECTS GRID (non-featured projects)
+  grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-12
+
+  PROJECT CARD (for each non-featured project):
+    bg-card border border-border rounded-2xl overflow-hidden
+    hover:border-primary/40 hover:-translate-y-1 hover:shadow-md
+    transition-all duration-300 cursor-pointer group
+
+    Image area: aspect-video next/image object-cover
+      On card hover: brightness-110 scale-105 transition
+
+    Content: p-5
+      Row 1: Category tag (text-xs font-mono text-primary) + Year
+      Title: font-semibold text-lg mt-1
+      Tagline: text-sm text-muted-foreground mt-1 line-clamp-2
+      Stack pills: mt-3, max 4 shown, "+N more" if overflow
+      Links row: mt-4 pt-4 border-t border-border flex justify-between
+        Left: ExternalLink + Github icon buttons
+        Right: "Details →" text link in primary color
+
+ANIMATION: Featured card: fadeInUp. Grid cards: stagger 0.06s each.
+
+"View all projects" link centered below grid:
+  text-primary hover:underline font-medium, ArrowRight icon inline.
+  (This will link to a /projects page in Phase 3)
+
+═══════════════════════════════════════════════════════════
+7. FOOTER — components/layout/Footer.tsx
+═══════════════════════════════════════════════════════════
+
+Minimal. 3-row stacked layout, centered, py-12.
+
+Row 1: Logo/Name + tagline (text-muted-foreground text-sm)
+Row 2: Nav links inline (same as Navbar, text-sm, gap-6)
+Row 3: Copyright + "Built with Next.js & ♥" + social icon row
+
+Divider above footer: a 1px border-t border-border.
+Background: bg-background (same as page, no contrast change).
+"Back to top" button: fixed bottom-6 right-6, appears after 400px scroll.
+  w-10 h-10 rounded-full bg-primary text-primary-foreground
+  ChevronUp icon, onClick scrolls to #top smoothly.
+  Animate: scale in/out with AnimatePresence.
+
+═══════════════════════════════════════════════════════════
+RESPONSIVE BREAKPOINTS — test every section at these widths
+═══════════════════════════════════════════════════════════
+
+375px  — iPhone SE. Single column. Touch targets ≥44px. No overflow.
+768px  — iPad. Two-column layouts begin.
+1024px — Desktop. Full layout. Max-width container kicks in.
+1440px — Large screen. Nothing stretches past max-w-6xl.
+
+═══════════════════════════════════════════════════════════
+DARK MODE — every component must pass this test
+═══════════════════════════════════════════════════════════
+
+Toggle dark mode and visually check each section. Specifically:
+- No pure white text on dark background (use text-foreground, not white)
+- Terminal code card in Hero: stays dark in both modes (intentional)
+- Images: no dark overlay in light mode that looks wrong
+- Borders: visible but not harsh in dark mode (border-border handles this)
+- Primary color: must be readable on both bg-background in light AND dark
+
+═══════════════════════════════════════════════════════════
+PERFORMANCE — enforce these patterns
+═══════════════════════════════════════════════════════════
+
+- All images: next/image with explicit width/height or fill+sizes.
+  Never <img> tags.
+- All icons: import individually from lucide-react, never import * .
+  This keeps bundle size minimal.
+- Framer Motion: lazy import heavy animation features if needed.
+  Use motion.div not import * from framer-motion.
+- Fonts: already configured in layout.tsx via next/font. Never load
+  fonts in CSS @import.
+- No layout shift: every image container has explicit aspect ratio or
+  min-height so content doesn't jump on load.
+
+═══════════════════════════════════════════════════════════
+FINAL COMPONENT CHECKLIST
+═══════════════════════════════════════════════════════════
+
+After building every component, verify each item:
+
+□ SectionHeader renders correctly at all breakpoints
+□ Navbar scroll behavior works (transparent → frosted glass)
+□ Navbar active link indicator slides smoothly between links
+□ Navbar mobile menu opens/closes and is accessible (focus trap)
+□ Hero availability badge pulses correctly
+□ Hero code card floats in dark AND light mode
+□ Hero scroll indicator disappears on scroll
+□ About stats numbers are correct and responsive
+□ Skills cards hover state (border highlight) works
+□ Skills tooltips appear on TechBadge hover
+□ Experience timeline line is visible and cards are aligned
+□ Featured project card image zooms on hover
+□ Project cards lift on hover (-translate-y-1)
+□ All external links open in _blank with rel="noopener noreferrer"
+□ Back-to-top button appears/disappears correctly
+□ All sections animate on scroll with once:true (don't re-animate)
+□ prefers-reduced-motion: animations skipped for accessibility
+□ pnpm build: zero errors, zero warnings
+□ Lighthouse: Performance 90+, Accessibility 100, Best Practices 100,
+              SEO 100 on homepage
+
+═══════════════════════════════════════════════════════════
+AFTER PHASE 2 IS COMPLETE, provide:
+═══════════════════════════════════════════════════════════
+
+1. Screenshots or descriptions of each section rendered
+2. Any component that could not be built exactly as specced and why
+3. List of 'use client' components and the exact reason each needs it
+4. Lighthouse scores (run pnpm build && pnpm start first)
+5. What placeholder content the developer should replace before Phase 3
+   (profile photo, real project screenshots, actual bio text, etc.)
