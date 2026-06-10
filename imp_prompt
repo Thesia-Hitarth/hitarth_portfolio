@@ -1,1235 +1,1294 @@
-You are an expert Next.js 15 developer. Phases 1, 2, and 3 are
-complete. The portfolio has a polished UI, real data, project detail
-pages, a projects listing page, and a live GitHub activity section —
-all passing pnpm build with zero errors.
+You are an expert Next.js 15 developer and DevOps engineer.
+Phases 1 through 4 are complete. The portfolio has:
+  ✓ Foundation, data architecture, config (Phase 1)
+  ✓ All section UI, animations, navbar, footer (Phase 2)
+  ✓ Project detail pages, /projects listing, GitHub
+    activity section (Phase 3)
+  ✓ MDX blog system, contact form with Gmail SMTP,
+    testimonials section (Phase 4)
 
-Phase 4 has four goals:
-  1. Build a complete MDX blog system (write posts as .mdx files,
-     zero CMS, auto-generates routes)
-  2. Build a working contact form with email delivery via
-     Nodemailer + Gmail SMTP (no third-party service needed)
-  3. Complete the BlogSection on the homepage (was a shell)
-  4. Add a Testimonials section (even if empty, ready to populate)
+Phase 5 is the final phase. It has six goals:
+  1. SEO hardening — sitemap, robots.txt, canonical URLs,
+     structured data (JSON-LD)
+  2. Dynamic OG image generation for every page
+  3. Performance final pass — bundle analysis, font
+     optimization, image audit
+  4. Analytics integration (privacy-first)
+  5. PWA manifest + favicon system
+  6. Complete Vercel deployment with environment variables,
+     custom domain, and post-deploy verification checklist
 
-After Phase 4 the portfolio is feature-complete. Only performance
-tuning, SEO hardening, and deployment remain for Phase 5.
+After Phase 5 the portfolio is production-ready and live.
+Nothing remains.
 
 ═══════════════════════════════════════════════════════════
-GROUND RULES — same as all previous phases
+GROUND RULES — final phase, highest quality bar
 ═══════════════════════════════════════════════════════════
+
+ZERO REGRESSIONS
+- Every quality gate from Phases 1–4 must still pass
+  after Phase 5 changes. Run pnpm build before and after
+  every section of this phase. If anything breaks, fix
+  it before continuing.
+
+PERFORMANCE FIRST
+- The goal is Lighthouse 100/100/100/100 on the homepage.
+  Every decision in Phase 5 is made with this target.
+  Acceptable minimum: 95+ Performance, 100 Accessibility,
+  100 Best Practices, 100 SEO on all pages.
+
+NO NEW UI
+- Phase 5 adds zero new visible sections to the page.
+  Everything here is infrastructure, metadata, and
+  optimization. If a change is visible to users it is
+  only an improvement to existing UI (e.g. favicon in
+  browser tab), not a new section.
 
 TYPESCRIPT
-- Zero `any`. Every MDX frontmatter field, API route handler,
-  form state, and utility function is fully typed.
-- Use zod for ALL runtime validation: frontmatter parsing,
-  contact form input, API response shapes.
-
-SERVER VS CLIENT
-- app/blog/page.tsx           → RSC
-- app/blog/[slug]/page.tsx    → RSC
-- BlogSection on homepage     → RSC (reads files at build time)
-- Contact form UI             → 'use client' (form state, fetch)
-- Contact API route           → server (Next.js Route Handler)
-- Testimonials section        → RSC (static data from data file)
-
-MDX RENDERING
-- Use next-mdx-remote/rsc for RSC-compatible MDX rendering.
-  Do NOT use @next/mdx (requires webpack config changes and
-  does not support dynamic routes cleanly).
-- Use gray-matter for frontmatter parsing from .mdx files.
-- Custom MDX components for every HTML element that needs
-  styling — never leave unstyled prose on the page.
-
-FORM HANDLING
-- No form libraries (no react-hook-form, no formik).
-  Plain React state + fetch. Keep it simple and dependency-free.
-- Zod validates on BOTH client (before submit) and server
-  (in the API route). Never trust client-only validation.
-- Nodemailer with Gmail SMTP for email delivery.
-  Uses the developer's own Gmail account as sender.
-  Requires a Gmail App Password (not the account password).
-  No third-party email service account needed.
+- Zero `any`. All JSON-LD types defined explicitly.
+  All route handler types follow Next.js conventions.
 
 ═══════════════════════════════════════════════════════════
-PART 1 — MDX BLOG SYSTEM
+PART 1 — SEO HARDENING
 ═══════════════════════════════════════════════════════════
 
-──── 1A. INSTALL DEPENDENCIES ─────────────────────────────
+──── 1A. SITEMAP ──────────────────────────────────────────
 
-Install these exact packages:
-  next-mdx-remote          (RSC-compatible MDX rendering)
-  gray-matter              (frontmatter parsing)
-  reading-time             (auto reading time from content)
-  rehype-highlight         (code block syntax highlighting)
-  rehype-slug              (auto IDs on headings)
-  rehype-autolink-headings (clickable heading anchors)
-  remark-gfm               (GitHub Flavored Markdown: tables,
-                            strikethrough, task lists)
-  highlight.js             (syntax highlighting styles)
-  nodemailer               (email sending via Gmail SMTP)
-  @types/nodemailer        (TypeScript types for nodemailer)
+File: app/sitemap.ts
 
-──── 1B. FRONTMATTER SCHEMA ───────────────────────────────
+Next.js 15 generates sitemap.xml automatically from this
+file. Export a default async function that returns a
+MetadataRoute.Sitemap array.
 
-File: lib/mdx.ts
+Include these URL groups:
 
-Define the frontmatter schema with Zod:
+  STATIC ROUTES (priority + changeFrequency):
+    /              priority: 1.0   changeFreq: monthly
+    /projects      priority: 0.9   changeFreq: monthly
+    /blog          priority: 0.8   changeFreq: weekly
 
-  const frontmatterSchema = z.object({
-    title:       z.string(),
-    excerpt:     z.string(),
-    date:        z.string(),   // ISO: "2025-06-15"
-    tags:        z.array(z.string()),
-    coverImage:  z.string().optional(),
-    published:   z.boolean().default(true),
-    featured:    z.boolean().default(false),
-  })
+  DYNAMIC — PROJECT PAGES:
+    Import projects from data/projects.ts
+    Map each to:
+      url:             `${siteConfig.url}/projects/${p.slug}`
+      lastModified:    new Date(p.year, 11, 31)
+      priority:        0.7
+      changeFrequency: 'yearly'
 
-  export type PostFrontmatter = z.infer<typeof frontmatterSchema>
+  DYNAMIC — BLOG POST PAGES:
+    Import getAllPosts from lib/mdx.ts
+    const posts = getAllPosts()
+    Map each to:
+      url:             `${siteConfig.url}/blog/${p.slug}`
+      lastModified:    new Date(p.date)
+      priority:        0.6
+      changeFrequency: 'never'
+      (posts don't change once published)
 
-  export interface Post extends PostFrontmatter {
-    slug:         string
-    readingTime:  string     // "5 min read"
-    content:      string     // raw MDX content string
+Full return shape per entry:
+  {
+    url:             string (absolute URL with https://)
+    lastModified:    Date
+    changeFrequency: 'always'|'hourly'|'daily'|'weekly'|
+                     'monthly'|'yearly'|'never'
+    priority:        number (0.0 – 1.0)
   }
 
-  export interface PostMeta extends PostFrontmatter {
-    slug:         string
-    readingTime:  string
-    // no content field — used for listings, not detail pages
-  }
+After deploy, verify sitemap at:
+  https://yourname.dev/sitemap.xml
 
-──── 1C. FILE SYSTEM HELPERS ──────────────────────────────
+──── 1B. ROBOTS.TXT ───────────────────────────────────────
 
-Still in lib/mdx.ts — implement these four functions:
+File: app/robots.ts
 
-  POSTS_DIR = path.join(process.cwd(), 'content/blog')
+Next.js 15 generates robots.txt from this file.
+Export a default function returning MetadataRoute.Robots:
 
-  export function getPostSlugs(): string[]
-    Read filenames from POSTS_DIR with fs.readdirSync.
-    Filter: only .mdx files.
-    Return filenames without extension.
-    If POSTS_DIR does not exist: return [].
-
-  export function getPostBySlug(slug: string): Post | null
-    Read file: path.join(POSTS_DIR, `${slug}.mdx`)
-    If file doesn't exist: return null.
-    Parse with gray-matter.
-    Validate frontmatter with frontmatterSchema.safeParse.
-    If validation fails: log a warning and return null
-      (never crash the build over a malformed post).
-    Calculate readingTime with readingTime(content).text.
-    Return the full Post object.
-
-  export function getAllPosts(): PostMeta[]
-    Call getPostSlugs(), map to getPostBySlug().
-    Filter nulls. Filter published: false posts.
-    Strip the content field (return PostMeta only).
-    Sort: newest first by date (descending).
-
-  export function getFeaturedPosts(): PostMeta[]
-    getAllPosts().filter(p => p.featured)
-    If no featured posts: return first 3 from getAllPosts().
-
-  export function getRelatedPosts(
-    slug: string,
-    tags: string[]
-  ): PostMeta[]
-    Get all posts excluding the current slug.
-    Score each post by number of matching tags.
-    Return top 3 by score (or 3 most recent if no tag overlap).
-
-──── 1D. SAMPLE BLOG POSTS ────────────────────────────────
-
-Create 3 sample .mdx files in content/blog/.
-These are REAL, useful posts — not Lorem Ipsum.
-Written as Hitarth would write them, based on actual
-experience from his resume.
-
-FILE 1: content/blog/how-i-achieved-90-lighthouse-score.mdx
-
-  ---
-  title: "How I achieved a 90+ Lighthouse score on a
-          production React app"
-  excerpt: "The specific techniques I used at Codage Habitation
-            to get code splitting, lazy loading, and memoization
-            working together — with before/after metrics."
-  date: "2025-05-10"
-  tags: ["performance", "react", "next.js", "optimization"]
-  published: true
-  featured: true
-  coverImage: "/images/blog/lighthouse-cover.png"
-  ---
-
-  Write a genuine 600–800 word technical post covering:
-  - Opening: the problem (slow tax-management platform,
-    what the Lighthouse score was before)
-  - Section 1: Code splitting with React.lazy and dynamic
-    imports in Next.js
-  - Section 2: Lazy loading images with next/image
-  - Section 3: Memoization with useMemo and useCallback —
-    when it helps vs when it adds overhead
-  - Section 4: The 45% re-render reduction — how Redux
-    Toolkit slices scoped state correctly
-  - Closing: the final score and what to tackle next
-    (bundle analysis, font loading)
-
-  Use real code examples in fenced code blocks with language
-  tags (```tsx, ```bash etc.). Include at least 3 code blocks.
-  Use ## headings for each section.
-  Keep a practical, first-person tone — "Here's what I did"
-  not "One should consider".
-
-FILE 2: content/blog/building-realtime-order-tracking-mern.mdx
-
-  ---
-  title: "Building real-time order tracking in a MERN
-          food delivery app"
-  excerpt: "How I built the order tracking feature for Daily
-            Dose — the data model, the polling strategy, and
-            why I chose polling over WebSockets for this case."
-  date: "2025-03-22"
-  tags: ["mern", "mongodb", "node.js", "react", "full-stack"]
-  published: true
-  featured: false
-  ---
-
-  Write a genuine 500–700 word technical post covering:
-  - Opening: the Daily Dose project context (150+ daily
-    users, tiffin subscription platform)
-  - Section 1: The order data model in MongoDB (order
-    states: pending → confirmed → preparing → delivered)
-  - Section 2: The API design (GET /orders/:id, status
-    codes, error handling)
-  - Section 3: Polling vs WebSockets — why polling every
-    10s was sufficient for this use case and simpler to
-    maintain
-  - Section 4: The React state management for order status
-    (useEffect + setInterval cleanup)
-  - Closing: what I'd change at scale (WebSockets or SSE)
-
-  Include 2–3 real code blocks. Use ## headings.
-  First-person, practical tone.
-
-FILE 3: content/blog/mongodb-aggregation-querious.mdx
-
-  ---
-  title: "Using MongoDB aggregation pipelines to rank Q&A
-          answers by score"
-  excerpt: "How I built the answer ranking system for
-            Querious — a Stack Overflow-style platform —
-            using aggregation pipelines instead of multiple
-            queries."
-  date: "2025-01-18"
-  tags: ["mongodb", "backend", "node.js", "database"]
-  published: true
-  featured: false
-  ---
-
-  Write a genuine 500–700 word technical post covering:
-  - Opening: the Querious project context and the ranking
-    problem (upvotes + recency combined score)
-  - Section 1: Why a simple find() sort isn't enough for
-    compound scoring
-  - Section 2: The aggregation pipeline — $lookup for
-    votes, $addFields for computed score, $sort
-  - Section 3: The actual pipeline code with explanation
-    of each stage
-  - Section 4: Performance — adding indexes on the fields
-    used in $match and $sort
-  - Closing: when to use aggregation vs application-level
-    sorting
-
-  Include 2–3 real code blocks including the full pipeline.
-  Use ## headings. Practical, first-person tone.
-
-──── 1E. MDX COMPONENTS ───────────────────────────────────
-
-File: components/mdx/MDXComponents.tsx
-
-Custom React components replacing standard HTML elements
-inside rendered MDX. Styled consistently with the design
-system from Phases 1 and 2.
-
-Export a components object (MDXComponents type from
-next-mdx-remote):
-
-  h1: large heading, font-bold, tracking-tight, mt-10 mb-4,
-      text-foreground, text-3xl md:text-4xl
-
-  h2: section heading, font-semibold, mt-10 mb-4,
-      text-foreground, text-2xl md:text-3xl,
-      border-b border-border pb-2
-
-  h3: sub-heading, font-semibold, mt-6 mb-3,
-      text-foreground, text-xl
-
-  p: text-muted-foreground, leading-relaxed, mb-4,
-     text-base md:text-lg
-
-  a: text-primary, underline-offset-4, hover:underline,
-     font-medium, transition-colors. External links open
-     in _blank with rel="noopener noreferrer".
-
-  strong: text-foreground, font-semibold
-
-  ul: list-disc list-outside ml-6 mb-4 space-y-2
-  ol: list-decimal list-outside ml-6 mb-4 space-y-2
-  li: text-muted-foreground leading-relaxed
-
-  blockquote:
-    border-l-4 border-primary bg-primary/5 rounded-r-lg
-    pl-6 pr-4 py-4 my-6 italic text-muted-foreground
-    text-base leading-relaxed
-
-  code (inline, not fenced):
-    bg-muted text-primary font-mono text-sm
-    px-1.5 py-0.5 rounded
-
-  pre (fenced code blocks):
-    bg-zinc-950 dark:bg-zinc-900 rounded-xl p-5 my-6
-    overflow-x-auto border border-zinc-800
-    Wrap in a relative div for the copy-button overlay.
-
-    COPY BUTTON overlay (top-right of pre):
-      'use client' (needs clipboard API)
-      Absolute positioned: top-3 right-3
-      bg-zinc-800 hover:bg-zinc-700 text-zinc-400
-      hover:text-zinc-200 rounded-md px-2 py-1 text-xs
-      Transition: "Copy" → "Copied!" for 2000ms on click
-      Uses navigator.clipboard.writeText()
-
-  hr: border-border my-8
-
-  table: full-width, border-collapse, my-6
-  thead: bg-muted
-  th: text-left font-semibold text-sm text-foreground
-      px-4 py-3 border border-border
-  td: px-4 py-3 text-sm text-muted-foreground
-      border border-border
-  tr (even rows): bg-muted/30
-
-  img: next/image (dynamic, fill or explicit w/h from props)
-    Wrapped in a figure with optional figcaption from alt.
-    rounded-xl overflow-hidden my-6
-
-  Callout (custom component — not a standard HTML element):
-    Used in MDX as <Callout type="info">text</Callout>
-    Props: type: 'info' | 'warning' | 'tip' | 'danger'
-    type → info: blue, warning: amber, tip: green,
-           danger: red
-    Left border + icon (Info, AlertTriangle, Lightbulb,
-    XCircle)
-    bg-{color}/10 border-l-4 border-{color} rounded-r-lg
-    p-4 my-6 flex gap-3 items-start
-
-──── 1F. BLOG LISTING PAGE ────────────────────────────────
-
-File: app/blog/page.tsx (RSC)
-
-generateMetadata:
-  title: "Blog — Hitarth Thesia"
-  description: "Technical writing on React, Next.js, Node.js,
-                MongoDB, and full-stack web development."
-
-Page layout:
-  pt-32 pb-24, container max-w-4xl (narrower — reading
-  context)
-
-  SectionHeader:
-    label="Blog"
-    title="Writing about what I build"
-    subtitle="Technical deep-dives into problems I've solved,
-              decisions I've made, and things I've learned.
-              No fluff — only posts I'd want to read myself."
-    align="left"
-
-  TAG FILTER BAR:
-    Extract all unique tags from getAllPosts().
-    Render as scrollable pill buttons (same style as
-    ProjectsGrid filter bar from Phase 3).
-    'use client' wrapper for filter state.
-    Filter: show only posts that include the active tag.
-    "All" pill first, deselects filter.
-
-  POSTS LIST:
-    Vertical list (not grid) — blog posts read better in
-    a single column. max-w-2xl mx-auto.
-    Map filtered posts to BlogPostCard components.
-    Empty state if no posts match tag filter.
-
-  BlogPostCard component:
-    File: components/blog/BlogPostCard.tsx
-
-    Layout: horizontal card on md+, stacked on mobile
-    bg-card border border-border rounded-2xl overflow-hidden
-    hover:border-primary/40 hover:-translate-y-0.5
-    transition-all duration-200 cursor-pointer
-    Entire card is a Next.js Link to /blog/[slug]
-
-    Left (if coverImage): next/image w-48 aspect-square
-                          object-cover flex-shrink-0
-    Right: p-5 flex flex-col justify-between
-
-      Top:
-        Tags row: first 3 tags as small pills
-                  bg-primary/10 text-primary text-xs
-                  rounded-full px-2.5 py-0.5
-        Title: font-semibold text-lg text-foreground mt-2
-               line-clamp-2 hover:text-primary
-               transition-colors
-        Excerpt: text-sm text-muted-foreground mt-1
-                 line-clamp-3 leading-relaxed
-
-      Bottom (flex items-center justify-between mt-4
-              pt-4 border-t border-border):
-        Left: Calendar icon + formatted date (Jan 15, 2025)
-              text-xs text-muted-foreground
-        Right: Clock icon + readingTime
-               text-xs text-muted-foreground
-        Far right: ArrowRight icon, text-primary, 16px
-
-    FEATURED BADGE: if post.featured show a small star badge
-      top-right corner: "Featured"
-      bg-primary/10 text-primary text-xs font-medium
-      px-2 py-0.5 rounded-bl-lg
-
-──── 1G. BLOG POST DETAIL PAGE ────────────────────────────
-
-File: app/blog/[slug]/page.tsx (RSC)
-
-generateStaticParams:
-  Return getAllPosts().map(p => ({ slug: p.slug }))
-
-generateMetadata:
-  Accept { params }: { params: Promise<{ slug: string }> }
-  Await params. Call getPostBySlug(slug).
-  If not found: return { title: 'Post Not Found' }
-  Return:
-    title:       post.title
-    description: post.excerpt
-    openGraph:
-      type:          'article'
-      title, description
-      images:        [post.coverImage ?? siteConfig.ogImage]
-      publishedTime: post.date
-      tags:          post.tags
-    twitter: summary_large_image card
-
-Page layout: TWO ZONES
-
-ZONE 1 — POST HEADER (container max-w-3xl, pt-32)
-
-  Back link: ← Back to blog
-    (same style as Phase 3 back navigation)
-
-  Tags: pill row, mt-6
-
-  Title: text-3xl md:text-4xl lg:text-5xl font-bold
-         tracking-tight leading-[1.1] mt-4 text-foreground
-
-  Excerpt: text-lg text-muted-foreground mt-4
-           leading-relaxed
-
-  META ROW (flex flex-wrap gap-6 mt-6 pb-8
-            border-b border-border):
-    Calendar + formatted date
-    Clock + readingTime
-    Author: siteConfig.name with small avatar initials
-
-  Cover image (if post.coverImage exists):
-    next/image, aspect-video (16:9), rounded-2xl,
-    full-width, priority: true, mt-8
-
-ZONE 2 — CONTENT + SIDEBAR
-  grid grid-cols-1 lg:grid-cols-4 gap-12 mt-12
-  container max-w-5xl
-
-MAIN CONTENT (lg:col-span-3):
-
-  MDX rendering:
-    import { MDXRemote } from 'next-mdx-remote/rsc'
-    import { MDXComponents } from
-      '@/components/mdx/MDXComponents'
-
-    const options = {
-      mdxOptions: {
-        remarkPlugins: [remarkGfm],
-        rehypePlugins: [
-          rehypeSlug,
-          [rehypeAutolink, { behavior: 'wrap' }],
-          [rehypeHighlight, { detect: true }],
-        ],
-      },
-    }
-
-    <article className="prose-custom">
-      <MDXRemote
-        source={post.content}
-        components={MDXComponents}
-        options={options}
-      />
-    </article>
-
-    Do NOT use Tailwind @tailwindcss/typography prose
-    classes. All prose styling is handled by MDXComponents.
-
-  POST FOOTER (mt-16 pt-8 border-t border-border):
-    Tags row with label: "Filed under:"
-    Share buttons row:
-      "Share on Twitter/X" — constructs tweet URL:
-        https://twitter.com/intent/tweet?text=
-        {encodeURIComponent(post.title)}&url={pageUrl}
-      "Copy link" — copies current URL to clipboard
-        Shows "Copied!" for 2000ms
-      Both: outline style buttons, small
-
-  RELATED POSTS (mt-12):
-    heading: "Related posts" text-xl font-semibold
-    const related = getRelatedPosts(slug, post.tags)
-    If related.length > 0: render 3 BlogPostCard components
-    If empty: render nothing
-
-RIGHT SIDEBAR (lg:col-span-1 sticky top-28 self-start):
-
-  TABLE OF CONTENTS:
-    File: components/blog/TableOfContents.tsx ('use client')
-
-    Props: headings: Array<{ id: string, text: string,
-                              level: 2 | 3 }>
-
-    Parse headings from post.content in the RSC page:
-      const headings = post.content
-        .split('\n')
-        .filter(line => line.startsWith('## ') ||
-                        line.startsWith('### '))
-        .map(line => ({
-          level: line.startsWith('### ') ? 3 : 2,
-          text:  line.replace(/^#{2,3} /, ''),
-          id:    line.replace(/^#{2,3} /, '')
-                     .toLowerCase()
-                     .replace(/\s+/g, '-')
-                     .replace(/[^a-z0-9-]/g, ''),
-        }))
-
-    TOC layout (sticky card):
-      bg-card border border-border rounded-2xl p-5
-
-      Label: "On this page"
-             text-xs font-mono uppercase tracking-widest
-             text-muted-foreground mb-4
-
-      List: space-y-1
-        h2 items: text-sm text-muted-foreground
-                  hover:text-foreground py-1 pl-0
-        h3 items: text-xs text-muted-foreground
-                  hover:text-foreground py-1 pl-3
-
-      ACTIVE HEADING (IntersectionObserver):
-        Observe all heading elements on the page.
-        Active link: text-primary font-medium
-        Updates as user scrolls.
-
-    If headings.length < 2: don't render the TOC card.
-
-  POST INFO CARD (below TOC, mt-4):
-    bg-card border border-border rounded-2xl p-5
-    "Written by" label
-    Avatar (initials in a circle, bg-primary/10)
-      + name: Hitarth Thesia
-      + title: Full-Stack Developer
-    LinkedIn link icon button
-
-NOT FOUND STATE:
-  If getPostBySlug returns null: notFound() from
-  next/navigation — proper 404, not a blank page.
-
-═══════════════════════════════════════════════════════════
-PART 2 — CONTACT FORM WITH NODEMAILER + GMAIL SMTP
-═══════════════════════════════════════════════════════════
-
-──── 2A. HOW GMAIL SMTP WORKS FOR THIS USE CASE ───────────
-
-Nodemailer connects directly to Gmail's SMTP server using
-the developer's Gmail account credentials. The account
-password is NOT used — Gmail requires an App Password, which
-is a 16-character code generated in Google Account settings
-specifically for apps that don't support OAuth2.
-
-The email flow:
-  Contact form submit
-    → Next.js API route (/api/contact)
-      → Nodemailer creates SMTP transport
-        → Connects to smtp.gmail.com:587 (TLS)
-          → Authenticates with Gmail App Password
-            → Delivers notification email to developer
-            → Delivers confirmation email to visitor
-              → Returns success to form
-
-Gmail free tier limits:
-  500 emails per day (Gmail free account)
-  More than sufficient for a portfolio contact form.
-
-──── 2B. ENVIRONMENT VARIABLES ────────────────────────────
-
-Add to .env.local:
-  GMAIL_USER=hitarththesia123@gmail.com
-  GMAIL_APP_PASSWORD=xxxx xxxx xxxx xxxx
-
-Add to .env.local.example with setup instructions:
-  # Gmail SMTP configuration for contact form
-  # GMAIL_USER: your full Gmail address
-  # GMAIL_APP_PASSWORD: NOT your Gmail password.
-  #   Generate one at:
-  #   Google Account → Security → 2-Step Verification
-  #   → App passwords → Create → name it "Portfolio"
-  #   → Copy the 16-character code (spaces don't matter)
-  # IMPORTANT: 2-Step Verification must be enabled first.
-  GMAIL_USER=your.email@gmail.com
-  GMAIL_APP_PASSWORD=xxxx xxxx xxxx xxxx
-
-──── 2C. NODEMAILER TRANSPORT ─────────────────────────────
-
-File: lib/mailer.ts
-
-This file creates and exports the Nodemailer transporter.
-Keeping it separate means the API route stays clean and
-the transport can be reused if other routes need email.
-
-  import nodemailer from 'nodemailer'
-
-  // Validate env vars at module load time — fail loudly
-  // in development if misconfigured rather than silently
-  // at runtime when a visitor submits the form.
-  if (!process.env.GMAIL_USER ||
-      !process.env.GMAIL_APP_PASSWORD) {
-    console.warn(
-      '[mailer] GMAIL_USER or GMAIL_APP_PASSWORD is not set.' +
-      ' Contact form emails will fail.'
-    )
-  }
-
-  export const transporter = nodemailer.createTransport({
-    host:   'smtp.gmail.com',
-    port:   587,
-    secure: false,        // true for 465, false for 587 (STARTTLS)
-    auth: {
-      user: process.env.GMAIL_USER,
-      pass: process.env.GMAIL_APP_PASSWORD,
-    },
-    tls: {
-      rejectUnauthorized: true,   // enforce valid TLS cert
-    },
-  })
-
-  // Verify transport on startup in development only.
-  // Catches wrong credentials before a real visitor hits
-  // the form. Never run verify() in production — it adds
-  // latency to cold starts.
-  if (process.env.NODE_ENV === 'development') {
-    transporter.verify((error) => {
-      if (error) {
-        console.error('[mailer] SMTP connection failed:', error)
-      } else {
-        console.log('[mailer] Gmail SMTP ready ✓')
+  {
+    rules: [
+      {
+        userAgent: '*',
+        allow:     '/',
+        disallow:  ['/api/'],
       }
-    })
+    ],
+    sitemap:    `${siteConfig.url}/sitemap.xml`,
+    host:       siteConfig.url,
   }
 
-  export type MailOptions = {
-    to:      string
-    subject: string
-    html:    string
-    text:    string
-    replyTo?: string
-  }
+The /api/ disallow prevents bots from hammering the
+contact form endpoint. Everything else is open to crawl.
 
-  export async function sendMail(options: MailOptions):
-    Promise<void> {
-    await transporter.sendMail({
-      from:    `"Portfolio" <${process.env.GMAIL_USER}>`,
-      to:      options.to,
-      subject: options.subject,
-      html:    options.html,
-      text:    options.text,
-      replyTo: options.replyTo,
-    })
-  }
+──── 1C. CANONICAL URLS ───────────────────────────────────
 
-──── 2D. CONTACT FORM VALIDATION SCHEMA ───────────────────
+Every page must declare its own canonical URL to prevent
+duplicate content penalties if the site is ever scraped
+or mirrored.
 
-File: lib/validations.ts
+Update lib/metadata.ts (built in Phase 1):
+  Add alternates.canonical to every generatePageMetadata
+  call. The canonical URL = siteConfig.url + the page
+  path.
 
-  export const contactFormSchema = z.object({
-    name:    z.string()
-               .min(2, 'Name must be at least 2 characters')
-               .max(50, 'Name must be under 50 characters')
-               .trim(),
-    email:   z.string()
-               .email('Please enter a valid email address')
-               .trim()
-               .toLowerCase(),
-    subject: z.string()
-               .min(5, 'Subject must be at least 5 characters')
-               .max(100, 'Subject must be under 100 characters')
-               .trim(),
-    message: z.string()
-               .min(20, 'Message must be at least 20 characters')
-               .max(2000, 'Message must be under 2000 characters')
-               .trim(),
-  })
+Update these pages explicitly:
+  app/layout.tsx:
+    metadataBase: new URL(siteConfig.url)
+    (This is required for Next.js to resolve relative OG
+    image URLs to absolute URLs automatically. Add this
+    to the root metadata object if not already present.)
 
-  export type ContactFormData =
-    z.infer<typeof contactFormSchema>
+  app/page.tsx (homepage):
+    alternates: { canonical: siteConfig.url }
 
-  export type ContactFormErrors =
-    Partial<Record<keyof ContactFormData, string>>
+  app/projects/page.tsx:
+    alternates: { canonical: `${siteConfig.url}/projects` }
 
-──── 2E. API ROUTE ────────────────────────────────────────
+  app/blog/page.tsx:
+    alternates: { canonical: `${siteConfig.url}/blog` }
 
-File: app/api/contact/route.ts
-
-  import { contactFormSchema } from '@/lib/validations'
-  import { sendMail } from '@/lib/mailer'
-  import { siteConfig } from '@/config/site'
-  import {
-    generateNotificationHTML,
-    generateNotificationText,
-    generateConfirmationHTML,
-    generateConfirmationText,
-  } from '@/lib/email-templates'
-
-  export async function POST(request: Request) {
-
-    // 1. Parse body
-    const body = await request.json().catch(() => null)
-    if (!body) {
-      return Response.json(
-        { error: 'Invalid request body' },
-        { status: 400 }
-      )
+  app/projects/[slug]/page.tsx:
+    In generateMetadata:
+    alternates: {
+      canonical: `${siteConfig.url}/projects/${slug}`
     }
 
-    // 2. Validate with Zod
-    const result = contactFormSchema.safeParse(body)
-    if (!result.success) {
-      return Response.json(
-        {
-          error:  'Validation failed',
-          fields: result.error.flatten().fieldErrors,
-        },
-        { status: 422 }
-      )
+  app/blog/[slug]/page.tsx:
+    In generateMetadata:
+    alternates: {
+      canonical: `${siteConfig.url}/blog/${slug}`
     }
 
-    const { name, email, subject, message } = result.data
+──── 1D. JSON-LD STRUCTURED DATA ──────────────────────────
 
-    // 3. Rate limiting (IP-based, in-memory)
-    // Allows max 3 submissions per IP per hour.
-    // Resets on serverless cold start — sufficient for
-    // a portfolio. No Redis or external service needed.
-    const ip =
-      request.headers.get('x-forwarded-for') ?? 'unknown'
-    if (isRateLimited(ip)) {
-      return Response.json(
-        { error: 'Too many requests. Please try again later.' },
-        { status: 429 }
-      )
-    }
+File: components/seo/JsonLd.tsx
 
-    // 4. Send notification email TO the developer
-    // replyTo is set to the visitor's email so hitting
-    // Reply in Gmail goes directly to them, not back to
-    // the portfolio sender address.
-    try {
-      await sendMail({
-        to:      siteConfig.email,
-        replyTo: email,
-        subject: `[Portfolio] ${subject}`,
-        html:    generateNotificationHTML({
-                   name, email, subject, message
-                 }),
-        text:    generateNotificationText({
-                   name, email, subject, message
-                 }),
-      })
-    } catch (error) {
-      console.error('[contact] Notification email failed:', error)
-      return Response.json(
-        { error: 'Failed to send message. Please try again.' },
-        { status: 500 }
-      )
-    }
+JSON-LD is structured data that search engines read to
+understand what a page is about. For a portfolio it
+enables rich results — Google may show your name, job
+title, and social links directly in search results.
 
-    // 5. Send confirmation email TO the visitor
-    // Best-effort — swallow error intentionally.
-    // The primary goal is notifying the developer.
-    // If the confirmation fails, the message was still
-    // received and the developer can still reply.
-    const firstName = name.split(' ')[0]
-    await sendMail({
-      to:      email,
-      subject: `Got your message, ${firstName}!`,
-      html:    generateConfirmationHTML({ name: firstName }),
-      text:    generateConfirmationText({ name: firstName }),
-    }).catch((err) => {
-      console.warn('[contact] Confirmation email failed:', err)
-    })
+This component accepts a `data` prop of type
+`Record<string, unknown>` and renders a
+<script type="application/ld+json"> tag with the
+serialized JSON. Never use dangerouslySetInnerHTML
+directly in pages — always use this component.
 
-    return Response.json(
-      { success: true, message: 'Message sent successfully!' },
-      { status: 200 }
+  export function JsonLd({ data }: {
+    data: Record<string, unknown>
+  }) {
+    return (
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(data)
+        }}
+      />
     )
   }
 
-  // ── Rate limiter ──────────────────────────────────────
-  const rateLimitMap = new Map<string, number[]>()
+Now add structured data to each page:
 
-  function isRateLimited(ip: string): boolean {
-    const now        = Date.now()
-    const windowMs   = 60 * 60 * 1000   // 1 hour
-    const maxRequests = 3
-    const timestamps = (rateLimitMap.get(ip) ?? [])
-      .filter(t => now - t < windowMs)
-    if (timestamps.length >= maxRequests) return true
-    rateLimitMap.set(ip, [...timestamps, now])
-    return false
+HOMEPAGE (app/page.tsx) — Person schema:
+  {
+    "@context":   "https://schema.org",
+    "@type":      "Person",
+    "name":       siteConfig.name,
+    "jobTitle":   siteConfig.title,
+    "url":        siteConfig.url,
+    "email":      siteConfig.email,
+    "image":      `${siteConfig.url}/images/profile.jpg`,
+    "description": siteConfig.description,
+    "address": {
+      "@type":          "PostalAddress",
+      "addressLocality": "Vadodara",
+      "addressRegion":   "Gujarat",
+      "addressCountry":  "IN"
+    },
+    "sameAs": [
+      siteConfig.social.github,
+      siteConfig.social.linkedin,
+    ],
+    "knowsAbout": [
+      "React.js", "Next.js", "TypeScript", "Node.js",
+      "MongoDB", "Full-Stack Development"
+    ]
   }
 
-──── 2F. EMAIL TEMPLATES ──────────────────────────────────
+PROJECT DETAIL PAGES (app/projects/[slug]/page.tsx)
+— SoftwareApplication schema:
+  {
+    "@context":         "https://schema.org",
+    "@type":            "SoftwareApplication",
+    "name":             project.title,
+    "description":      project.description,
+    "url":              project.liveUrl || pageUrl,
+    "applicationCategory": "WebApplication",
+    "operatingSystem":  "Web Browser",
+    "author": {
+      "@type": "Person",
+      "name":  siteConfig.name,
+      "url":   siteConfig.url,
+    },
+    "programmingLanguage": project.stack,
+    "dateCreated":      `${project.year}-01-01`,
+  }
 
-File: lib/email-templates.ts
+BLOG POST PAGES (app/blog/[slug]/page.tsx)
+— BlogPosting schema:
+  {
+    "@context":         "https://schema.org",
+    "@type":            "BlogPosting",
+    "headline":         post.title,
+    "description":      post.excerpt,
+    "datePublished":    post.date,
+    "dateModified":     post.date,
+    "url":              `${siteConfig.url}/blog/${slug}`,
+    "image":            post.coverImage ?? siteConfig.ogImage,
+    "author": {
+      "@type": "Person",
+      "name":  siteConfig.name,
+      "url":   siteConfig.url,
+    },
+    "publisher": {
+      "@type": "Person",
+      "name":  siteConfig.name,
+      "url":   siteConfig.url,
+    },
+    "keywords": post.tags.join(', '),
+    "timeRequired": `PT${post.readingTime.replace(
+                      ' min read', 'M'
+                    )}`,
+    "inLanguage": "en-US",
+  }
 
-Keep templates in their own file — the API route stays
-clean and templates can be edited without touching logic.
-
-All templates use inline styles only. Email clients
-(Gmail, Outlook, Apple Mail) strip <style> tags and
-external stylesheets. Every style must be on the element.
-
-Export these four functions:
-
-  generateNotificationHTML(data: ContactFormData): string
-
-    A clean notification email to the developer.
-    Structure (inline styles throughout):
-
-    Outer wrapper: max-width 600px, margin auto,
-                   font-family: system-ui, sans-serif
-
-    Header bar: background your primary color (#6366f1 or
-      whatever matches the portfolio), padding 24px 32px,
-      border-radius 12px 12px 0 0
-      Text: "New message from your portfolio"
-      font-size 20px, font-weight 600, color white
-
-    Body: background #ffffff (light always — email clients
-      don't respect dark mode), padding 32px,
-      border: 1px solid #e5e7eb, border-top: none,
-      border-radius 0 0 12px 12px
-
-    INFO ROWS (each: margin-bottom 20px):
-      Label: font-size 11px, font-weight 600,
-             text-transform uppercase, letter-spacing 0.05em,
-             color #6b7280, margin-bottom 4px
-      Value: font-size 15px, color #111827
-
-      Row 1 — From:    {name}
-      Row 2 — Email:   {email} (as a mailto: anchor,
-                       color your primary, no underline)
-      Row 3 — Subject: {subject}
-
-    Divider: border-top 1px solid #e5e7eb, margin 24px 0
-
-    Message label (same label style as above)
-    Message body: font-size 15px, color #374151,
-      line-height 1.6, white-space pre-wrap,
-      background #f9fafb, border-radius 8px,
-      padding 16px, border: 1px solid #e5e7eb
-
-    Footer: margin-top 32px, font-size 12px,
-      color #9ca3af, text-align center
-      "Sent from hitarththesia.dev"
-
-  generateNotificationText(data: ContactFormData): string
-
-    Plain text fallback. Structured clearly:
-      New portfolio message
-      ─────────────────────
-      From:    {name}
-      Email:   {email}
-      Subject: {subject}
-
-      Message:
-      {message}
-
-      ─────────────────────
-      Sent from hitarththesia.dev
-
-  generateConfirmationHTML({ name }: { name: string }):
-    string
-
-    Brief, warm confirmation to the person who sent
-    the message. NOT a marketing email.
-
-    Same wrapper structure as notification email.
-
-    Header: slightly softer color (primary/80 or #818cf8)
-      Text: "Message received!"
-
-    Body:
-      "Hey {name},"
-      (paragraph, font-size 16px, color #111827)
-
-      "Thanks for reaching out. I've received your message
-      and will get back to you within 24–48 hours."
-      (font-size 15px, color #374151, line-height 1.6)
-
-      "In the meantime, feel free to check out my work:"
-      Link button: "View portfolio →"
-        background primary color, color white,
-        padding 12px 24px, border-radius 8px,
-        display inline-block, margin-top 16px,
-        text-decoration none, font-weight 500
-        href: siteConfig.url
-
-    Footer: "— Hitarth Thesia"
-      + LinkedIn link (small, text only)
-      font-size 12px, color #9ca3af
-
-  generateConfirmationText({ name }: { name: string }):
-    string
-
-    Hi {name},
-
-    Thanks for reaching out. I received your message and
-    will get back to you within 24–48 hours.
-
-    — Hitarth Thesia
-    {siteConfig.url}
-
-──── 2G. CONTACT SECTION COMPONENT ───────────────────────
-
-File: components/sections/ContactSection.tsx ('use client')
-
-This was a shell in Phase 2. Implement it fully now.
-
-SectionHeader:
-  label="07 / Contact"
-  title="Let's work together"
-  subtitle="I'm currently open to full-time roles and
-            freelance projects. Have something in mind?
-            Send a message — I reply within 24 hours."
-
-TWO-COLUMN LAYOUT (lg:grid-cols-5, gap-12):
-
-LEFT COLUMN (lg:col-span-2) — contact info:
-
-  AVAILABILITY CARD:
-    bg-card border border-border rounded-2xl p-6
-    Green pulsing dot + "Available for work"
-    (same pill style as Hero section)
-    Subtitle: "Open to full-time roles in India or remote"
-
-  CONTACT DETAILS (mt-6 space-y-4):
-    Each row: flex items-center gap-3
-    Icon (20px, text-primary) + value
-    Rows:
-      Mail icon    → hitarththesia123@gmail.com
-                     (mailto: link)
-      MapPin icon  → Vadodara, Gujarat, India
-      Linkedin     → LinkedIn profile (external link)
-      Github       → GitHub profile (external link)
-    Values: text-sm text-muted-foreground
-            hover:text-foreground transition-colors
-
-  RESPONSE TIME NOTE (mt-6):
-    Clock icon + "Typical response time: within 24 hours"
-    text-xs text-muted-foreground
-
-RIGHT COLUMN (lg:col-span-3) — form:
-
-  FORM STATE (useState):
-    formData: ContactFormData
-    errors: ContactFormErrors
-    status: 'idle' | 'loading' | 'success' | 'error'
-    errorMessage: string
-
-  FORM FIELDS (space-y-5):
-
-    Each field wrapper: space-y-1.5
-    Label: text-sm font-medium text-foreground
-    Input/Textarea: w-full bg-background border border-border
-      rounded-lg px-4 py-3 text-sm text-foreground
-      placeholder:text-muted-foreground/60
-      focus:outline-none focus:ring-2 focus:ring-primary
-      focus:border-primary transition-all duration-150
-      disabled:opacity-50 disabled:cursor-not-allowed
-
-    Name field:    type="text" placeholder="Your name"
-    Email field:   type="email" placeholder="your@email.com"
-    Subject field: type="text"
-                   placeholder="What's this about?"
-    Message:       <textarea rows={5}>
-                   placeholder="Tell me about your project
-                   or opportunity..."
-                   resize-none
-
-    Error display (below each field if errors[field]):
-      text-red-500 text-xs mt-1 flex items-center gap-1
-      AlertCircle icon (12px) + error message text
-      Animate: fadeIn when error appears
-
-    Character counter on message field:
-      text-xs text-muted-foreground text-right mt-1
-      "{message.length} / 2000"
-      Turns red when > 2000
-
-  CLIENT-SIDE VALIDATION:
-    Validate each field on blur (onBlur handler).
-    Validate all fields on submit attempt.
-    Show errors inline. Scroll to first error if multiple.
-
-  SUBMIT BUTTON (full width, mt-6):
-    Primary style, py-3, rounded-lg, font-medium
-    Status states:
-      idle:    "Send message" + Send icon
-      loading: Spinner (animate-spin) + "Sending..."
-               disabled, cursor-not-allowed
-      success: CheckCircle icon (green) + "Message sent!"
-               disabled
-      error:   "Try again" + RefreshCw icon
-
-  SUCCESS STATE (replaces form after submission):
-    Animate form out, animate success card in.
-    bg-green-500/10 border border-green-500/20
-    rounded-2xl p-8 text-center
-    CheckCircle (48px, green) + "Message sent!" heading
-    + "Thanks for reaching out. I'll reply within
-      24 hours." paragraph
-    + "Connect on LinkedIn →" outline button
-
-  ERROR BANNER (above submit button, on API error):
-    bg-red-500/10 border border-red-500/20 rounded-lg p-3
-    AlertCircle icon + errorMessage text
-    Dismissible (×) button, top-right corner
+Render JsonLd inside the page's return, placed before the
+visible content but inside the root element. Next.js hoists
+<script> tags in the head automatically.
 
 ═══════════════════════════════════════════════════════════
-PART 3 — HOMEPAGE BLOG SECTION
+PART 2 — DYNAMIC OG IMAGE GENERATION
 ═══════════════════════════════════════════════════════════
 
-File: components/sections/BlogSection.tsx (RSC)
+OG images are the preview cards shown when someone shares
+your portfolio link on LinkedIn, Twitter, Slack, or
+WhatsApp. A custom OG image looks professional and
+signals attention to detail. A missing or generic one
+loses the first impression before the page even loads.
 
-  import { getFeaturedPosts } from '@/lib/mdx'
-  const posts = getFeaturedPosts()
+──── 2A. HOMEPAGE OG IMAGE ────────────────────────────────
 
-  If posts.length === 0: return null
-  (Section completely hidden until there are published posts)
+File: app/opengraph-image.tsx
 
-SectionHeader:
-  label="06 / Writing"
-  title="Recent writing"
-  subtitle="Technical posts on what I'm building and
-            learning."
-  align="left"
+Next.js 15 serves this file as /opengraph-image.png
+automatically. It uses @vercel/og (included with Next.js,
+no install needed).
 
-POSTS GRID:
-  grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6
-  Use BlogPostCard (max 3 posts shown).
+  import { ImageResponse } from 'next/og'
+  import { siteConfig } from '@/config/site'
 
-"Read all posts →" link below grid:
-  Link href="/blog", text-primary, ArrowRight inline.
-  Same style as "View all projects →" from Phase 3.
+  export const runtime = 'edge'
+  export const alt = siteConfig.name
+  export const size = { width: 1200, height: 630 }
+  export const contentType = 'image/png'
 
-Update app/page.tsx:
-  id="blog" on the BlogSection wrapper.
-  "Blog" already in siteConfig.nav — no change needed.
+  export default function OGImage() {
+    return new ImageResponse(
+      <div style={{
+        width:      '100%',
+        height:     '100%',
+        display:    'flex',
+        flexDirection: 'column',
+        alignItems: 'flex-start',
+        justifyContent: 'flex-end',
+        padding:    '80px',
+        background: '#09090b',
+                    // zinc-950 — matches dark portfolio bg
+        fontFamily: 'system-ui, sans-serif',
+        position:   'relative',
+      }}>
+
+        {/* Background grid pattern */}
+        <div style={{
+          position:   'absolute',
+          inset:      0,
+          backgroundImage:
+            'linear-gradient(rgba(99,102,241,0.05) 1px,
+             transparent 1px),
+             linear-gradient(90deg,
+             rgba(99,102,241,0.05) 1px, transparent 1px)',
+          backgroundSize: '64px 64px',
+        }} />
+
+        {/* Radial glow — top right */}
+        <div style={{
+          position:   'absolute',
+          top:        '-200px',
+          right:      '-200px',
+          width:      '600px',
+          height:     '600px',
+          borderRadius: '50%',
+          background: 'radial-gradient(circle,
+                       rgba(99,102,241,0.15) 0%,
+                       transparent 70%)',
+        }} />
+
+        {/* Bottom left glow */}
+        <div style={{
+          position:   'absolute',
+          bottom:     '-100px',
+          left:       '-100px',
+          width:      '400px',
+          height:     '400px',
+          borderRadius: '50%',
+          background: 'radial-gradient(circle,
+                       rgba(99,102,241,0.10) 0%,
+                       transparent 70%)',
+        }} />
+
+        {/* Available badge */}
+        <div style={{
+          display:      'flex',
+          alignItems:   'center',
+          gap:          '8px',
+          background:   'rgba(34,197,94,0.1)',
+          border:       '1px solid rgba(34,197,94,0.2)',
+          borderRadius: '999px',
+          padding:      '6px 16px',
+          marginBottom: '24px',
+        }}>
+          <div style={{
+            width:        '8px',
+            height:       '8px',
+            borderRadius: '50%',
+            background:   '#22c55e',
+          }} />
+          <span style={{
+            color:      '#22c55e',
+            fontSize:   '16px',
+            fontWeight: 500,
+          }}>
+            Available for work
+          </span>
+        </div>
+
+        {/* Name */}
+        <div style={{
+          fontSize:   '72px',
+          fontWeight: 700,
+          color:      '#ffffff',
+          lineHeight: 1,
+          marginBottom: '16px',
+          letterSpacing: '-2px',
+        }}>
+          {siteConfig.name}
+        </div>
+
+        {/* Title */}
+        <div style={{
+          fontSize:   '32px',
+          fontWeight: 400,
+          color:      'rgba(255,255,255,0.5)',
+          marginBottom: '48px',
+        }}>
+          {siteConfig.title}
+        </div>
+
+        {/* Tech stack pills */}
+        <div style={{
+          display:  'flex',
+          gap:      '12px',
+          flexWrap: 'wrap',
+        }}>
+          {['Next.js', 'TypeScript', 'React',
+            'Node.js', 'MongoDB'].map(tech => (
+            <div key={tech} style={{
+              background:   'rgba(99,102,241,0.15)',
+              border:       '1px solid rgba(99,102,241,0.3)',
+              borderRadius: '999px',
+              padding:      '8px 20px',
+              color:        '#a5b4fc',
+              fontSize:     '18px',
+              fontWeight:   500,
+            }}>
+              {tech}
+            </div>
+          ))}
+        </div>
+
+        {/* Domain — bottom right */}
+        <div style={{
+          position:  'absolute',
+          bottom:    '48px',
+          right:     '80px',
+          fontSize:  '18px',
+          color:     'rgba(255,255,255,0.3)',
+          fontFamily: 'monospace',
+        }}>
+          hitarththesia.dev
+        </div>
+
+      </div>,
+      { ...size }
+    )
+  }
+
+──── 2B. PROJECT PAGE OG IMAGE ────────────────────────────
+
+File: app/projects/[slug]/opengraph-image.tsx
+
+  export const runtime = 'edge'
+  export const alt = 'Project'
+  export const size = { width: 1200, height: 630 }
+  export const contentType = 'image/png'
+
+  export default async function OGImage({
+    params,
+  }: {
+    params: Promise<{ slug: string }>
+  }) {
+    const { slug } = await params
+    const project = getProjectBySlug(slug)
+    if (!project) return new ImageResponse(
+      <div style={{ background: '#09090b', width: '100%',
+                    height: '100%' }} />,
+      { ...size }
+    )
+
+    return new ImageResponse(
+      <div style={{
+        width:      '100%',
+        height:     '100%',
+        display:    'flex',
+        flexDirection: 'column',
+        padding:    '80px',
+        background: '#09090b',
+        fontFamily: 'system-ui, sans-serif',
+        position:   'relative',
+        gap:        '0',
+      }}>
+
+        {/* Same background grid as homepage OG */}
+
+        {/* Top label */}
+        <div style={{
+          fontSize:     '16px',
+          color:        '#6366f1',
+          fontFamily:   'monospace',
+          fontWeight:   500,
+          letterSpacing: '0.1em',
+          textTransform: 'uppercase',
+          marginBottom: '24px',
+        }}>
+          Project · {project.category}
+        </div>
+
+        {/* Project title */}
+        <div style={{
+          fontSize:     '64px',
+          fontWeight:   700,
+          color:        '#ffffff',
+          lineHeight:   1.05,
+          marginBottom: '20px',
+          letterSpacing: '-1.5px',
+          maxWidth:     '800px',
+        }}>
+          {project.title}
+        </div>
+
+        {/* Tagline */}
+        <div style={{
+          fontSize:   '24px',
+          color:      'rgba(255,255,255,0.5)',
+          maxWidth:   '700px',
+          lineHeight: 1.4,
+          marginBottom: 'auto',
+        }}>
+          {project.tagline}
+        </div>
+
+        {/* Stack pills — bottom left */}
+        <div style={{
+          display:      'flex',
+          gap:          '10px',
+          flexWrap:     'wrap',
+          marginTop:    '48px',
+        }}>
+          {project.stack.slice(0, 5).map(tech => (
+            <div key={tech} style={{
+              background:   'rgba(99,102,241,0.15)',
+              border:       '1px solid rgba(99,102,241,0.3)',
+              borderRadius: '999px',
+              padding:      '6px 16px',
+              color:        '#a5b4fc',
+              fontSize:     '16px',
+            }}>
+              {tech}
+            </div>
+          ))}
+        </div>
+
+        {/* Author — bottom right */}
+        <div style={{
+          position:  'absolute',
+          bottom:    '48px',
+          right:     '80px',
+          display:   'flex',
+          flexDirection: 'column',
+          alignItems: 'flex-end',
+          gap:       '4px',
+        }}>
+          <div style={{
+            fontSize:   '18px',
+            fontWeight: 600,
+            color:      'rgba(255,255,255,0.7)',
+          }}>
+            {siteConfig.name}
+          </div>
+          <div style={{
+            fontSize: '14px',
+            color:    'rgba(255,255,255,0.3)',
+            fontFamily: 'monospace',
+          }}>
+            hitarththesia.dev
+          </div>
+        </div>
+
+      </div>,
+      { ...size }
+    )
+  }
+
+──── 2C. BLOG POST OG IMAGE ───────────────────────────────
+
+File: app/blog/[slug]/opengraph-image.tsx
+
+  export const runtime = 'edge'
+  export const size = { width: 1200, height: 630 }
+  export const contentType = 'image/png'
+
+  Same structure as project OG image but with:
+    Top label: "Blog post · {readingTime}"
+    Large title: post.title (font-size 56px, max 3 lines,
+                 maxWidth 800px)
+    Below title: post.excerpt (font-size 22px, maxWidth
+                 700px, color rgba(255,255,255,0.5),
+                 line-clamp not available in edge runtime —
+                 use maxWidth and rely on natural wrapping)
+    Bottom left: tag pills (first 3 tags, same pill style)
+    Bottom right: author + domain
+
+  If getPostBySlug returns null: return blank dark image.
+
+──── 2D. TWITTER IMAGE ────────────────────────────────────
+
+File: app/twitter-image.tsx
+      app/projects/[slug]/twitter-image.tsx
+      app/blog/[slug]/twitter-image.tsx
+
+Twitter/X uses a separate image from OG in some clients.
+The simplest approach: re-export the same OG image.
+
+  export { default, runtime, alt, size, contentType }
+    from './opengraph-image'
+
+This works for all three routes. Twitter gets the same
+image as OG — no extra work needed.
 
 ═══════════════════════════════════════════════════════════
-PART 4 — TESTIMONIALS SECTION
+PART 3 — PERFORMANCE FINAL PASS
 ═══════════════════════════════════════════════════════════
 
-File: components/sections/TestimonialsSection.tsx (RSC)
+──── 3A. BUNDLE ANALYSIS ──────────────────────────────────
 
-  import { testimonials } from '@/data/testimonials'
-  If testimonials.length === 0: return null
+Install: @next/bundle-analyzer
 
-When testimonials DO exist:
+Update next.config.ts:
 
-SectionHeader:
-  label="08 / Testimonials"
-  title="What people say"
-  align="center"
+  import bundleAnalyzer from '@next/bundle-analyzer'
 
-TESTIMONIAL CARDS:
-  grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6
+  const withBundleAnalyzer = bundleAnalyzer({
+    enabled: process.env.ANALYZE === 'true',
+  })
 
-  Each card: bg-card border border-border rounded-2xl p-6
-    Large quote icon: text-primary/20 absolute top-4 right-4
-    Content: text-muted-foreground leading-relaxed italic
-    Footer (mt-6 pt-4 border-t border-border):
-      Avatar (initials in circle, bg-primary/10) or
-      next/image if avatar path provided
-      Name: font-semibold text-foreground text-sm
-      Role + Company: text-xs text-muted-foreground
-      LinkedIn icon button if linkedinUrl provided
+  export default withBundleAnalyzer({
+    // existing config
+  })
 
-Add to app/page.tsx between ContactSection and Footer.
-id="testimonials". Returns null when empty — zero visual
-whitespace added to page.
+Add to package.json scripts:
+  "analyze": "ANALYZE=true pnpm build"
+
+Run: pnpm analyze
+
+Open the generated .next/analyze/client.html in browser.
+
+Look for and fix these common issues:
+
+  ISSUE 1 — Large library imported in full:
+    Symptom: lodash, date-fns, or any utility library
+    showing as 50KB+ in client bundle.
+    Fix: use named imports or find a lighter alternative.
+    Example: import { format } from 'date-fns' not
+             import dateFns from 'date-fns'
+
+  ISSUE 2 — Framer Motion in the wrong bundle:
+    Symptom: framer-motion appearing in initial page load
+    bundle instead of being lazy loaded.
+    Fix: verify all Framer Motion usage is in 'use client'
+    components and those components are not imported in
+    RSC pages without dynamic() wrapping.
+
+  ISSUE 3 — highlight.js full library imported:
+    Symptom: highlight.js showing 200KB+ in bundle.
+    Fix: import only needed languages:
+      import hljs from 'highlight.js/lib/core'
+      import javascript from 'highlight.js/lib/languages/javascript'
+      import typescript from 'highlight.js/lib/languages/typescript'
+      hljs.registerLanguage('javascript', javascript)
+      hljs.registerLanguage('typescript', typescript)
+    Add: bash, css, json as well (common in blog posts).
+
+  ISSUE 4 — Lucide React importing all icons:
+    Symptom: lucide-react showing as 500KB+
+    Fix: verify every import is named:
+      import { ArrowRight } from 'lucide-react'
+    Never: import * as Icons from 'lucide-react'
+    Search entire codebase for 'import * from lucide' and
+    fix any violations.
+
+  ISSUE 5 — next-mdx-remote in client bundle:
+    Symptom: mdx-remote appearing in client-side JS.
+    Fix: ensure MDXRemote is only used in RSC files
+    (no 'use client' at top of files using MDXRemote).
+
+After fixes: re-run pnpm analyze and verify each issue
+is resolved before moving on.
+
+──── 3B. IMAGE AUDIT ──────────────────────────────────────
+
+Run this audit across every image in the project:
+
+  RULE 1 — No raw <img> tags anywhere.
+    Search: grep -r "<img " app/ components/
+    Every result must be converted to next/image.
+
+  RULE 2 — Every next/image has explicit sizes prop.
+    Without sizes, Next.js serves a full-width image
+    even for thumbnail-sized usage.
+    Examples:
+      Full width hero:   sizes="100vw"
+      Half width:        sizes="(max-width: 768px) 100vw,
+                                50vw"
+      Project card:      sizes="(max-width: 640px) 100vw,
+                                (max-width: 1024px) 50vw,
+                                33vw"
+      Fixed thumbnail:   sizes="192px"
+
+  RULE 3 — priority={true} on above-the-fold images only.
+    Above fold: hero image, hero code card illustration,
+    first visible project card image.
+    All others: default (lazy loaded).
+    Using priority on too many images defeats the purpose.
+
+  RULE 4 — All project and blog images under 200KB.
+    Check /public/images/ file sizes.
+    If any PNG is over 200KB: convert to WebP.
+    Next.js serves WebP automatically when the browser
+    supports it, but starting with WebP reduces the
+    original file size too.
+    Tool: squoosh.app (browser-based, free)
+    Target: project covers ~100KB, blog covers ~80KB.
+
+  RULE 5 — OG images are generated, not static files.
+    /public/og-image.png (the placeholder from Phase 1)
+    is no longer needed — remove it.
+    The dynamic opengraph-image.tsx files now handle this.
+
+──── 3C. FONT OPTIMIZATION ────────────────────────────────
+
+Fonts were configured in app/layout.tsx in Phase 1 using
+next/font/google. Verify these settings are correct:
+
+  const inter = Inter({
+    subsets:  ['latin'],
+    variable: '--font-sans',
+    display:  'swap',
+    // preload: true (default) — correct, keep it
+  })
+
+  const jetbrainsMono = JetBrains_Mono({
+    subsets:  ['latin'],
+    variable: '--font-mono',
+    display:  'swap',
+    weight:   ['400', '500', '700'],
+    // Only include weights actually used in the project.
+    // Unused weights add download size for zero benefit.
+  })
+
+Audit which JetBrains Mono weights are actually used:
+  - font-mono (400) — code blocks, labels, badges
+  - font-mono font-medium (500) — section labels
+  - font-mono font-bold (700) — logo/name in navbar
+  Remove any weight not used.
+
+Verify no Google Fonts @import exists anywhere in CSS
+files. next/font handles everything — any @import is
+redundant and causes a double download.
+
+──── 3D. CORE WEB VITALS TARGETS ─────────────────────────
+
+These are the metrics Google uses for search ranking.
+Verify each after running pnpm build && pnpm start:
+
+  LCP (Largest Contentful Paint): < 2.5s
+    The LCP element on the homepage is almost always the
+    hero section heading or the code card image.
+    If LCP > 2.5s: check that the hero image (if any)
+    has priority={true} and is properly sized.
+
+  CLS (Cumulative Layout Shift): < 0.1
+    The most common cause in portfolios: images without
+    explicit width/height causing reflow on load.
+    Fix: every next/image either has explicit w/h or
+    uses the fill prop with a sized container.
+
+  FID/INP (Interaction to Next Paint): < 200ms
+    The most common cause: heavy JS executing on the
+    main thread during page load.
+    Fix: verified in bundle analysis step above.
+
+  FCP (First Contentful Paint): < 1.8s
+    The most common cause: render-blocking resources
+    (fonts, CSS). next/font with display:swap fixes fonts.
+    Tailwind CSS is purged at build time — no issue.
+
+Run PageSpeed Insights after deploy:
+  https://pagespeed.web.dev/
+  Enter your live URL. Both Mobile and Desktop must
+  pass. Mobile is harder — prioritize it first.
 
 ═══════════════════════════════════════════════════════════
-FILE SUMMARY — every file touched or created in Phase 4
+PART 4 — ANALYTICS (PRIVACY-FIRST)
 ═══════════════════════════════════════════════════════════
+
+Using Vercel Analytics — zero configuration, no cookie
+banner needed, GDPR compliant by default, free on
+Vercel's hobby plan.
+
+DO NOT use Google Analytics. It requires a cookie consent
+banner, adds 45KB to the bundle, and sends visitor data
+to Google. For a portfolio, Vercel Analytics gives all
+the data you actually need (page views, top pages,
+referrers, countries) with none of the downsides.
+
+──── 4A. INSTALL ──────────────────────────────────────────
+
+  pnpm add @vercel/analytics @vercel/speed-insights
+
+──── 4B. ADD TO ROOT LAYOUT ───────────────────────────────
+
+File: app/layout.tsx
+
+  import { Analytics } from '@vercel/analytics/react'
+  import { SpeedInsights } from '@vercel/speed-insights/next'
+
+  // Inside the root layout's return, just before </body>:
+  <Analytics />
+  <SpeedInsights />
+
+Both components:
+  - Are tree-shaken to zero bytes in non-Vercel environments
+  - Add ~1KB to the bundle when deployed on Vercel
+  - Collect no personally identifiable information
+  - Require no configuration, no API key, no env var
+
+SpeedInsights collects real-user Core Web Vitals data
+from actual visitors — more valuable than synthetic
+Lighthouse scores because it shows real-world performance
+on real devices and connections.
+
+──── 4C. WHAT YOU CAN TRACK ───────────────────────────────
+
+After deploy, view data at:
+  vercel.com/your-project/analytics
+
+You will see:
+  - Which pages get the most views
+    (homepage vs /projects vs /blog vs specific posts)
+  - Which countries visitors are from
+    (useful to know if you're being found internationally)
+  - Referrers — where traffic comes from
+    (LinkedIn shares, GitHub profile, Google search)
+  - Top devices (mobile vs desktop ratio)
+  - Core Web Vitals from real users (SpeedInsights)
+
+No setup needed. Data starts flowing the moment the
+first visitor hits the deployed site.
+
+═══════════════════════════════════════════════════════════
+PART 5 — PWA MANIFEST + FAVICON SYSTEM
+═══════════════════════════════════════════════════════════
+
+──── 5A. FAVICON SYSTEM ───────────────────────────────────
+
+A proper favicon system in 2025 requires these files.
+Do not use a single .ico file — modern browsers and
+devices need multiple formats and sizes.
+
+Generate all files from a single source SVG using
+realfavicongenerator.net (free). Upload your logo/initials
+SVG and download the complete favicon package.
+
+Files to place in /app/ (not /public/):
+  favicon.ico         (32×32, for legacy browsers)
+  icon.svg            (scalable, modern browsers)
+  icon-192.png        (192×192, Android PWA)
+  icon-512.png        (512×512, Android PWA splash)
+  apple-icon.png      (180×180, iOS home screen)
+
+Next.js 15 automatically serves these when placed in
+/app/ — no configuration needed. The filenames are
+a Next.js convention.
+
+File: app/icon.tsx (alternative to static icon.svg)
+If you want to generate the favicon programmatically
+(useful to keep it consistent with your primary color):
+
+  import { ImageResponse } from 'next/og'
+
+  export const runtime = 'edge'
+  export const size = { width: 32, height: 32 }
+  export const contentType = 'image/png'
+
+  export default function Icon() {
+    return new ImageResponse(
+      <div style={{
+        width:        '100%',
+        height:       '100%',
+        display:      'flex',
+        alignItems:   'center',
+        justifyContent: 'center',
+        background:   '#6366f1',
+        borderRadius: '6px',
+        fontSize:     '18px',
+        fontWeight:   700,
+        color:        'white',
+        fontFamily:   'system-ui',
+      }}>
+        H
+      </div>,
+      { ...size }
+    )
+  }
+
+  This generates a purple square with "H" (for Hitarth).
+  Simple, recognizable, on-brand.
+
+──── 5B. WEB APP MANIFEST ─────────────────────────────────
+
+File: app/manifest.ts
+
+Next.js 15 generates manifest.json from this file.
+Export a default function returning MetadataRoute.Manifest:
+
+  {
+    name:             siteConfig.name,
+    short_name:       "Hitarth",
+    description:      siteConfig.description,
+    start_url:        '/',
+    display:          'standalone',
+    background_color: '#09090b',
+    theme_color:      '#6366f1',
+    orientation:      'portrait',
+    icons: [
+      {
+        src:     '/icon-192.png',
+        sizes:   '192x192',
+        type:    'image/png',
+        purpose: 'maskable',
+      },
+      {
+        src:     '/icon-512.png',
+        sizes:   '512x512',
+        type:    'image/png',
+        purpose: 'any',
+      },
+    ],
+    screenshots: [
+      {
+        src:          '/screenshots/desktop.png',
+        sizes:        '1280x800',
+        type:         'image/png',
+        form_factor:  'wide',
+        label:        'Desktop portfolio',
+      },
+    ],
+  }
+
+  Note: /screenshots/desktop.png is optional for PWA
+  store listings. Skip it for now — add a screenshot
+  after the site is live.
+
+──── 5C. THEME COLOR META TAG ─────────────────────────────
+
+Add to app/layout.tsx root metadata:
+
+  themeColor: [
+    { media: '(prefers-color-scheme: light)',
+      color: '#ffffff' },
+    { media: '(prefers-color-scheme: dark)',
+      color: '#09090b' },
+  ]
+
+This sets the browser chrome color on mobile — the bar
+at the top of Safari/Chrome on iOS/Android. In dark mode
+it matches the portfolio background, making the site feel
+like a native app.
+
+═══════════════════════════════════════════════════════════
+PART 6 — VERCEL DEPLOYMENT
+═══════════════════════════════════════════════════════════
+
+──── 6A. PRE-DEPLOY CHECKLIST ─────────────────────────────
+
+Complete every item before pushing to production:
+
+  □ pnpm build passes with zero errors locally
+  □ pnpm start runs the production build locally without
+    errors (not pnpm dev — production build only)
+  □ All project liveUrl and githubUrl fields in
+    data/projects.ts are real, working URLs
+  □ Resume PDF exists at public/resume.pdf and downloads
+    correctly (not a placeholder empty file)
+  □ Profile photo exists at public/images/profile.jpg
+    (or profile.png) — referenced in About section and
+    JSON-LD structured data
+  □ All project screenshots exist at their paths in
+    public/images/projects/
+  □ No console.error or console.warn in production build
+    output (warnings are acceptable only from
+    third-party libraries — your code: zero)
+  □ Contact form tested end-to-end: email received in
+    Gmail inbox, confirmation received by sender
+  □ All navigation links work: scroll-spy, blog links,
+    project links, back navigation on detail pages
+  □ Dark mode toggle works and persists on refresh
+  □ Mobile layout verified at 375px on a real device
+    (not just browser DevTools)
+  □ All external links open in new tab
+  □ Resume download button downloads the PDF (not opens
+    in browser — verify the download attribute is present)
+
+──── 6B. GITHUB REPOSITORY ────────────────────────────────
+
+If the project is not already on GitHub:
+
+  git init
+  git add .
+  git commit -m "feat: complete portfolio — phases 1-5"
+  git branch -M main
+  git remote add origin https://github.com/
+    hitarth-thesia/portfolio.git
+  git push -u origin main
+
+.gitignore must include (verify these are present):
+  .env.local
+  .env*.local
+  .next/
+  node_modules/
+  .vercel/
+
+CRITICAL: .env.local must NEVER be committed to Git.
+Your Gmail App Password is in that file. If it is ever
+committed by accident:
+  1. Immediately revoke the App Password in Google
+     Account settings and generate a new one.
+  2. Use git filter-branch or BFG Repo Cleaner to
+     remove it from git history.
+  3. Force push the cleaned history.
+
+──── 6C. VERCEL PROJECT SETUP ─────────────────────────────
+
+  1. Go to vercel.com → New Project
+  2. Import the GitHub repository
+  3. Framework: Next.js (auto-detected)
+  4. Root directory: ./ (default)
+  5. Build command: pnpm build (or leave default)
+  6. Output directory: .next (default)
+  7. Install command: pnpm install (change from npm)
+
+  Click "Environment Variables" before deploying:
+  Add these exact keys and values:
+
+    Key: GMAIL_USER
+    Value: hitarththesia123@gmail.com
+    Environment: Production ✓ Preview ✓ Development ✓
+
+    Key: GMAIL_APP_PASSWORD
+    Value: (your 16-char App Password, no spaces needed)
+    Environment: Production ✓ Preview ✓ Development ✓
+
+    Key: NEXT_PUBLIC_SITE_URL
+    Value: https://hitarththesia.dev
+           (your actual domain — update after domain setup)
+    Environment: Production ✓
+
+  Click Deploy.
+
+──── 6D. CUSTOM DOMAIN ────────────────────────────────────
+
+Option A — Buy on Vercel (easiest):
+  Vercel Dashboard → Project → Settings → Domains
+  → Add Domain → "hitarththesia.dev"
+  If available: Vercel handles DNS automatically.
+  SSL certificate: auto-provisioned, auto-renewed.
+  Cost: ~$12-15/year for a .dev domain.
+
+Option B — Buy elsewhere (Namecheap, Cloudflare, etc.):
+  Buy the domain externally (~$10-12/year on Cloudflare
+  Registrar — cheapest option).
+  In Vercel: Settings → Domains → Add your domain.
+  Vercel gives you DNS records (A record + CNAME).
+  In your registrar's DNS settings: add those records.
+  Propagation: 5 minutes on Cloudflare, up to 48 hours
+  on other registrars.
+
+Recommended domain for Hitarth:
+  hitarththesia.dev    — clean, professional (.dev for
+                         developers, HTTPS-only by spec)
+
+  Alternatives if taken:
+  hitarth.dev
+  thesia.dev
+  hitarththesia.in     (.in for India, very cheap ~$5/yr)
+
+Once domain is live:
+  Update siteConfig.url in config/site.ts to the real URL.
+  Update NEXT_PUBLIC_SITE_URL in Vercel env vars.
+  Redeploy (git push to main triggers auto-deploy).
+
+──── 6E. POST-DEPLOY VERIFICATION ────────────────────────
+
+After the site is live, run through this checklist
+on the production URL (not localhost):
+
+  FUNCTIONALITY:
+  □ All pages load without errors: /, /projects,
+    /blog, /projects/[slug], /blog/[slug]
+  □ Contact form sends email successfully
+  □ Resume download works
+  □ All project links open correctly
+  □ Dark/light mode toggle works and persists
+  □ GitHub activity section shows real data
+    (not the fallback empty state)
+  □ Blog posts render with syntax highlighting
+  □ Back navigation works on detail pages
+
+  SEO:
+  □ Visit: https://yourname.dev/sitemap.xml
+    Verify all pages are listed
+  □ Visit: https://yourname.dev/robots.txt
+    Verify content is correct
+  □ Google Search Console: submit sitemap
+    (search.google.com/search-console → Sitemaps →
+    enter sitemap.xml URL → Submit)
+  □ Test OG image: paste URL into
+    opengraph.xyz or linkedin post preview
+    Verify the custom OG image appears (not a blank card)
+  □ Test JSON-LD: paste homepage URL into
+    search.google.com/test/rich-results
+    Verify Person schema is detected without errors
+
+  PERFORMANCE:
+  □ PageSpeed Insights mobile score: 90+
+    (pagespeed.web.dev — use the live URL, not localhost)
+  □ PageSpeed Insights desktop score: 95+
+  □ GTmetrix grade A (gtmetrix.com — free scan)
+  □ No mixed content warnings (all resources HTTPS)
+
+  SECURITY:
+  □ HTTPS enforced — http:// redirects to https://
+    (Vercel does this automatically)
+  □ No sensitive data in page source or network tab
+    (open DevTools → Network → XHR — GMAIL credentials
+    must not appear anywhere)
+  □ Contact form: submit with script tags in all fields
+    — verify they are escaped in the email, not executed
+  □ Rate limiting: submit form 4 times in quick
+    succession — 4th attempt must return 429
+
+  ANALYTICS:
+  □ Vercel Analytics dashboard shows first page view
+    (may take a few minutes to appear)
+  □ SpeedInsights shows first real CWV data point
+    (appears after 2–3 page loads)
+
+══════════════════════════════════════════════════════════
+PART 7 — REMAINING POLISH (do these after going live)
+══════════════════════════════════════════════════════════
+
+These are not blocking for launch but should be done
+within the first week of the site being live.
+
+──── 7A. LINKEDIN & GITHUB PROFILE UPDATE ─────────────────
+
+LinkedIn:
+  Featured section: add your portfolio URL as the first
+  featured item. This is the most visible spot on your
+  profile and directly drives portfolio traffic.
+  About section: add "Portfolio: hitarththesia.dev"
+  Contact info: add the portfolio URL.
+
+GitHub:
+  Profile README (github.com/hitarth-thesia):
+    Create a README.md in a repo named hitarth-thesia
+    (same as your GitHub username).
+    Add: portfolio link, tech stack badges, current role,
+    and a link to your best project.
+  GitHub profile URL: set to hitarththesia.dev in
+    Settings → Public profile → Website.
+
+──── 7B. RESUME UPDATE ────────────────────────────────────
+
+Add the portfolio URL to your resume PDF:
+  Header section next to your email and LinkedIn:
+  🌐 hitarththesia.dev
+
+Regenerate the PDF and replace public/resume.pdf.
+The URL stays the same — no code changes needed.
+
+──── 7C. ERROR MONITORING ─────────────────────────────────
+
+Vercel has built-in error logging. After deploy:
+  Vercel Dashboard → Project → Logs
+  Filter by "Error" to see any runtime errors.
+
+If errors appear from real visitors:
+  Most common: GitHub API rate limit (fix: add
+  GITHUB_TOKEN env var in Vercel — public rate limit is
+  60/hr, authenticated is 5000/hr)
+
+  Add to lib/github.ts fetch calls:
+    headers: {
+      ...(process.env.GITHUB_TOKEN && {
+        Authorization: `Bearer ${process.env.GITHUB_TOKEN}`
+      })
+    }
+
+  Add to Vercel env vars:
+    GITHUB_TOKEN: (personal access token, read:user scope
+    only — generate at github.com/settings/tokens)
+
+──── 7D. OPEN GRAPH TESTING ACROSS PLATFORMS ──────────────
+
+Test your OG image on every platform where you'll share:
+
+  LinkedIn:   linkedin.com/post/inspector
+              (paste URL — shows exact preview)
+  Twitter/X:  cards-dev.twitter.com/validator
+  WhatsApp:   just paste the URL in a chat with yourself
+  Telegram:   paste URL in Saved Messages
+  Facebook:   developers.facebook.com/tools/debug
+
+If the image doesn't appear: OG tags may be cached.
+Use the "Fetch new scrape info" button on each platform's
+debugger to force a refresh.
+
+──── 7E. GOOGLE SEARCH CONSOLE ────────────────────────────
+
+After submitting your sitemap:
+  1. Request indexing for the homepage manually:
+     Search Console → URL Inspection → enter homepage URL
+     → Request Indexing
+  2. Do the same for /projects and /blog
+  3. Individual project and blog pages will be crawled
+     automatically via the sitemap
+  4. Check back after 3–5 days to see if pages are indexed
+     (search: site:hitarththesia.dev on Google)
+
+First appearance in Google search results typically
+takes 1–4 weeks for a new domain.
+
+══════════════════════════════════════════════════════════
+FILE SUMMARY — every file touched or created in Phase 5
+══════════════════════════════════════════════════════════
 
 NEW FILES:
-  content/blog/
-    how-i-achieved-90-lighthouse-score.mdx
-    building-realtime-order-tracking-mern.mdx
-    mongodb-aggregation-querious.mdx
-  app/blog/page.tsx
-  app/blog/[slug]/page.tsx
-  components/blog/BlogPostCard.tsx
-  components/blog/TableOfContents.tsx
-  components/mdx/MDXComponents.tsx
-  components/mdx/CopyButton.tsx
-  lib/mdx.ts
-  lib/mailer.ts
-  lib/validations.ts
-  lib/email-templates.ts
-  components/sections/TestimonialsSection.tsx
+  app/sitemap.ts
+  app/robots.ts
+  app/manifest.ts
+  app/icon.tsx                   (or static favicon files)
+  app/apple-icon.png             (static, from favicon gen)
+  app/opengraph-image.tsx
+  app/twitter-image.tsx
+  app/projects/[slug]/
+    opengraph-image.tsx
+    twitter-image.tsx
+  app/blog/[slug]/
+    opengraph-image.tsx
+    twitter-image.tsx
+  components/seo/JsonLd.tsx
 
 MODIFIED FILES:
-  app/api/contact/route.ts       (was shell, now complete)
-  app/page.tsx                   (wire BlogSection, add
-                                  TestimonialsSection)
-  components/sections/
-    ContactSection.tsx           (was shell, now complete)
-    BlogSection.tsx              (was shell, now complete)
-  config/site.ts                 (verify Blog in nav)
-  .env.local                     (add GMAIL_USER,
-                                  GMAIL_APP_PASSWORD)
-  .env.local.example             (document both vars with
-                                  setup instructions)
+  app/layout.tsx                 (Analytics, SpeedInsights,
+                                  themeColor, metadataBase)
+  app/page.tsx                   (add JsonLd Person schema)
+  app/projects/[slug]/page.tsx   (add JsonLd Software schema,
+                                  canonical URL)
+  app/blog/[slug]/page.tsx       (add JsonLd BlogPosting
+                                  schema, canonical URL)
+  app/projects/page.tsx          (add canonical URL)
+  app/blog/page.tsx              (add canonical URL)
+  lib/metadata.ts                (add canonical to all calls)
+  next.config.ts                 (bundle analyzer)
+  config/site.ts                 (update url to real domain)
+  package.json                   (add analyze script)
 
-═══════════════════════════════════════════════════════════
-QUALITY GATES — Phase 4 not complete until all pass
-═══════════════════════════════════════════════════════════
+══════════════════════════════════════════════════════════
+QUALITY GATES — Phase 5 complete when all pass
+══════════════════════════════════════════════════════════
 
-□ pnpm build: zero errors, zero TypeScript errors
-□ pnpm dev starts and console shows:
-    "[mailer] Gmail SMTP ready ✓"
-    If not: GMAIL credentials are wrong — fix before
-    proceeding to form testing
-□ All 3 blog post routes resolve:
+□ pnpm build: zero errors, zero warnings
+□ /sitemap.xml accessible and lists all pages
+□ /robots.txt accessible and correct
+□ /manifest.webmanifest accessible
+□ Favicon visible in browser tab
+□ Apple icon visible when added to iOS home screen
+□ OG image appears on all three routes:
+    / (homepage)
+    /projects/daily-dose
     /blog/how-i-achieved-90-lighthouse-score
-    /blog/building-realtime-order-tracking-mern
-    /blog/mongodb-aggregation-querious
-□ /blog listing page shows all 3 posts
-□ Tag filter on /blog works correctly
-□ Blog post page: MDX renders with custom component styles
-□ Code blocks: copy button appears and copies correctly
-□ Code blocks: syntax highlighting renders (not plain text)
-□ Table of contents: renders correctly for each post
-□ Table of contents: scroll-spy highlights active heading
-□ Related posts: renders below each post
-□ Contact form: client-side validation fires on blur
-□ Contact form: submit shows loading state during request
-□ Contact form: API returns 422 on invalid input
-    (test: submit empty form — verify field errors appear)
-□ Contact form: API returns 429 after 3 rapid submits
-    (test: submit 4 times quickly from same browser)
-□ Contact form: success state replaces form on 200 response
-□ Contact form: error banner shows on failed send
-    (test: temporarily remove GMAIL_APP_PASSWORD from
-    .env.local, submit form — verify error banner appears,
-    then restore the key)
-□ Notification email received in developer's Gmail inbox
-□ Confirmation email received in the visitor's inbox
-    (use a different email address to test)
-□ Reply-To on notification email points to visitor's email
-    (hit Reply in Gmail — verify it goes to visitor)
-□ BlogSection on homepage: shows featured posts only
-□ BlogSection on homepage: hidden if 0 published posts
-    (test: set published: false on all 3 — verify section
-    disappears with no whitespace gap)
-□ TestimonialsSection: returns null cleanly
-□ generateStaticParams on /blog/[slug]: all 3 pre-built
-□ notFound() fires on /blog/nonexistent-slug
-□ Lighthouse /blog: Performance 90+, Accessibility 100
-□ Lighthouse /blog/[slug]: Performance 90+,
-    Accessibility 100
-□ Mobile: contact form fully usable at 375px
-□ Mobile: blog post readable, TOC hidden or scrollable
-□ prefers-reduced-motion respected throughout
-□ Zero `any` in all Phase 4 files
-□ No Gmail credentials appear in any client-side code,
-    logs, or error messages exposed to the browser
+□ JSON-LD valid on homepage (rich results test)
+□ JSON-LD valid on one project page
+□ JSON-LD valid on one blog post page
+□ Bundle analyzer: no library over 100KB in initial
+  client bundle (excluding Next.js framework chunks)
+□ All images have explicit sizes prop
+□ No <img> tags anywhere in codebase
+□ Vercel Analytics component present in layout
+□ SpeedInsights component present in layout
+□ Lighthouse homepage: 95+ Performance, 100 Accessibility,
+  100 Best Practices, 100 SEO
+□ Lighthouse /projects/[slug]: same targets
+□ Lighthouse /blog/[slug]: same targets
+□ PageSpeed mobile: 90+ (production URL, not localhost)
+□ No GMAIL credentials visible in any network response
+□ sitemap.xml submitted to Google Search Console
+□ OG image verified on LinkedIn post inspector
 
-═══════════════════════════════════════════════════════════
-WHAT THE DEVELOPER MUST DO MANUALLY AFTER THIS PROMPT
-═══════════════════════════════════════════════════════════
+══════════════════════════════════════════════════════════
+AFTER PHASE 5, FINAL CONFIRMATION REPORT
+══════════════════════════════════════════════════════════
 
-STEP 1 — Enable 2-Step Verification on your Gmail account
-  Go to: myaccount.google.com/security
-  Click "2-Step Verification" → follow the setup flow.
-  This is required before App Passwords are available.
-
-STEP 2 — Generate a Gmail App Password
-  Go to: myaccount.google.com/apppasswords
-  (If you don't see this option, 2-Step Verification is
-  not fully enabled — complete Step 1 first.)
-  Click "Create" → name it "Portfolio Contact Form"
-  → Google generates a 16-character code.
-  Copy it immediately — it is shown only once.
-
-STEP 3 — Add credentials to .env.local
-  GMAIL_USER=hitarththesia123@gmail.com
-  GMAIL_APP_PASSWORD=paste the 16-character code here
-  Spaces in the code are fine — Nodemailer handles them.
-
-STEP 4 — Test in development
-  Run pnpm dev. Check terminal for:
-    "[mailer] Gmail SMTP ready ✓"
-  Submit the contact form. Check your Gmail inbox.
-  Check the sender's inbox for the confirmation email.
-
-STEP 5 — Add to Vercel before deploying
-  Vercel Dashboard → Project → Settings →
-  Environment Variables → Add:
-    GMAIL_USER
-    GMAIL_APP_PASSWORD
-  Both as Production + Preview + Development.
-
-STEP 6 — Add real blog post cover images (optional):
-  /public/images/blog/lighthouse-cover.png (1200×675px)
-  Or remove coverImage from frontmatter to use the
-  default gradient fallback — both look clean.
-
-STEP 7 — Personalize the 3 blog posts
-  The content is drafted from your resume context. You
-  know the real details better. Add actual code from your
-  projects, fix any inaccurate specifics, adjust the tone
-  to match how you naturally write.
-
-STEP 8 — Add testimonials when ready
-  Ask your manager at Codage Habitation and your mentor
-  at Zikasha for a short LinkedIn recommendation — then
-  copy the text into data/testimonials.ts. The section
-  will appear automatically.
-
-═══════════════════════════════════════════════════════════
-AFTER PHASE 4 IS COMPLETE, provide:
-═══════════════════════════════════════════════════════════
-
-1. Confirm every blog route resolves — list all URLs
-2. Gmail SMTP status: did "[mailer] Gmail SMTP ready ✓"
-   appear in terminal?
-3. Contact form test: did notification email arrive?
-   Did confirmation email arrive? Did Reply-To work?
-4. List all new 'use client' components and exact reasons
-5. Lighthouse scores for /blog and /blog/[slug]
-6. Any deviation from this spec and the reason why
-7. What remains for Phase 5:
-   sitemap.xml, robots.txt, dynamic OG images,
-   analytics, final Vercel deployment checklist
+Provide a final report with:
+  1. Live URL of the deployed portfolio
+  2. Lighthouse scores (all 4 metrics, mobile + desktop)
+  3. PageSpeed Insights score (mobile + desktop)
+  4. Bundle sizes: initial JS, total JS, largest chunk
+     (from pnpm analyze output)
+  5. Sitemap URL and count of URLs indexed
+  6. OG image verified on: (list platforms tested)
+  7. Any item from the quality gates that could not be
+     completed and the reason why
+  8. What to do in week 1 after launch:
+     (LinkedIn update, resume update, Google Search
+     Console request indexing, share on LinkedIn)

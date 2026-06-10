@@ -27,6 +27,7 @@ import { ProjectImagePlaceholder } from '@/components/projects/ProjectCard';
 import { TechBadge } from '@/components/ui/TechBadge';
 import { GithubIcon } from '@/components/ui/BrandIcons';
 import { cn } from '@/lib/utils';
+import { JsonLd } from '@/components/seo/JsonLd';
 
 // ── Static generation ──────────────────────────────────
 
@@ -113,8 +114,25 @@ export default async function ProjectDetailPage({ params }: Props) {
 
   const { prev, next } = getProjectSiblings(slug);
 
+  const projectSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'SoftwareApplication',
+    name: project.title,
+    description: project.description,
+    applicationCategory: 'WebApplication',
+    operatingSystem: 'All',
+    url: `${siteConfig.url}projects/${project.slug}`,
+    downloadUrl: project.liveUrl || undefined,
+    softwareRequirements: project.stack.join(', '),
+    author: {
+      '@type': 'Person',
+      name: siteConfig.name,
+    },
+  };
+
   return (
     <div className="min-h-screen bg-background">
+      <JsonLd data={projectSchema} />
       {/* ZONE 1: Navigation & Breadcrumbs */}
       <div className="border-b border-border bg-card/20 backdrop-blur-md sticky top-[65px] z-30">
         <div className="container mx-auto max-w-6xl px-4 py-4 flex items-center justify-between sm:px-6 lg:px-8">

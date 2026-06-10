@@ -24,6 +24,7 @@ import { ShareButtons } from '@/components/blog/ShareButtons';
 import { TableOfContents } from '@/components/blog/TableOfContents';
 import { BlogPostCard } from '@/components/blog/BlogPostCard';
 import { LinkedinIcon } from '@/components/ui/BrandIcons';
+import { JsonLd } from '@/components/seo/JsonLd';
 
 // ── Static generation ──────────────────────────────────
 
@@ -127,8 +128,31 @@ export default async function BlogPostPage({ params }: Props) {
     },
   };
 
+  const blogPostSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'BlogPosting',
+    headline: post.title,
+    description: post.excerpt,
+    datePublished: post.date,
+    dateModified: post.date,
+    author: {
+      '@type': 'Person',
+      name: siteConfig.name,
+      url: siteConfig.url,
+    },
+    publisher: {
+      '@type': 'Person',
+      name: siteConfig.name,
+    },
+    url: `${siteConfig.url}blog/${post.slug}`,
+    image: post.coverImage
+      ? `${siteConfig.url.replace(/\/$/, '')}${post.coverImage}`
+      : `${siteConfig.url.replace(/\/$/, '')}${siteConfig.ogImage}`,
+  };
+
   return (
     <div className="min-h-screen bg-background pb-20">
+      <JsonLd data={blogPostSchema} />
       {/* ZONE 1: Post Header */}
       <header className="pt-32 pb-8 border-b border-border bg-muted/5">
         <div className="container mx-auto max-w-3xl px-4 sm:px-6">

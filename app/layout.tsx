@@ -12,6 +12,7 @@ import { ThemeProvider } from '@/components/layout/ThemeProvider';
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
 import { siteConfig } from '@/config/site';
+import { Analytics } from '@vercel/analytics/react';
 import '@/app/globals.css';
 
 // ── Google Fonts ───────────────────────────────────────
@@ -114,6 +115,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
           <Navbar />
           <main className="flex-1">{children}</main>
           <Footer />
+          <Analytics />
         </ThemeProvider>
       </body>
     </html>

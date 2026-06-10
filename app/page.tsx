@@ -22,6 +22,7 @@ import { projects, featuredProjects } from '@/data/projects';
 import { skillCategories } from '@/data/skills';
 import { experiences } from '@/data/experience';
 import { siteConfig } from '@/config/site';
+import { JsonLd } from '@/components/seo/JsonLd';
 
 export const metadata: Metadata = {
   title: {
@@ -31,8 +32,29 @@ export const metadata: Metadata = {
 };
 
 export default function HomePage(): ReactElement {
+  const personSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'Person',
+    name: siteConfig.name,
+    jobTitle: siteConfig.title,
+    url: siteConfig.url,
+    image: `${siteConfig.url}Passportsize_Hitarth.png`,
+    sameAs: [
+      siteConfig.social.github,
+      siteConfig.social.linkedin,
+    ].filter(Boolean),
+    address: {
+      '@type': 'PostalAddress',
+      addressLocality: 'Ahmedabad',
+      addressRegion: 'Gujarat',
+      addressCountry: 'India',
+    },
+    description: siteConfig.description,
+  };
+
   return (
     <>
+      <JsonLd data={personSchema} />
       <HeroSection />
       <AboutSection />
       <SkillsSection categories={skillCategories} />

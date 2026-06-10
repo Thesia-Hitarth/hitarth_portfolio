@@ -8,11 +8,11 @@
 
 import type { NextConfig } from 'next';
 
-// ── Bundle analyzer (uncomment to enable) ─────────────
-// import bundleAnalyzer from '@next/bundle-analyzer';
-// const withBundleAnalyzer = bundleAnalyzer({
-//   enabled: process.env.ANALYZE === 'true',
-// });
+// ── Bundle analyzer ───────────────────────────────────
+import bundleAnalyzer from '@next/bundle-analyzer';
+const withBundleAnalyzer = bundleAnalyzer({
+  enabled: process.env.ANALYZE === 'true',
+});
 
 const nextConfig: NextConfig = {
   // ── Image optimisation ────────────────────────────────
@@ -97,5 +97,4 @@ const nextConfig: NextConfig = {
 };
 
 // Wrap with bundle analyzer when ANALYZE=true
-// export default withBundleAnalyzer(nextConfig);
-export default nextConfig;
+export default withBundleAnalyzer(nextConfig);
