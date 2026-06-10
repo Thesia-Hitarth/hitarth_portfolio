@@ -188,14 +188,14 @@ export function HeroSection(): ReactElement {
             <motion.div
               variants={prefersReduced ? undefined : floatVariants}
               animate={prefersReduced ? undefined : 'animate'}
-              className="relative rounded-xl border border-zinc-700 bg-zinc-900 shadow-2xl overflow-hidden"
+              className="relative rounded-xl border border-primary/10 dark:border-zinc-800 bg-primary/[0.03] dark:bg-zinc-950/60 backdrop-blur-md shadow-2xl overflow-hidden"
             >
               {/* Terminal header */}
-              <div className="flex items-center gap-2 border-b border-zinc-700 px-4 py-3">
+              <div className="flex items-center gap-2 border-b border-primary/10 dark:border-zinc-800/60 bg-primary/[0.05] dark:bg-zinc-900/60 px-4 py-3">
                 <span className="h-3 w-3 rounded-full bg-red-500" />
                 <span className="h-3 w-3 rounded-full bg-yellow-500" />
                 <span className="h-3 w-3 rounded-full bg-green-500" />
-                <span className="ml-3 rounded-md border border-zinc-600 bg-zinc-800 px-3 py-0.5 text-xs font-mono text-zinc-400">
+                <span className="ml-3 rounded-md border border-primary/10 dark:border-zinc-700 bg-primary/[0.02] dark:bg-zinc-800 px-3 py-0.5 text-xs font-semibold font-mono text-primary dark:text-zinc-400">
                   developer.ts
                 </span>
               </div>
@@ -203,29 +203,29 @@ export function HeroSection(): ReactElement {
               {/* Code */}
               <div className="p-5 font-mono text-sm leading-relaxed">
                 <p>
-                  <span className="text-violet-400">const</span>{' '}
-                  <span className="text-sky-300">developer</span>{' '}
-                  <span className="text-zinc-400">= {'{'}</span>
+                  <span className="text-violet-600 dark:text-violet-400">const</span>{' '}
+                  <span className="text-sky-600 dark:text-sky-400">developer</span>{' '}
+                  <span className="text-muted-foreground dark:text-zinc-500">= {'{'}</span>
                 </p>
                 <div className="ml-4 space-y-1">
-                  <CodeLine k="name" v={`"${siteConfig.name}"`} vClass="text-emerald-300" />
-                  <CodeLine k="role" v={`"${siteConfig.title}"`} vClass="text-emerald-300" />
+                  <CodeLine k="name" v={`"${siteConfig.name}"`} vClass="text-emerald-600 dark:text-emerald-400" />
+                  <CodeLine k="role" v={`"${siteConfig.title}"`} vClass="text-emerald-600 dark:text-emerald-400" />
                   <p>
-                    <span className="text-sky-300">  stack</span>
-                    <span className="text-zinc-400">: [</span>
+                    <span className="text-sky-600 dark:text-sky-400">  stack</span>
+                    <span className="text-muted-foreground dark:text-zinc-500">: [</span>
                     {['Next.js', 'TypeScript', 'Node.js'].map((t, i, arr) => (
                       <span key={t}>
-                        <span className="text-emerald-300">&quot;{t}&quot;</span>
-                        {i < arr.length - 1 && <span className="text-zinc-400">, </span>}
+                        <span className="text-emerald-600 dark:text-emerald-400">&quot;{t}&quot;</span>
+                        {i < arr.length - 1 && <span className="text-muted-foreground dark:text-zinc-500">, </span>}
                       </span>
                     ))}
-                    <span className="text-zinc-400">],</span>
+                    <span className="text-muted-foreground dark:text-zinc-500">],</span>
                   </p>
-                  <CodeLine k="status" v='"open_to_work"' vClass="text-amber-300" />
-                  <CodeLine k="location" v={`"${siteConfig.location}"`} vClass="text-emerald-300" />
-                  <CodeLine k="passion" v='"Building products people love"' vClass="text-emerald-300" />
+                  <CodeLine k="status" v='"open_to_work"' vClass="text-amber-600 dark:text-amber-400" />
+                  <CodeLine k="location" v={`"${siteConfig.location}"`} vClass="text-emerald-600 dark:text-emerald-400" />
+                  <CodeLine k="passion" v='"Building products people love"' vClass="text-emerald-600 dark:text-emerald-400" />
                 </div>
-                <p className="text-zinc-400">{'}'}</p>
+                <p className="text-muted-foreground dark:text-zinc-500">{'}'}</p>
               </div>
             </motion.div>
           </motion.div>
@@ -256,10 +256,10 @@ export function HeroSection(): ReactElement {
 function CodeLine({ k, v, vClass }: { k: string; v: string; vClass: string }): ReactElement {
   return (
     <p>
-      <span className="text-sky-300">  {k}</span>
-      <span className="text-zinc-400">: </span>
+      <span className="text-sky-600 dark:text-sky-400">  {k}</span>
+      <span className="text-muted-foreground dark:text-zinc-500">: </span>
       <span className={vClass}>{v}</span>
-      <span className="text-zinc-400">,</span>
+      <span className="text-muted-foreground dark:text-zinc-500">,</span>
     </p>
   );
 }
