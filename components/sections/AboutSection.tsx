@@ -148,7 +148,7 @@ export function AboutSection(): ReactElement {
                 aria-hidden="true"
                 className="absolute -top-2 -left-2 right-2 bottom-2 rounded-2xl border-2 border-primary/30 z-0"
               />
-              <div className="relative z-10 aspect-square rounded-2xl bg-gradient-to-br from-primary/20 to-primary/5 border border-border overflow-hidden">
+              <div className="relative z-10 aspect-[4/5] rounded-2xl bg-gradient-to-br from-primary/20 to-primary/5 border border-border overflow-hidden">
                 <Image
                   src="/Passportsize_Hitarth.png"
                   alt={`${siteConfig.name} profile photo`}
