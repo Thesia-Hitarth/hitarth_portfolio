@@ -28,7 +28,7 @@ const BIO_PARAGRAPHS = [
 const INFO_ITEMS = [
   { icon: MapPin, text: siteConfig.location },
   { icon: Briefcase, text: 'Open to Full-time · Onsite / Hybrid / Remote' },
-  { icon: GraduationCap, text: 'B.Tech · Computer Science' },
+  { icon: GraduationCap, text: 'B.Tech · Computer Engineering' },
 ];
 
 const INITIALS = siteConfig.name
