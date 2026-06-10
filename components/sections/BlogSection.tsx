@@ -6,35 +6,44 @@
  * ─────────────────────────────────────────────────────────
  */
 
+import type { ReactElement } from 'react';
 import Link from 'next/link';
+import { ArrowRight } from 'lucide-react';
+import { SectionHeader } from '@/components/ui/SectionHeader';
+import { AnimatedSection } from '@/components/ui/AnimatedSection';
 
-export function BlogSection() {
+export function BlogSection(): ReactElement {
   return (
     <section
       id="blog"
-      className="mx-auto max-w-6xl px-6 py-24"
-      aria-label="Blog"
+      aria-labelledby="blog-heading"
+      className="py-24 lg:py-32"
     >
-      <h2 className="mb-4 text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
-        Blog
-      </h2>
-      <div className="h-1 w-16 rounded-full bg-primary mb-10" />
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-6xl">
+        <SectionHeader
+          id="blog-heading"
+          label="06 / Blog"
+          title="Latest writing"
+          subtitle="Thoughts on Next.js, TypeScript, distributed systems, and developer tooling."
+        />
 
-      {/* Coming-soon placeholder — replace in Phase 4 */}
-      <div className="rounded-2xl border border-dashed border-border bg-card p-12 text-center">
-        <p className="text-lg font-semibold text-foreground">
-          Articles coming soon
-        </p>
-        <p className="mt-2 text-sm text-muted-foreground">
-          I write about Next.js, TypeScript, distributed systems, and developer tooling.
-          Subscribe to get notified when the first post drops.
-        </p>
-        <Link
-          href="/blog"
-          className="mt-6 inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline"
-        >
-          Visit the blog →
-        </Link>
+        <AnimatedSection>
+          {/* Coming-soon placeholder */}
+          <div className="rounded-2xl border border-dashed border-border bg-card p-12 text-center">
+            <p className="text-lg font-semibold text-foreground">Articles coming soon</p>
+            <p className="mt-2 text-sm text-muted-foreground max-w-md mx-auto">
+              I write about Next.js architecture, TypeScript patterns, and lessons learned
+              shipping production software.
+            </p>
+            <Link
+              href="/blog"
+              className="mt-6 inline-flex items-center gap-2 text-sm font-medium text-primary hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 rounded-sm"
+            >
+              Visit the blog
+              <ArrowRight size={14} />
+            </Link>
+          </div>
+        </AnimatedSection>
       </div>
     </section>
   );

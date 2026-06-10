@@ -1,81 +1,128 @@
+'use client';
+
 /**
  * components/sections/SkillsSection.tsx
- * ─────────────────────────────────────────────────────────
- * Skills section — renders skill categories passed as props.
- * ─────────────────────────────────────────────────────────
  */
 
+import { motion, useReducedMotion } from 'framer-motion';
+import {
+  Monitor,
+  Server,
+  Database,
+  Wrench,
+  Sparkles,
+} from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
+import type { ReactElement } from 'react';
+import { SectionHeader } from '@/components/ui/SectionHeader';
+import { TechBadge } from '@/components/ui/TechBadge';
+import { containerVariants } from '@/lib/animations';
 import type { SkillCategory } from '@/lib/types';
 import { cn } from '@/lib/utils';
+
+const ICON_MAP: Record<string, LucideIcon> = {
+  Monitor,
+  Server,
+  Database,
+  Wrench,
+  Sparkles,
+};
+
+const LEVEL_LABEL: Record<string, string> = {
+  learning: 'Learning',
+  comfortable: 'Comfortable',
+  proficient: 'Proficient',
+  expert: 'Expert',
+};
+
+// Card entrance variant — ease as 4-tuple
+const EASE = [0.21, 0.47, 0.32, 0.98] as [number, number, number, number];
+
+const cardItemVariants = {
+  hidden: { opacity: 0, scale: 0.96, y: 12 },
+  visible: {
+    opacity: 1,
+    scale: 1,
+    y: 0,
+    transition: { duration: 0.4, ease: EASE },
+  },
+};
 
 interface SkillsSectionProps {
   categories: SkillCategory[];
 }
 
-/** Visual indicator for each proficiency level */
-const LEVEL_STYLES: Record<string, string> = {
-  learning: 'bg-sky-500/20 text-sky-600 dark:text-sky-400 border-sky-500/30',
-  comfortable: 'bg-violet-500/20 text-violet-600 dark:text-violet-400 border-violet-500/30',
-  proficient: 'bg-amber-500/20 text-amber-600 dark:text-amber-400 border-amber-500/30',
-  expert: 'bg-primary/15 text-primary border-primary/30',
-};
+export function SkillsSection({ categories }: SkillsSectionProps): ReactElement {
+  const prefersReduced = useReducedMotion();
 
-export function SkillsSection({ categories }: SkillsSectionProps) {
+  const containerProps = prefersReduced
+    ? {}
+    : {
+        variants: containerVariants,
+        initial: 'hidden' as const,
+        whileInView: 'visible' as const,
+        viewport: { once: true, amount: 0.1 },
+      };
+
   return (
     <section
       id="skills"
-      className="bg-muted/30 px-6 py-24"
-      aria-label="Skills"
+      aria-labelledby="skills-heading"
+      className="py-24 lg:py-32"
     >
-      <div className="mx-auto max-w-6xl">
-        <h2 className="mb-4 text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
-          Skills
-        </h2>
-        <div className="h-1 w-16 rounded-full bg-primary mb-10" />
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-6xl">
+        <SectionHeader
+          id="skills-heading"
+          label="03 / Skills"
+          title="What I work with"
+          subtitle="Technologies and tools I use to build things."
+        />
 
-        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-          {categories.map((category) => (
-            <div
-              key={category.name}
-              className="rounded-2xl border border-border bg-card p-6 shadow-sm"
-            >
-              <h3 className="mb-4 text-lg font-semibold text-foreground">
-                {category.name}
-              </h3>
-              <ul className="flex flex-wrap gap-2" role="list">
-                {category.skills.map((skill) => (
-                  <li key={skill.name}>
-                    <span
-                      className={cn(
-                        'inline-flex items-center rounded-full border px-3 py-1 text-xs font-medium',
-                        LEVEL_STYLES[skill.level]
-                      )}
-                      title={`Level: ${skill.level}`}
-                    >
-                      {skill.name}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
-        </div>
+        <motion.div
+          {...containerProps}
+          className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3"
+        >
+          {categories.map((category) => {
+            const Icon = ICON_MAP[category.icon] ?? Monitor;
+            const isLearning =
+              category.name.toLowerCase().includes('learning') ||
+              category.name.toLowerCase().includes('exploring');
 
-        {/* Legend */}
-        <div className="mt-8 flex flex-wrap items-center gap-4 text-xs text-muted-foreground">
-          <span className="font-semibold">Proficiency:</span>
-          {Object.entries(LEVEL_STYLES).map(([level, styles]) => (
-            <span
-              key={level}
-              className={cn(
-                'inline-flex items-center rounded-full border px-2.5 py-0.5 capitalize',
-                styles
-              )}
-            >
-              {level}
-            </span>
-          ))}
-        </div>
+            return (
+              <motion.div
+                key={category.name}
+                variants={prefersReduced ? undefined : cardItemVariants}
+                className={cn(
+                  'rounded-2xl border bg-card p-6',
+                  'hover:shadow-sm transition-all duration-300',
+                  isLearning
+                    ? 'border-dashed border-primary/30 hover:border-primary/50'
+                    : 'border-border hover:border-primary/40'
+                )}
+              >
+                <div className="flex flex-col">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
+                    <Icon size={20} className="text-primary" />
+                  </div>
+                  <h3 className="mt-3 text-lg font-semibold text-foreground">
+                    {isLearning ? 'Currently Exploring' : category.name}
+                  </h3>
+                </div>
+
+                <div className="mt-4 flex flex-wrap gap-2">
+                  {category.skills.map((skill) => (
+                    <TechBadge
+                      key={skill.name}
+                      name={skill.name}
+                      variant={isLearning ? 'outline' : 'default'}
+                      tooltip={LEVEL_LABEL[skill.level] ?? skill.level}
+                    />
+                  ))}
+                </div>
+              </motion.div>
+            );
+          })}
+        </motion.div>
       </div>
     </section>
   );

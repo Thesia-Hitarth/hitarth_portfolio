@@ -8,6 +8,7 @@
  */
 
 import type { Metadata } from 'next';
+import type { ReactElement } from 'react';
 import { HeroSection } from '@/components/sections/HeroSection';
 import { AboutSection } from '@/components/sections/AboutSection';
 import { SkillsSection } from '@/components/sections/SkillsSection';
@@ -15,7 +16,7 @@ import { ExperienceSection } from '@/components/sections/ExperienceSection';
 import { ProjectsSection } from '@/components/sections/ProjectsSection';
 import { BlogSection } from '@/components/sections/BlogSection';
 import { ContactSection } from '@/components/sections/ContactSection';
-import { featuredProjects } from '@/data/projects';
+import { projects, featuredProjects } from '@/data/projects';
 import { skillCategories } from '@/data/skills';
 import { experiences } from '@/data/experience';
 import { siteConfig } from '@/config/site';
@@ -27,14 +28,14 @@ export const metadata: Metadata = {
   description: siteConfig.description,
 };
 
-export default function HomePage() {
+export default function HomePage(): ReactElement {
   return (
     <>
       <HeroSection />
       <AboutSection />
       <SkillsSection categories={skillCategories} />
-      <ExperienceSection items={experiences} />
-      <ProjectsSection projects={featuredProjects} />
+      <ExperienceSection experiences={experiences} />
+      <ProjectsSection projects={projects} featured={featuredProjects} />
       <BlogSection />
       <ContactSection />
     </>

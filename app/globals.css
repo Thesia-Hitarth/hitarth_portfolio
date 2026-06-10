@@ -110,3 +110,16 @@ body {
   outline: 2px solid var(--ring);
   outline-offset: 2px;
 }
+
+/* ── Blinking cursor (used in Hero title line) ────────── */
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+/* ── Container utility ────────────────────────────────── */
+.container {
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+}
