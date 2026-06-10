@@ -91,6 +91,10 @@ Designing this project provided crucial insights into relational schema modeling
     ],
     liveUrl: "",
     githubUrl: "",
+    challenges: [
+      "Securing route endpoints by validating JWT tokens on both frontend and backend handlers.",
+      "Implementing custom Express validation middleware to intercept malformed request payloads before they reach controllers."
+    ],
   },
 
   // ── 3. Querious ──────────────────────────────────────────

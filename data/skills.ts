@@ -78,6 +78,7 @@ export const skillCategories: SkillCategory[] = [
     skills: [
       { name: "AI", level: "learning" },
       { name: "ML", level: "learning" },
+      { name: "Python", level: "learning" },
     ],
   },
 ];

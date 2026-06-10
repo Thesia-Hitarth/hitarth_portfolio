@@ -1,401 +1,706 @@
-You are updating an existing Next.js 15 portfolio that already has a
-complete, polished UI from Phase 2. Your ONLY job in this prompt is to
-replace all placeholder/dummy content with real data from the attached
-resume. DO NOT touch any component UI, styling, Tailwind classes,
-animations, layout, or structure. Zero UI changes. Data only.
+You are an expert Next.js 15 developer. Phase 1 (foundation + data
+architecture) and Phase 2 (all core section UI + animations) are
+complete and passing pnpm build with zero errors. The portfolio is
+live with real data from the developer's resume.
 
-The developer is: Hitarth Thesia
-Role: MERN Stack / Full-Stack Developer
-Location: Ahmedabad, Gujarat, India
+Phase 3 has three goals:
+  1. Build fully designed project detail pages (/projects/[slug])
+  2. Build a complete /projects listing page (all projects)
+  3. Add a GitHub activity section to the homepage
 
-═══════════════════════════════════════════════════════════
-RULE — read this before touching any file
-═══════════════════════════════════════════════════════════
-
-ONLY these files may be modified:
-  config/site.ts
-  data/projects.ts
-  data/skills.ts
-  data/experience.ts
-  data/testimonials.ts
-
-NO other file gets touched. Not layout.tsx, not any component,
-not globals.css, not next.config.ts. If a UI change is needed to
-display the data better, note it as a comment but do not implement it.
-
-All content must feel like it was written by a senior developer
-reviewing their own work — confident, specific, metric-driven.
-Never use vague phrases like "worked on", "helped with",
-"responsible for", or "passionate about". Every sentence must
-either state a metric, a technical decision, or a concrete outcome.
+These are the pages that turn a portfolio into a case study showcase —
+the difference between a developer who lists projects and one who
+demonstrates engineering judgment. Every page must be statically
+generated, fast, and designed to the same quality bar as Phase 2.
 
 ═══════════════════════════════════════════════════════════
-config/site.ts — replace every field completely
+GROUND RULES — same as Phase 2, enforced strictly
 ═══════════════════════════════════════════════════════════
 
-name:         "Hitarth Thesia"
-title:        "Full-Stack Developer"
-tagline:      "I build fast, production-ready web products."
-description:  Two-sentence version of resume summary. Must include:
-              the 90+ Lighthouse score, 45% re-render reduction, and
-              mention of both frontend and backend capability.
-              Keep it under 40 words total.
+TYPESCRIPT
+- Zero `any`. Every prop, ref, and async param is fully typed.
+- generateStaticParams, generateMetadata, and page props all
+  typed with Next.js PageProps pattern.
 
-url:          "https://hitarththesia.vercel.app/"
-              (placeholder domain — developer will update)
-email:        "hitarththesia123@gmail.com"
-location:     "Ahmedabad, Gujarat, India"
-openToWork:   true
+SERVER VS CLIENT
+- app/projects/page.tsx          → RSC (no interactivity needed)
+- app/projects/[slug]/page.tsx   → RSC (data fetching + metadata)
+- Filter/search UI inside        → 'use client' wrapper only
+- GitHub section                 → RSC fetch + 'use client' chart
+- All animation wrappers         → 'use client' (Framer Motion)
 
-social:
-  github:     "https://github.com/hitarth-thesia"
-  linkedin:   "https://linkedin.com/in/Hitarth Thesia"
-              (developer must verify exact LinkedIn slug and update)
+PERFORMANCE
+- All project pages: statically generated via generateStaticParams
+- Images: next/image always, with explicit sizes prop
+- GitHub data: fetched at build time (not client-side fetch)
+  with revalidate: 3600 (revalidates hourly on Vercel)
+- No layout shift on any page — every image container has
+  explicit aspect ratio
 
-resumeUrl:    "/resume.pdf"
-              (developer must drop their resume PDF in /public/)
-
-nav: Home, About, Skills, Experience, Projects, Blog, Contact
-     (unchanged from Phase 2)
-
-═══════════════════════════════════════════════════════════
-data/experience.ts — 3 entries total
-═══════════════════════════════════════════════════════════
-
-Follow the Experience interface exactly. All fields required.
-Bullets must be verbatim from resume but expanded slightly —
-add one sentence of "how" or "why" to each bullet without
-changing the metric. Maximum 4 bullets per role.
-
-────────────────────────────────────────────────────────────
-ENTRY 1 — Current role
-────────────────────────────────────────────────────────────
-id:           "codage-habitation-intern"
-type:         "work"
-company:      "Codage Habitation"
-companyUrl:   ""   ← developer to fill
-role:         "Frontend Developer Intern"
-startDate:    "2026-01"
-endDate:      "present"
-location:     "Ahmedabad, Gujarat"
-locationType: "onsite"
-description:  Write 2 sentences. Cover: tax-management platform,
-              tech stack (React, Next.js, TypeScript, Tailwind,
-              Redux Toolkit, Sanity, Strapi), and team context.
-              Example direction — not verbatim:
-              "Building a multi-module tax-management platform
-              serving financial advisors, contributing across UI
-              components, state management, and CMS integration."
-bullets:
-  - "Built 25+ reusable UI components in React.js, TypeScript,
-    and Tailwind CSS, directly improving user engagement by 30%
-    as measured by session depth analytics."
-  - "Cut component re-renders by 45% by replacing local state
-    with Redux Toolkit slices and scoping React Context precisely
-    to the subtrees that needed it."
-  - "Achieved and maintained a 90+ Google Lighthouse performance
-    score through code splitting, lazy loading, and strategic
-    memoization of expensive render paths."
-  - "Integrated Sanity and Strapi headless CMS, enabling
-    non-technical team members to manage content independently
-    without developer involvement."
-technologies: ["React.js", "Next.js", "TypeScript", "Tailwind CSS",
-               "Redux Toolkit", "Sanity", "Strapi"]
-logo:         "/images/companies/codage.png"
-              ← developer to add logo; use empty string for now
-
-────────────────────────────────────────────────────────────
-ENTRY 2 — Previous internship
-────────────────────────────────────────────────────────────
-id:           "zikasha-intern"
-type:         "work"
-company:      "Zikasha Consultancy LLP"
-companyUrl:   ""   ← developer to fill
-role:         "Software Developer Intern"
-startDate:    "2025-02"
-endDate:      "2025-07"
-location:     "Gandhinagar, Gujarat"
-locationType: "onsite"
-description:  2 sentences covering: full-stack food delivery platform,
-              150+ daily active users, React + Node + MongoDB stack.
-bullets:
-  - "Developed a full-stack food delivery platform serving 150+
-    daily users, handling real-time order tracking, cart
-    management, and meal subscription workflows end-to-end."
-  - "Designed and built 10+ REST API endpoints in Node.js and
-    Express.js covering authentication, order lifecycle, and
-    subscription management."
-  - "Diagnosed and fixed a broken checkout flow and added
-    client-side and server-side form validation, eliminating
-    the user-reported order errors that had been logged weekly."
-technologies: ["React.js", "Node.js", "Express.js", "MongoDB",
-               "ShadCN/UI", "REST APIs"]
-logo:         ""  ← developer to add
-
-────────────────────────────────────────────────────────────
-ENTRY 3 — Education
-────────────────────────────────────────────────────────────
-id:           "charusat-btech"
-type:         "education"
-company:      "CHARUSAT University"
-companyUrl:   "https://www.charusat.ac.in"
-role:         "B.Tech in Computer Engineering"
-startDate:    "2022-07"
-endDate:      "2025-06"
-location:     "Anand, Gujarat"
-locationType: "onsite"
-description:  "Bachelor of Technology in Computer Engineering from
-              Charotar University of Science and Technology (CHARUSAT),
-              Anand. CGPA: 7.50 / 10."
-bullets:
-  - "Completed full B.Tech curriculum covering data structures,
-    algorithms, databases, operating systems, and software
-    engineering."
-  - "Built and shipped 3 full-stack projects during the program,
-    all of which are live and publicly accessible."
-technologies: ["Java", "C/C++", "Data Structures", "Algorithms",
-               "DBMS", "Operating Systems"]
-logo:         ""  ← developer to add
-
-Export helpers as before:
-  export const workExperience = ...  (type work or freelance)
-  export const education = ...       (type education)
+CONSISTENCY
+- Use the exact same SectionHeader, TechBadge, AnimatedSection,
+  and GradientText components from Phase 2
+- Use the same spacing scale: section py-24 lg:py-32,
+  container max-w-6xl mx-auto px-4 sm:px-6 lg:px-8
+- Same animation variants from lib/animations.ts — no new
+  inline variants
 
 ═══════════════════════════════════════════════════════════
-data/projects.ts — 3 real projects
+PART 1 — /projects/[slug] DETAIL PAGE
 ═══════════════════════════════════════════════════════════
 
-All 3 from the resume. featured: true on the first one only.
-Each project MUST have:
-  - A tagline under 12 words (punchy, describes the product)
-  - A description of 2–3 sentences (what it is + technical depth)
-  - A longDescription of 4–6 sentences (for the detail page case
-    study — covers the problem, approach, key decisions, outcomes)
-  - highlights[] with exactly 4 items — specific, technical,
-    never vague
-  - Accurate stack[], liveUrl (empty string for now), githubUrl
-    (developer must fill real URLs)
+File: app/projects/[slug]/page.tsx
 
-────────────────────────────────────────────────────────────
-PROJECT 1 — Featured
-────────────────────────────────────────────────────────────
-slug:         "daily-dose"
-title:        "Daily Dose"
-tagline:      "Tiffin ordering and meal subscription platform."
-year:         2025
-category:     "fullstack"
-featured:     true
-status:       "live"
-coverImage:   "/images/projects/daily-dose.png"
-stack:        ["React.js", "Node.js", "Express.js", "MongoDB",
-               "ShadCN/UI", "REST APIs"]
-description:
-  Write 2–3 sentences covering: live food subscription web app,
-  real-time order tracking, 150+ daily users, sole frontend
-  developer role. Must mention the component library built.
-longDescription:
-  Write 4–6 sentences for the case study page. Cover:
-  - The problem (daily meal subscription is hard to manage
-    without a dedicated platform)
-  - The solution (what Hitarth built specifically)
-  - Technical decisions (shared API contracts, component library,
-    ShadCN/UI)
-  - His specific contribution as sole frontend developer
-  - Outcomes (150+ DAU, reduced integration issues)
-highlights:
-  - "Sole frontend developer — designed and built a component
-    library covering 10+ pages with consistent UI across
-    desktop and mobile."
-  - "Collaborated with the backend team using shared API
-    contracts, reducing integration bugs during development."
-  - "Implemented real-time order tracking and cart state
-    management with REST API integration."
-  - "Achieved consistent cross-device experience without
-    a UI framework — custom components only with ShadCN/UI."
-liveUrl:      ""   ← developer to fill
-githubUrl:    ""   ← developer to fill
+This page is the case study for a single project. A recruiter
+who clicks "Case study →" from the homepage lands here. It must
+read like an engineering write-up, not a README.
 
-────────────────────────────────────────────────────────────
-PROJECT 2
-────────────────────────────────────────────────────────────
-slug:         "ecommerce-platform"
-title:        "E-Commerce Platform"
-tagline:      "Full-stack MERN shopping platform with secure checkout."
-year:         2025
-category:     "fullstack"
-featured:     false
-status:       "live"
-coverImage:   "/images/projects/ecommerce.png"
-stack:        ["MongoDB", "Express.js", "React.js", "Node.js",
-               "JWT", "REST APIs"]
-description:
-  2–3 sentences: complete online shopping platform, product
-  browsing to secure checkout, JWT auth with protected routes
-  on both frontend and backend.
-longDescription:
-  4–6 sentences covering: problem (learning full MERN by
-  building something real), architecture (monorepo with
-  separate client/server), JWT implementation decisions
-  (httpOnly cookies vs localStorage, why), payment integration
-  approach, and what was learned about securing routes.
-highlights:
-  - "Built end-to-end from product listing to checkout,
-    covering the complete MERN stack without any scaffolding."
-  - "Implemented JWT-based authentication with protected routes
-    enforced on both the React frontend and Express backend."
-  - "Integrated a third-party payment API with server-side
-    order verification to prevent client-side manipulation."
-  - "Designed a normalized MongoDB schema to handle products,
-    users, carts, and orders as separate collections with
-    references."
-liveUrl:      ""
-githubUrl:    ""
+── generateStaticParams ───────────────────────────────────
 
-────────────────────────────────────────────────────────────
-PROJECT 3
-────────────────────────────────────────────────────────────
-slug:         "querious"
-title:        "Querious"
-tagline:      "Community Q&A platform for developers."
-year:         2024
-category:     "fullstack"
-featured:     false
-status:       "live"
-coverImage:   "/images/projects/querious.png"
-stack:        ["MongoDB", "Express.js", "React.js", "Node.js",
-               "Firebase Authentication", "REST APIs"]
-description:
-  2–3 sentences: developer Q&A platform similar to Stack
-  Overflow, upvoting and answer ranking with MongoDB
-  aggregation, Firebase Authentication.
-longDescription:
-  4–6 sentences: why this problem (learning aggregation pipelines
-  and complex relational-style logic in MongoDB), how the ranking
-  algorithm works (aggregation pipeline scoring upvotes +
-  recency), Firebase Auth decision (why not JWT here), REST API
-  design for questions/answers/votes, and what the project
-  taught about data modeling for social features.
-highlights:
-  - "Built answer ranking using MongoDB aggregation pipelines
-    that score by upvote count and recency combined."
-  - "Integrated Firebase Authentication for social login,
-    decoupling identity management from the core API."
-  - "Designed REST APIs for questions, answers, and votes with
-    consistent error handling and HTTP status codes."
-  - "Modeled a graph-like social data structure (users,
-    questions, answers, votes) in MongoDB with efficient
-    query patterns."
-liveUrl:      ""
-githubUrl:    ""
+Import projects from data/projects.ts.
+Return projects.map(p => ({ slug: p.slug })).
+This statically generates a page for every project at build time.
 
-Export helpers:
-  export const featuredProjects = projects.filter(p => p.featured)
-  export function getProjectBySlug(slug: string) { ... }
+── generateMetadata ───────────────────────────────────────
 
-═══════════════════════════════════════════════════════════
-data/skills.ts — based exactly on resume, no invented skills
-═══════════════════════════════════════════════════════════
+Accept { params }: { params: Promise<{ slug: string }> }
+Await params, call getProjectBySlug(slug).
+If not found return { title: 'Project Not Found' }.
 
-Only include skills explicitly mentioned in the resume.
-Do not add AWS, Docker, Kubernetes, GraphQL, or anything
-not evidenced in real work. Level assignments below are
-based on evidence from the resume — do not change them.
+Return full metadata:
+  title:       `${project.title} — Hitarth Thesia`
+  description: project.description (2–3 sentence version)
+  openGraph:
+    title:     project.title
+    description: project.description
+    images:    [{ url: project.coverImage, width: 1200, height: 675 }]
+    type:      'article'
+  twitter:
+    card:      'summary_large_image'
+    title:     project.title
+    images:    [project.coverImage]
 
-Category 1: Frontend
-  React.js          → expert        (2 internships, 3 projects)
-  Next.js           → proficient    (current internship, Phase 1)
-  TypeScript        → proficient    (current internship explicitly)
-  Tailwind CSS      → expert        (current internship, all projects)
-  Redux Toolkit     → comfortable   (current internship, 45% metric)
-  ShadCN/UI         → comfortable   (Zikasha internship + Daily Dose)
+── PAGE LAYOUT ────────────────────────────────────────────
 
-Category 2: Backend
-  Node.js           → proficient    (Zikasha + 3 projects)
-  Express.js        → proficient    (Zikasha + 3 projects)
-  REST APIs         → proficient    (10+ endpoints built)
-  JWT Auth          → comfortable   (e-commerce project)
-  Firebase Auth     → comfortable   (Querious project)
+The page has 5 zones stacked vertically:
 
-Category 3: Database
-  MongoDB           → proficient    (3 projects, aggregation used)
-  MySQL             → comfortable   (listed in skills)
+  ┌─────────────────────────────────────┐
+  │  1. BACK NAVIGATION                 │
+  ├─────────────────────────────────────┤
+  │  2. HERO BANNER                     │
+  ├─────────────────────────────────────┤
+  │  3. CONTENT BODY (2-col on desktop) │
+  ├─────────────────────────────────────┤
+  │  4. HIGHLIGHTS & TECH STACK         │
+  ├─────────────────────────────────────┤
+  │  5. NEXT PROJECT NAVIGATION         │
+  └─────────────────────────────────────┘
 
-Category 4: CMS & Tools
-  Sanity            → comfortable   (Codage Habitation)
-  Strapi            → comfortable   (Codage Habitation)
-  Git / GitHub      → proficient    (all projects)
-  Postman           → comfortable   (API development workflow)
+──── ZONE 1: BACK NAVIGATION ──────────────────────────────
 
-Category 5: Languages
-  JavaScript        → expert        (foundation of all work)
-  TypeScript        → proficient    (current role)
-  Java              → comfortable   (education)
-  C / C++           → comfortable   (education)
+'use client' (uses router.back())
 
-Category 6: Currently exploring
-  (Hitarth to fill — suggest: Docker, PostgreSQL, AWS S3, or
-  whatever he is genuinely learning right now. Leave as
-  placeholder strings: "Your next skill", "Your next tool"
-  so the section does not show false information.)
+A slim bar at top of page, below Navbar:
+  pt-28 pb-4 (clears fixed navbar)
+  container max-w-6xl
 
-═══════════════════════════════════════════════════════════
-data/testimonials.ts — honest placeholder, not fake quotes
-═══════════════════════════════════════════════════════════
+Left side:
+  ← Back to projects
+  ArrowLeft icon (16px) + text-sm text-muted-foreground
+  hover:text-foreground transition-colors
+  onClick: router.back() — goes to previous page in history
+  If no history: falls back to href="/projects"
 
-Do NOT fabricate testimonials. Instead set the array to empty
-for now and add a comment explaining how to add real ones:
+Right side:
+  Breadcrumb: Projects / {project.title}
+  text-xs text-muted-foreground font-mono
+  "/" separator in text-border
 
-// testimonials.ts
-// Add real testimonials here once you have them.
-// Ask your manager at Codage Habitation and your mentor at
-// Zikasha Consultancy for a short LinkedIn recommendation —
-// then copy the text here.
-// Each testimonial needs: name, role, company, content (2–4
-// sentences), and ideally a LinkedIn profile URL.
+──── ZONE 2: HERO BANNER ──────────────────────────────────
 
-export const testimonials: Testimonial[] = []
+Full-width image banner. Height: h-[280px] md:h-[420px] lg:h-[520px]
+Position: relative overflow-hidden rounded-2xl
 
-═══════════════════════════════════════════════════════════
-THINGS THE DEVELOPER MUST DO MANUALLY AFTER THIS PROMPT
-═══════════════════════════════════════════════════════════
+LAYER 1 (bottom): next/image fill object-cover
+  src: project.coverImage
+  priority: true (above-the-fold image, load immediately)
+  sizes: "100vw"
+  If coverImage is empty string, show a gradient placeholder:
+    bg-gradient-to-br from-primary/20 via-primary/5 to-background
+    with a large project title centered in text-primary/20
 
-The following cannot be automated — add these as a TODO
-comment block at the top of config/site.ts so they are
-impossible to miss:
+LAYER 2 (top): gradient overlay
+  absolute inset-0
+  bg-gradient-to-t from-background via-background/40 to-transparent
 
-/*
-  TODO — complete before going live:
+LAYER 3 (content, absolute bottom-0 left-0 p-8 md:p-12):
+  Status badge: same style as Phase 2 project cards
+    "Live" → green, "In Progress" → amber, "Archived" → gray
+  Title: text-3xl md:text-4xl lg:text-5xl font-bold text-foreground
+         mt-3 tracking-tight leading-[1.1]
+  Tagline: text-lg md:text-xl text-muted-foreground mt-2
 
-  1. Verify LinkedIn URL slug and update social.linkedin
-  2. Drop your actual resume PDF at /public/resume.pdf
-  3. Add real project screenshots to /public/images/projects/
-     Filenames: daily-dose.png, ecommerce.png, querious.png
-     Recommended size: 1200×675px (16:9), under 200KB each
-  4. Add real liveUrl and githubUrl to every project in
-     data/projects.ts
-  5. Fill the "Currently exploring" skills in data/skills.ts
-     with technologies you are genuinely learning right now
-  6. Once you have real testimonials, populate
-     data/testimonials.ts
-  7. Replace /public/og-image.png with a real OG image
-     (1200×630px) — use a tool like Figma or og-image.vercel.app
-  8. Add company logo images if available:
-     /public/images/companies/codage.png
-     /public/images/companies/zikasha.png
-     /public/images/companies/charusat.png
-*/
+ANIMATION: Hero banner fadeIn (opacity only, no y movement).
+Title + tagline: staggered fadeInUp with delay 0.15s and 0.25s.
+
+──── ZONE 3: CONTENT BODY ─────────────────────────────────
+
+Two-column grid on desktop:
+  grid grid-cols-1 lg:grid-cols-3 gap-12 mt-16
+
+LEFT COLUMN (lg:col-span-2) — main content:
+
+  A. OVERVIEW heading (h2)
+     text-xl font-semibold mb-4
+     Long description text (project.longDescription).
+     Split into paragraphs by double newline.
+     Each paragraph: text-muted-foreground leading-relaxed mb-4
+
+  B. HIGHLIGHTS heading (h2) — mt-10
+     text-xl font-semibold mb-4
+     Renders project.highlights[] as a styled list:
+       Each item: flex gap-3 items-start mb-3
+       Icon: CheckCircle2, 18px, text-primary, flex-shrink-0, mt-0.5
+       Text: text-muted-foreground leading-relaxed
+
+  C. CHALLENGES & DECISIONS heading (h2) — mt-10
+     text-xl font-semibold mb-4
+     This section does NOT come from the data file.
+     Render a styled placeholder card:
+       bg-muted/50 border border-dashed border-border rounded-xl p-6
+       Icon: Lightbulb (24px, text-primary)
+       Heading: "Engineering decisions"
+       Text: "Add the key technical decisions and challenges you
+              faced in data/projects.ts under the
+              `longDescription` field, or add a new
+              `challenges` field to the Project interface."
+     This card is a reminder for the developer to fill it.
+     It will be invisible once real content is added — wrap it
+     in: {!project.challenges && <PlaceholderCard />}
+     Add optional challenges?: string[] to the Project interface.
+
+RIGHT COLUMN (lg:col-span-1) — sticky sidebar:
+  position: sticky top-28 (clears navbar)
+  self-start (so it doesn't stretch full height)
+
+  SIDEBAR CARD:
+    bg-card border border-border rounded-2xl p-6 space-y-6
+
+    Section A — PROJECT INFO
+      Label: "Project info" text-xs font-mono uppercase
+              tracking-widest text-muted-foreground mb-4
+      Rows (each: flex justify-between items-center py-2
+            border-b border-border last:border-0):
+        Year:     project.year
+        Status:   status badge (same pill style)
+        Category: capitalize(project.category)
+        Role:     "Full-Stack Developer" (from siteConfig.title)
+
+    Section B — TECH STACK
+      Label: "Built with" (same label style)
+      Wrapping flex of TechBadge components (variant="default")
+      All stacks from project.stack[]
+
+    Section C — LINKS
+      Label: "Links"
+      If project.liveUrl:
+        Full-width button: primary style
+        ExternalLink icon + "View live demo"
+        Opens in _blank rel="noopener noreferrer"
+      If project.githubUrl:
+        Full-width button: outline style, mt-2
+        Github icon + "View source code"
+        Opens in _blank
+      If neither liveUrl nor githubUrl:
+        Muted text: "Links coming soon" text-sm
+                    text-muted-foreground text-center
+
+──── ZONE 4: RELATED TECH — full width below content body ─
+
+Appears only if project.stack.length > 0.
+A subtle full-width band: bg-muted/30 rounded-2xl p-8 mt-16
+
+Label: "Technologies used in this project"
+       text-sm font-mono uppercase tracking-widest
+       text-muted-foreground mb-6
+
+Larger TechBadge display — render each tech with:
+  A slightly larger pill: text-sm px-4 py-2 (override default)
+  Icon placeholder space (16px) — developer can add devicon
+  later without restructuring
+  Wrap: flex flex-wrap gap-3
+
+──── ZONE 5: PROJECT NAVIGATION ───────────────────────────
+
+Previous / Next project navigation at the bottom of the page.
+Compute prevProject and nextProject by index in the projects
+array (wrap around: last project's next is first project).
+
+Layout: grid grid-cols-1 md:grid-cols-2 gap-4 mt-24
+        border-t border-border pt-12
+
+PREV card (left, md:text-left):
+  label: "← Previous project" text-xs font-mono
+          text-muted-foreground uppercase tracking-widest
+  title: prevProject.title font-semibold text-lg mt-1
+          hover:text-primary transition-colors
+  tagline: prevProject.tagline text-sm text-muted-foreground
+  Entire card is a Next.js Link wrapping a div
+  hover: border-primary/40 on card border
+
+NEXT card (right, md:text-right):
+  label: "Next project →"
+  Same structure mirrored
+
+Both cards:
+  bg-card border border-border rounded-2xl p-6
+  hover:border-primary/40 transition-all duration-200
+  cursor-pointer
+
+NOT FOUND STATE:
+If getProjectBySlug returns undefined:
+  Return a centered page:
+    404 in large muted text
+    "Project not found" heading
+    Button: ← Back to projects (Link to /projects)
+  Use notFound() from next/navigation — Next.js handles
+  this as a proper 404, not a blank page.
 
 ═══════════════════════════════════════════════════════════
-QUALITY CHECK — verify after making all changes
+PART 2 — /projects LISTING PAGE
 ═══════════════════════════════════════════════════════════
 
-□ pnpm build completes with zero errors
-□ All TypeScript types still satisfied — no `any` introduced
-□ No component file was modified
-□ Every metric from the resume appears at least once
-  (90+ Lighthouse, 45% re-renders, 30% engagement, 150+ users)
-□ No skill appears that is not evidenced in the resume
-□ Testimonials array is empty, not filled with fake data
-□ All TODO comments are present in config/site.ts
-□ /projects/daily-dose, /projects/ecommerce-platform, and
-  /projects/querious all resolve without 404
+File: app/projects/page.tsx (RSC wrapper)
+File: components/projects/ProjectsGrid.tsx ('use client')
+
+The listing page shows ALL projects with category filtering.
+Split into RSC + client component to keep filtering interactive
+while keeping the page itself statically generated.
+
+── app/projects/page.tsx (RSC) ────────────────────────────
+
+generateMetadata:
+  title: "Projects — Hitarth Thesia"
+  description: "A collection of full-stack projects built with
+                React, Next.js, Node.js, MongoDB, and TypeScript."
+  openGraph: title, description, type: 'website'
+
+Page component:
+  Import projects from data/projects.ts
+  Pass to ProjectsGrid as prop
+  Wrap in page layout with SectionHeader
+
+Page layout:
+  pt-32 pb-24 (extra top padding — no hero banner here)
+  container max-w-6xl
+
+  SectionHeader:
+    label="All projects"
+    title="Things I've built"
+    subtitle="Every project — from production platforms to
+              learning experiments. Filter by category."
+    align="left"
+
+  <ProjectsGrid projects={projects} />
+
+── components/projects/ProjectsGrid.tsx ('use client') ────
+
+Props: projects: Project[]
+
+STATE:
+  activeFilter: string — default "all"
+  searchQuery: string — default ""
+
+FILTER BAR:
+  Horizontally scrollable on mobile (overflow-x-auto, no wrap)
+  flex gap-2 pb-2
+
+  Filter buttons for: All, Full-Stack, Frontend, Backend,
+                      Open Source
+  Map category values from Project interface.
+
+  Each button:
+    Active: bg-primary text-primary-foreground
+    Inactive: bg-muted text-muted-foreground hover:bg-muted/80
+    Both: rounded-full px-4 py-1.5 text-sm font-medium
+          transition-colors duration-150
+
+  SEARCH INPUT (right side on desktop, below filters on mobile):
+    Search icon (16px) inside input (left padding: pl-9)
+    Placeholder: "Search projects..."
+    bg-muted border border-border rounded-lg
+    text-sm px-4 py-2 pl-9
+    Controlled: value={searchQuery} onChange={...}
+    Clears on Escape key (onKeyDown)
+
+FILTERING LOGIC:
+  const filtered = projects
+    .filter(p => activeFilter === 'all' || p.category === activeFilter)
+    .filter(p => {
+      if (!searchQuery) return true
+      const q = searchQuery.toLowerCase()
+      return (
+        p.title.toLowerCase().includes(q) ||
+        p.tagline.toLowerCase().includes(q) ||
+        p.stack.some(s => s.toLowerCase().includes(q))
+      )
+    })
+
+RESULTS COUNT:
+  text-sm text-muted-foreground mt-4 mb-8
+  "{filtered.length} project{filtered.length !== 1 ? 's' : ''}"
+  If filtered.length === 0: show empty state (see below)
+
+PROJECTS GRID:
+  grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6
+
+  Use the EXACT same project card design from Phase 2
+  ProjectsSection (the non-featured cards). Do not redesign.
+  Extract it into components/projects/ProjectCard.tsx if not
+  already done — it is now shared between homepage and this page.
+
+EMPTY STATE (when no projects match filter/search):
+  Centered div, py-24:
+  SearchX icon (48px, text-muted-foreground)
+  "No projects found" text-xl font-semibold mt-4
+  "Try a different filter or search term."
+    text-muted-foreground mt-2
+  Button: "Clear filters" → resets both activeFilter and
+          searchQuery to defaults. Primary outline style.
+
+ANIMATION:
+  AnimatePresence wrapping the grid so cards animate out
+  when filter changes.
+  Each card: layout prop on motion.div so they reflow smoothly.
+  Entering cards: fadeInUp with stagger 0.04s.
+  Exiting cards: opacity 0, scale 0.95, duration 0.15s.
+
+── components/projects/ProjectCard.tsx ────────────────────
+
+Extract the non-featured project card from Phase 2 into this
+shared component. Used in both:
+  - components/sections/ProjectsSection.tsx (homepage grid)
+  - components/projects/ProjectsGrid.tsx (listing page)
+
+Props:
+  project: Project
+  priority?: boolean  (true for first 3 cards — loads images eagerly)
+
+The card design must be IDENTICAL to what was built in Phase 2.
+No style changes. Just extraction into a shared file.
+
+═══════════════════════════════════════════════════════════
+PART 3 — GITHUB ACTIVITY SECTION (homepage)
+═══════════════════════════════════════════════════════════
+
+File: components/sections/GitHubSection.tsx
+File: lib/github.ts
+
+Add this section to app/page.tsx between ProjectsSection and
+BlogSection (or between ProjectsSection and ContactSection if
+BlogSection is not yet built).
+
+── lib/github.ts ───────────────────────────────────────────
+
+All GitHub fetching happens here. Uses the public GitHub API
+(no token needed for public data, but add token support for
+higher rate limits).
+
+TYPES:
+  interface GitHubStats {
+    username:        string
+    name:            string
+    bio:             string
+    publicRepos:     number
+    followers:       number
+    following:       number
+    avatarUrl:       string
+    profileUrl:      string
+  }
+
+  interface PinnedRepo {
+    name:            string
+    description:     string
+    url:             string
+    language:        string
+    languageColor:   string
+    stars:           number
+    forks:           number
+    topics:          string[]
+  }
+
+  interface ContributionDay {
+    date:            string
+    count:           number
+    level:           0 | 1 | 2 | 3 | 4
+  }
+
+  interface GitHubData {
+    stats:           GitHubStats
+    pinnedRepos:     PinnedRepo[]
+    contributions:   ContributionDay[]
+    totalContributions: number
+    currentStreak:   number
+    longestStreak:   number
+  }
+
+FETCH FUNCTIONS:
+
+  async function getGitHubStats(username: string):
+    Promise<GitHubStats>
+    Fetches: https://api.github.com/users/{username}
+    Map response fields to GitHubStats interface.
+    next: { revalidate: 3600 }
+
+  async function getPinnedRepos(username: string):
+    Promise<PinnedRepo[]>
+    GitHub REST API does not expose pinned repos.
+    Use: https://gh-pinned-repos.egoist.dev/?username={username}
+    This is a public, free, no-auth API that returns pinned repos.
+    If the API fails or returns empty, fall back to fetching
+    the 3 most recently updated repos:
+      https://api.github.com/users/{username}/repos
+      ?sort=updated&per_page=3&type=public
+    next: { revalidate: 3600 }
+
+  async function getContributions(username: string):
+    Promise<{ days: ContributionDay[], total: number }>
+    Use: https://github-contributions-api.jogruber.de/v4/{username}
+    This public API returns contribution data without auth.
+    Transform the response into ContributionDay[] with level
+    calculated from count:
+      0 → level 0 (no contributions)
+      1–3 → level 1
+      4–9 → level 2
+      10–19 → level 3
+      20+ → level 4
+    next: { revalidate: 3600 }
+
+  export async function getGitHubData(username: string):
+    Promise<GitHubData>
+    Calls all three functions in parallel with Promise.all.
+    Computes currentStreak and longestStreak from the days array.
+    Returns the combined GitHubData object.
+    Wrap everything in try/catch — if GitHub is down, return
+    a safe fallback object with zeroed numbers and empty arrays
+    so the page never crashes.
+
+  Streak calculation:
+    currentStreak: count backwards from today, stop at first day
+                   with count === 0.
+    longestStreak: sliding window over all days, track max
+                   consecutive days with count > 0.
+
+── components/sections/GitHubSection.tsx ──────────────────
+
+This is an RSC that fetches data, then passes to a client
+child for the contribution graph chart.
+
+IMPORTS:
+  import { getGitHubData } from '@/lib/github'
+  import { siteConfig } from '@/config/site'
+
+FETCHING:
+  const username = siteConfig.social.github
+    .split('/').pop() ?? ''
+  const data = await getGitHubData(username)
+  If data is null / fetch failed: return null (section hidden)
+
+SECTION LAYOUT:
+  Same section anatomy as Phase 2:
+  <section id="github" aria-labelledby="github-heading">
+    <div className="container...">
+
+  SectionHeader:
+    label="06 / Open Source"
+    title="GitHub activity"
+    subtitle="My open source contributions and public work."
+
+STATS ROW (4 cards, grid grid-cols-2 md:grid-cols-4 gap-4):
+  Each card: bg-card border border-border rounded-2xl p-5
+             text-center hover:border-primary/30 transition
+
+  Card 1: data.totalContributions — "Contributions this year"
+  Card 2: data.currentStreak — "Current streak (days)"
+  Card 3: data.longestStreak — "Longest streak (days)"
+  Card 4: data.stats.publicRepos — "Public repositories"
+
+  Number: text-3xl font-bold text-primary
+  Label: text-xs text-muted-foreground mt-1 font-mono uppercase
+
+CONTRIBUTION GRAPH:
+  Pass data.contributions to a client component:
+  <ContributionGraph contributions={data.contributions} />
+
+  File: components/github/ContributionGraph.tsx ('use client')
+
+  Renders the classic GitHub contribution heatmap grid.
+  Layout: 53 columns (weeks) × 7 rows (days)
+
+  Implementation:
+    Group ContributionDay[] into weeks (arrays of 7).
+    Render as a grid using CSS grid:
+      grid-template-columns: repeat(53, minmax(0, 1fr))
+      gap: 3px
+
+    Each day cell: w-full aspect-square rounded-sm
+    Color by level (use CSS custom properties):
+      level 0: bg-muted
+      level 1: bg-primary/20
+      level 2: bg-primary/40
+      level 3: bg-primary/70
+      level 4: bg-primary
+
+    On cell hover: Tooltip showing date and count
+      "3 contributions on Mon, Jan 15"
+      Use shadcn/ui Tooltip
+
+    Month labels above the graph:
+      Calculate which column each month starts in.
+      Render month names (Jan, Feb...) above those columns.
+      text-xs text-muted-foreground font-mono
+
+    Day labels (Mon, Wed, Fri) to the left:
+      Fixed left column, text-xs text-muted-foreground
+
+    Wrap graph in overflow-x-auto so it scrolls on mobile
+    without breaking the layout.
+
+    Legend below graph (right-aligned):
+      "Less" → 5 colored squares → "More"
+      Same level colors, w-3 h-3 each
+
+PINNED REPOS GRID:
+  Below the contribution graph.
+  grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-8
+
+  PINNED REPO CARD (for each PinnedRepo):
+    bg-card border border-border rounded-xl p-5
+    hover:border-primary/30 hover:-translate-y-0.5
+    transition-all duration-200
+
+    Header (flex justify-between):
+      Left: Folder icon (16px, text-primary) + repo name
+            (font-semibold text-sm)
+      Right: ExternalLink icon (14px, text-muted-foreground)
+             — entire card links to repo.url
+
+    Description:
+      text-sm text-muted-foreground mt-2 line-clamp-2
+      leading-relaxed
+
+    Footer (flex items-center gap-4 mt-4):
+      Language dot (w-3 h-3 rounded-full, bg = languageColor)
+        + language name (text-xs text-muted-foreground)
+      Star icon + stars count (text-xs)
+      GitFork icon + forks count (text-xs)
+
+    Topics (if any, mt-3 flex flex-wrap gap-1):
+      text-xs bg-muted text-muted-foreground rounded-full
+      px-2 py-0.5 for each topic (max 3 shown)
+
+"View full GitHub profile →" link centered below:
+  text-primary hover:underline text-sm font-medium
+  ExternalLink icon inline, opens siteConfig.social.github
+
+ANIMATION:
+  Stats row: stagger fadeInUp, 0.06s each
+  Contribution graph: fadeIn (no y movement — it's wide)
+  Pinned repos: stagger fadeInUp, 0.08s each
+
+═══════════════════════════════════════════════════════════
+PART 4 — CONNECT HOMEPAGE PROJECTS SECTION TO /projects
+═══════════════════════════════════════════════════════════
+
+In components/sections/ProjectsSection.tsx (Phase 2 file):
+
+The "View all projects →" link at the bottom already exists
+as a placeholder. Make it a real Next.js Link:
+  <Link href="/projects">
+    View all projects
+    <ArrowRight className="ml-1 w-4 h-4 inline" />
+  </Link>
+
+Also update each project card's "Details →" link:
+  <Link href={`/projects/${project.slug}`}>
+    Case study →
+  </Link>
+
+These were shells in Phase 2. Wire them up now.
+
+In app/page.tsx:
+  Add id="github" to the GitHubSection wrapper so scroll-spy
+  in the Navbar picks it up.
+  Add "GitHub" to siteConfig.nav array:
+    { label: "GitHub", href: "#github" }
+
+═══════════════════════════════════════════════════════════
+FILE SUMMARY — every file touched or created in Phase 3
+═══════════════════════════════════════════════════════════
+
+NEW FILES:
+  app/projects/page.tsx
+  components/projects/ProjectsGrid.tsx
+  components/projects/ProjectCard.tsx
+  components/sections/GitHubSection.tsx
+  components/github/ContributionGraph.tsx
+  lib/github.ts
+
+MODIFIED FILES:
+  app/projects/[slug]/page.tsx     (was a shell, now complete)
+  app/page.tsx                     (add GitHubSection, wire nav)
+  components/sections/
+    ProjectsSection.tsx            (wire "View all" + "Details" links)
+  config/site.ts                   (add GitHub to nav)
+  lib/types.ts                     (add optional challenges field)
+  data/projects.ts                 (add optional challenges field)
+
+═══════════════════════════════════════════════════════════
+QUALITY GATES — Phase 3 is not complete until all pass
+═══════════════════════════════════════════════════════════
+
+□ pnpm build: zero errors, zero TypeScript errors, zero warnings
+□ All 3 project detail pages resolve:
+    /projects/daily-dose
+    /projects/ecommerce-platform
+    /projects/querious
+□ /projects listing page loads and shows all 3 projects
+□ Category filter correctly shows/hides projects
+□ Search by stack name works (e.g. typing "MongoDB" shows
+  only MongoDB projects)
+□ Empty state renders when filter has no matches
+□ AnimatePresence reflows cards smoothly on filter change
+□ Project detail: prev/next navigation cycles through all projects
+□ Project detail: sticky sidebar is actually sticky on desktop
+□ Project detail: notFound() fires correctly for unknown slugs
+  (visit /projects/fake-slug — must return 404, not blank page)
+□ GitHub section: page does not crash if GitHub API is down
+  (comment out the fetch temporarily and verify fallback)
+□ Contribution graph: renders without overflow on 375px mobile
+□ Contribution graph: tooltips show on hover
+□ Contribution graph: month labels are correctly positioned
+□ Pinned repos: "Links coming soon" fallback works if
+  gh-pinned-repos API is unavailable
+□ "View all projects →" on homepage goes to /projects
+□ "Case study →" on project cards goes to /projects/[slug]
+□ Lighthouse on /projects/[slug]: Performance 90+,
+  Accessibility 100
+□ All external links: target="_blank" rel="noopener noreferrer"
+□ No `any` introduced anywhere in Phase 3 code
+□ prefers-reduced-motion respected in AnimatePresence
+
+═══════════════════════════════════════════════════════════
+AFTER PHASE 3 IS COMPLETE, provide:
+═══════════════════════════════════════════════════════════
+
+1. Confirm every route resolves: list all URLs verified
+2. GitHub section status: which API responded successfully,
+   which fell back
+3. List every 'use client' component added and exact reason
+4. Lighthouse scores for /projects and /projects/[slug]
+5. Any deviation from this spec and the reason why
+6. What the developer must do manually before Phase 4:
+   - Add real project screenshots (exact filenames + sizes)
+   - Fill githubUrl and liveUrl in data/projects.ts
+   - Verify GitHub username matches siteConfig.social.github
+   - Add challenges field to projects if desired

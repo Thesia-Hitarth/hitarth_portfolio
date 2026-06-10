@@ -53,6 +53,9 @@ export interface Project {
 
   /** 3–4 bullet points that explain the technical depth or business impact */
   highlights: string[];
+
+  /** Optional engineering challenges and key decisions */
+  challenges?: string[];
 }
 
 // ─── Skills ──────────────────────────────────────────────
