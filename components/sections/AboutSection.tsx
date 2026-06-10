@@ -6,6 +6,7 @@
 
 import { motion, useReducedMotion } from 'framer-motion';
 import { MapPin, Briefcase, GraduationCap } from 'lucide-react';
+import Image from 'next/image';
 import type { ReactElement } from 'react';
 import { SectionHeader } from '@/components/ui/SectionHeader';
 import { siteConfig } from '@/config/site';
@@ -26,7 +27,7 @@ const BIO_PARAGRAPHS = [
 
 const INFO_ITEMS = [
   { icon: MapPin, text: siteConfig.location },
-  { icon: Briefcase, text: 'Open to Full-time · Remote' },
+  { icon: Briefcase, text: 'Open to Full-time · Onsite / Hybrid / Remote' },
   { icon: GraduationCap, text: 'B.Tech · Computer Science' },
 ];
 
@@ -147,13 +148,15 @@ export function AboutSection(): ReactElement {
                 aria-hidden="true"
                 className="absolute -top-2 -left-2 right-2 bottom-2 rounded-2xl border-2 border-primary/30 z-0"
               />
-              <div className="relative z-10 aspect-square rounded-2xl bg-gradient-to-br from-primary/20 to-primary/5 border border-border flex items-center justify-center overflow-hidden">
-                <span
-                  className="text-6xl font-bold text-primary/60 select-none"
-                  aria-label={`${siteConfig.name} — profile photo placeholder`}
-                >
-                  {INITIALS}
-                </span>
+              <div className="relative z-10 aspect-square rounded-2xl bg-gradient-to-br from-primary/20 to-primary/5 border border-border overflow-hidden">
+                <Image
+                  src="/Passportsize_Hitarth.png"
+                  alt={`${siteConfig.name} profile photo`}
+                  fill
+                  sizes="(max-width: 768px) 100vw, 300px"
+                  priority
+                  className="object-cover"
+                />
               </div>
             </div>
 

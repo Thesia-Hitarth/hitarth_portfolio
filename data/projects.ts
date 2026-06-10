@@ -9,122 +9,128 @@
 import type { Project } from "@/lib/types";
 
 export const projects: Project[] = [
-  // ── 1. SaaS Analytics Dashboard ─────────────────────────
+  // ── 1. Daily Dose (Featured Project) ────────────────────
   {
-    slug: "nexus-dashboard",
-    title: "Nexus Dashboard",
-    tagline: "Multi-tenant SaaS analytics platform with real-time data pipelines",
-    description:
-      "Nexus is a production-grade SaaS analytics dashboard built for B2B teams that need live visibility into their business metrics. " +
-      "The platform handles multi-tenant data isolation, real-time WebSocket updates, and a role-based access control system — all deployed on Vercel with a zero-downtime CI/CD pipeline.",
-    longDescription: `
-## Overview
-Nexus Dashboard was designed to replace fragmented spreadsheet workflows for growing B2B teams. The core challenge was engineering a system that could serve deeply isolated per-tenant datasets at sub-100ms latency while keeping infrastructure costs predictable at scale.
-
-## Architecture
-The frontend is a Next.js 15 App Router application with React Server Components handling data-heavy views and a thin client layer for real-time chart updates via WebSockets. Authentication is delegated to NextAuth.js backed by a PostgreSQL session store.
-
-On the backend, a Prisma-managed PostgreSQL instance uses row-level security policies to enforce multi-tenant isolation at the database layer — no application-level filtering required.
-
-## Key Decisions
-- Row-Level Security over application-level filtering eliminates an entire class of data-leak bugs
-- WebSocket events are broadcast through a Redis pub/sub channel so horizontal scaling doesn't break real-time updates
-- CI/CD via GitHub Actions runs type-checks, unit tests, and a Lighthouse CI audit before every merge to main
-    `,
-    coverImage: "/images/projects/nexus-dashboard.png",
-    images: [
-      "/images/projects/nexus-dashboard.png",
-    ],
-    stack: [
-      "Next.js 15",
-      "TypeScript",
-      "PostgreSQL",
-      "Prisma ORM",
-      "NextAuth.js",
-      "Redis",
-      "Tailwind CSS",
-      "Recharts",
-      "Vercel",
-      "GitHub Actions",
-    ],
-    liveUrl: "https://nexus-dashboard-demo.vercel.app",
-    githubUrl: "https://github.com/hitarththesia/nexus-dashboard",
+    slug: "daily-dose",
+    title: "Daily Dose",
+    tagline: "Tiffin ordering and meal subscription platform.",
+    year: 2025,
+    category: "fullstack",
     featured: true,
     status: "live",
-    year: 2024,
-    category: "fullstack",
-    highlights: [
-      "Implemented row-level security in PostgreSQL to enforce zero-trust multi-tenant data isolation without any application-level filtering",
-      "Designed a WebSocket broadcast layer backed by Redis pub/sub, enabling real-time chart updates across horizontally scaled instances",
-      "Achieved sub-100ms server response times on the analytics endpoints by combining Prisma query optimisation with Next.js partial pre-rendering",
-      "Shipped with a GitHub Actions pipeline that enforces TypeScript strict mode, ESLint, unit tests, and Lighthouse CI ≥ 90 on every PR",
-    ],
-  },
-
-  // ── 2. E-commerce REST API ───────────────────────────────
-  {
-    slug: "cartforge-api",
-    title: "CartForge API",
-    tagline: "Production-ready e-commerce API with Stripe payment orchestration",
-    description:
-      "CartForge is a RESTful API built with Node.js and Express that powers the core commerce operations — product catalogue, cart state, orders, and Stripe Checkout sessions — for a headless storefront. " +
-      "It exposes a clean, versioned API contract documented with OpenAPI 3.0 and includes webhook handling for asynchronous payment confirmation.",
-    coverImage: "/images/projects/cartforge-api.png",
+    coverImage: "/images/projects/daily-dose.png",
     stack: [
+      "React.js",
       "Node.js",
       "Express.js",
       "MongoDB",
-      "Mongoose",
-      "Stripe",
-      "JWT",
-      "Zod",
-      "Docker",
-      "Railway",
+      "ShadCN/UI",
+      "REST APIs",
     ],
-    githubUrl: "https://github.com/hitarththesia/cartforge-api",
-    featured: false,
-    status: "live",
-    year: 2024,
-    category: "backend",
+    description:
+      "A live food subscription web app built as the sole frontend developer. " +
+      "Features real-time order tracking, comprehensive cart state management, and a custom component library with ShadCN/UI supporting 150+ daily active users.",
+    longDescription: `
+## Overview
+Daily Dose was engineered to solve the complex coordination of daily tiffin deliveries and meal subscription management. As the sole frontend developer, the primary goal was to deliver an intuitive, cross-device interface that simplifies subscription configuration and ordering.
+
+## Architecture & Contributions
+The frontend is built on React.js using ShadCN/UI, communicating with a Node.js/Express backend through well-defined, shared API contracts. I designed and implemented a consistent component library spanning over 10 pages, ensuring responsiveness across desktop and mobile layouts.
+
+## Key Decisions & Outcomes
+- Designed a unified component library to maintain aesthetic consistency across all application views.
+- Leveraged shared API contracts to reduce development-time integration errors and speed up delivery cycles.
+- Integrated optimistic UI updates in state management to ensure instant user feedback on order status updates.
+- Reduced UI defects on mobile devices by conducting extensive cross-browser testing and device-agnostic responsive design.
+    `,
     highlights: [
-      "Engineered idempotent Stripe webhook processing with event deduplication via MongoDB unique indexes, eliminating double-charge edge cases",
-      "Implemented a layered Zod validation pipeline that catches malformed payloads at the route boundary before any business logic executes",
-      "Designed a JWT refresh-token rotation scheme with Redis-backed token revocation for immediate session invalidation on logout",
-      "Containerised the entire stack with Docker Compose so local development exactly mirrors the production Railway deployment",
+      "Sole frontend developer — designed and built a component library covering 10+ pages with consistent UI across desktop and mobile.",
+      "Collaborated with the backend team using shared API contracts, reducing integration bugs during development.",
+      "Implemented real-time order tracking and cart state management with REST API integration.",
+      "Achieved consistent cross-device experience without a UI framework — custom components only with ShadCN/UI.",
     ],
+    liveUrl: "",
+    githubUrl: "",
   },
 
-  // ── 3. Real-time Chat Application ───────────────────────
+  // ── 2. E-Commerce Platform ──────────────────────────────
   {
-    slug: "pingroom",
-    title: "PingRoom",
-    tagline: "Real-time group chat with typing indicators and message persistence",
-    description:
-      "PingRoom is a full-stack chat application where users can create rooms, exchange messages in real-time, and see live typing indicators — all with full message history persisted in MongoDB. " +
-      "The WebSocket layer is built on Socket.IO with a Redis adapter for multi-process support, and the frontend uses optimistic UI updates to keep perceived latency near zero.",
-    coverImage: "/images/projects/pingroom.png",
-    stack: [
-      "Next.js 14",
-      "Socket.IO",
-      "Redis",
-      "MongoDB",
-      "Mongoose",
-      "Tailwind CSS",
-      "Zustand",
-      "TypeScript",
-    ],
-    githubUrl: "https://github.com/hitarththesia/pingroom",
-    liveUrl: "https://pingroom.vercel.app",
+    slug: "ecommerce-platform",
+    title: "E-Commerce Platform",
+    tagline: "Full-stack MERN shopping platform with secure checkout.",
+    year: 2025,
+    category: "fullstack",
     featured: false,
     status: "live",
-    year: 2023,
-    category: "fullstack",
-    highlights: [
-      "Built a Socket.IO event architecture backed by the Redis adapter, enabling seamless horizontal scaling without sticky-session constraints",
-      "Implemented optimistic UI updates with Zustand so messages appear instantly while the server acknowledgement propagates in the background",
-      "Designed an efficient MongoDB cursor-based pagination strategy for chat history that avoids the skip-offset N+1 query anti-pattern",
-      "Delivered typing-indicator broadcasting with a debounced client-side emission and a server-side TTL cleanup to prevent ghost indicators",
+    coverImage: "/images/projects/ecommerce.png",
+    stack: [
+      "MongoDB",
+      "Express.js",
+      "React.js",
+      "Node.js",
+      "JWT",
+      "REST APIs",
     ],
+    description:
+      "A complete online shopping platform supporting product browsing, shopping cart state persistence, secure payments, and token-based session verification.",
+    longDescription: `
+## Overview
+This full-stack MERN application was built to deeply explore database security, session handling, and backend authorization patterns. The focus was on securing checkout pathways and validating client inputs at the route boundaries.
+
+## Technical Decisions
+To handle state securely, authentication is implemented using JWT tokens with protected routes enforced on both the React client-side router and the Express.js server middleware. The checkout flow features third-party payment API integrations and server-side verification checks to prevent fraud.
+
+## Learnings
+Designing this project provided crucial insights into relational schema modeling in MongoDB, token storage strategies (such as HTTP-only cookies), and the orchestration of transactional order lifecycles.
+    `,
+    highlights: [
+      "Built end-to-end from product listing to checkout, covering the complete MERN stack without any scaffolding.",
+      "Implemented JWT-based authentication with protected routes enforced on both the React frontend and Express backend.",
+      "Integrated a third-party payment API with server-side order verification to prevent client-side manipulation.",
+      "Designed a normalized MongoDB schema to handle products, users, carts, and orders as separate collections with references.",
+    ],
+    liveUrl: "",
+    githubUrl: "",
+  },
+
+  // ── 3. Querious ──────────────────────────────────────────
+  {
+    slug: "querious",
+    title: "Querious",
+    tagline: "Community Q&A platform for developers.",
+    year: 2024,
+    category: "fullstack",
+    featured: false,
+    status: "live",
+    coverImage: "/images/projects/querious.png",
+    stack: [
+      "MongoDB",
+      "Express.js",
+      "React.js",
+      "Node.js",
+      "Firebase Authentication",
+      "REST APIs",
+    ],
+    description:
+      "A developer community Q&A platform featuring structured posts, answer upvoting, Firebase authentication, and complex data aggregation.",
+    longDescription: `
+## Overview
+Querious is a community-driven Q&A site tailored for software developers. The main engineering challenge was building a low-latency ranking system that scores and bubbles up relevant answers based on community votes and recency.
+
+## Design and Integration
+The platform uses Firebase Authentication to manage user identity securely, decoupling login management from our database layer. In MongoDB, relational-style data schemas represent users, questions, answers, and votes, which are queried through optimized pipelines.
+
+## Outcomes
+By employing MongoDB aggregation pipelines, we implemented high-performance query logic that calculates voting scores on the fly, eliminating the need to cache stale values or run expensive post-processing in application memory.
+    `,
+    highlights: [
+      "Built answer ranking using MongoDB aggregation pipelines that score by upvote count and recency combined.",
+      "Integrated Firebase Authentication for social login, decoupling identity management from the core API.",
+      "Designed REST APIs for questions, answers, and votes with consistent error handling and HTTP status codes.",
+      "Modeled a graph-like social data structure (users, questions, answers, votes) in MongoDB with efficient query patterns.",
+    ],
+    liveUrl: "",
+    githubUrl: "",
   },
 ];
 

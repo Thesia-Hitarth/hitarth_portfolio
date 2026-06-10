@@ -14,13 +14,12 @@ export const skillCategories: SkillCategory[] = [
     name: "Frontend",
     icon: "Monitor",
     skills: [
-      { name: "Next.js", level: "expert", icon: "devicon-nextjs-plain" },
-      { name: "React", level: "expert", icon: "devicon-react-original" },
-      { name: "TypeScript", level: "proficient", icon: "devicon-typescript-plain" },
-      { name: "Tailwind CSS", level: "expert", icon: "devicon-tailwindcss-plain" },
-      { name: "Framer Motion", level: "comfortable", icon: "devicon-framermotion-original" },
-      { name: "HTML / CSS", level: "expert", icon: "devicon-html5-plain" },
-      { name: "Redux", level: "comfortable", icon: "devicon-redux-original" },
+      { name: "React.js", level: "expert" },
+      { name: "Next.js", level: "proficient" },
+      { name: "TypeScript", level: "proficient" },
+      { name: "Tailwind CSS", level: "expert" },
+      { name: "Redux Toolkit", level: "comfortable" },
+      { name: "ShadCN/UI", level: "comfortable" },
     ],
   },
 
@@ -29,12 +28,11 @@ export const skillCategories: SkillCategory[] = [
     name: "Backend",
     icon: "Server",
     skills: [
-      { name: "Node.js", level: "proficient", icon: "devicon-nodejs-plain" },
-      { name: "Express.js", level: "proficient", icon: "devicon-express-original" },
+      { name: "Node.js", level: "proficient" },
+      { name: "Express.js", level: "proficient" },
       { name: "REST APIs", level: "proficient" },
-      { name: "GraphQL", level: "comfortable", icon: "devicon-graphql-plain" },
-      { name: "WebSockets", level: "comfortable" },
-      { name: "NextAuth.js", level: "comfortable" },
+      { name: "JWT Auth", level: "comfortable" },
+      { name: "Firebase Auth", level: "comfortable" },
     ],
   },
 
@@ -43,36 +41,43 @@ export const skillCategories: SkillCategory[] = [
     name: "Database",
     icon: "Database",
     skills: [
-      { name: "PostgreSQL", level: "comfortable", icon: "devicon-postgresql-plain" },
-      { name: "MongoDB", level: "proficient", icon: "devicon-mongodb-plain" },
-      { name: "Prisma ORM", level: "comfortable" },
-      { name: "Redis", level: "learning", icon: "devicon-redis-plain" },
-      { name: "MySQL", level: "comfortable", icon: "devicon-mysql-plain" },
+      { name: "MongoDB", level: "proficient" },
+      { name: "MySQL", level: "comfortable" },
     ],
   },
 
-  // ── 4. DevOps & Tools ─────────────────────────────────
+  // ── 4. CMS & Tools ────────────────────────────────────
   {
-    name: "DevOps & Tools",
+    name: "CMS & Tools",
     icon: "Wrench",
     skills: [
-      { name: "Git", level: "expert", icon: "devicon-git-plain" },
-      { name: "GitHub Actions", level: "comfortable", icon: "devicon-github-original" },
-      { name: "Docker", level: "learning", icon: "devicon-docker-plain" },
-      { name: "Vercel", level: "proficient" },
-      { name: "Postman", level: "proficient" },
-      { name: "Linux", level: "comfortable", icon: "devicon-linux-plain" },
+      { name: "Sanity", level: "comfortable" },
+      { name: "Strapi", level: "comfortable" },
+      { name: "Git", level: "proficient" },
+      { name: "GitHub", level: "proficient" },
+      { name: "Postman", level: "comfortable" },
     ],
   },
 
-  // ── 5. Currently Learning ─────────────────────────────
+  // ── 5. Languages ──────────────────────────────────────
   {
-    name: "Currently Learning",
+    name: "Languages",
+    icon: "Wrench",
+    skills: [
+      { name: "JavaScript", level: "expert" },
+      { name: "TypeScript", level: "proficient" },
+      { name: "Java", level: "comfortable" },
+      { name: "C / C++", level: "comfortable" },
+    ],
+  },
+
+  // ── 6. Currently Exploring ────────────────────────────
+  {
+    name: "Currently Exploring",
     icon: "Sparkles",
     skills: [
-      { name: "AWS", level: "learning", icon: "devicon-amazonwebservices-original" },
-      { name: "Kubernetes", level: "learning", icon: "devicon-kubernetes-plain" },
-      { name: "Rust", level: "learning", icon: "devicon-rust-plain" },
+      { name: "AI", level: "learning" },
+      { name: "ML", level: "learning" },
     ],
   },
 ];
