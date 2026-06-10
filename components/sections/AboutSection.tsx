@@ -7,6 +7,7 @@
 import { motion, useReducedMotion } from 'framer-motion';
 import { MapPin, Briefcase, GraduationCap } from 'lucide-react';
 import Image from 'next/image';
+import profilePic from '../../public/Passportsize_Hitarth.png';
 import type { ReactElement } from 'react';
 import { SectionHeader } from '@/components/ui/SectionHeader';
 import { siteConfig } from '@/config/site';
@@ -44,20 +45,20 @@ export function AboutSection(): ReactElement {
   const leftProps = prefersReduced
     ? {}
     : {
-        variants: slideInLeft,
-        initial: 'hidden' as const,
-        whileInView: 'visible' as const,
-        viewport: { once: true, amount: 0.2 },
-      };
+      variants: slideInLeft,
+      initial: 'hidden' as const,
+      whileInView: 'visible' as const,
+      viewport: { once: true, amount: 0.2 },
+    };
 
   const rightProps = prefersReduced
     ? {}
     : {
-        variants: slideInRight,
-        initial: 'hidden' as const,
-        whileInView: 'visible' as const,
-        viewport: { once: true, amount: 0.2 },
-      };
+      variants: slideInRight,
+      initial: 'hidden' as const,
+      whileInView: 'visible' as const,
+      viewport: { once: true, amount: 0.2 },
+    };
 
   return (
     <section
@@ -96,9 +97,8 @@ export function AboutSection(): ReactElement {
               {STATS.map((stat, i) => (
                 <div
                   key={stat.label}
-                  className={`flex flex-col px-6 first:pl-0 ${
-                    i < STATS.length - 1 ? 'border-r border-border' : ''
-                  }`}
+                  className={`flex flex-col px-6 first:pl-0 ${i < STATS.length - 1 ? 'border-r border-border' : ''
+                    }`}
                 >
                   <span className="text-3xl font-bold text-primary">{stat.value}</span>
                   <span className="text-xs text-muted-foreground mt-1">{stat.label}</span>
@@ -150,7 +150,7 @@ export function AboutSection(): ReactElement {
               />
               <div className="relative z-10 aspect-[4/5] rounded-2xl bg-gradient-to-br from-primary/20 to-primary/5 border border-border overflow-hidden">
                 <Image
-                  src="/Passportsize_Hitarth.png"
+                  src={profilePic}
                   alt={`${siteConfig.name} profile photo`}
                   fill
                   sizes="(max-width: 768px) 100vw, 300px"
