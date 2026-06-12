@@ -15,9 +15,9 @@ import { slideInLeft, slideInRight } from '@/lib/animations';
 import { GithubIcon, LinkedinIcon, TwitterIcon } from '@/components/ui/BrandIcons';
 
 const STATS = [
-  { value: '10+', label: 'Projects built' },
-  { value: '15+', label: 'Technologies' },
-  { value: '18+', label: 'Months exp.' },
+  { value: '8+', label: 'Projects built' },
+  { value: '10+', label: 'Technologies' },
+  { value: '12+', label: 'Months exp.' },
 ];
 
 const BIO_PARAGRAPHS = [
@@ -172,6 +172,6 @@ export function AboutSection(): ReactElement {
           </motion.div>
         </div>
       </div>
-    </section>
+    </section >
   );
 }
