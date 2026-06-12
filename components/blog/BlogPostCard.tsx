@@ -48,7 +48,7 @@ export function BlogPostCard({ post, layout = 'horizontal', priority = false }: 
           <div
             className={cn(
               'relative aspect-square overflow-hidden shrink-0 border-b border-border',
-              isHorizontal && 'md:aspect-auto md:w-[35%] md:h-full md:border-b-0 md:border-r'
+              isHorizontal && 'md:h-full md:w-auto md:border-b-0 md:border-r'
             )}
           >
             <Image
@@ -57,7 +57,7 @@ export function BlogPostCard({ post, layout = 'horizontal', priority = false }: 
               fill
               priority={priority}
               className="object-cover transition-transform duration-300 group-hover:scale-102"
-              sizes={isHorizontal ? '(max-width: 768px) 100vw, 35vw' : '(max-width: 768px) 100vw, 500px'}
+              sizes={isHorizontal ? '(max-width: 768px) 100vw, 260px' : '(max-width: 768px) 100vw, 500px'}
             />
           </div>
         ) : (
@@ -65,7 +65,7 @@ export function BlogPostCard({ post, layout = 'horizontal', priority = false }: 
           <div
             className={cn(
               'relative aspect-square shrink-0 border-b border-border bg-gradient-to-br from-primary/10 via-primary/5 to-muted flex items-center justify-center p-4',
-              isHorizontal && 'md:aspect-auto md:w-[35%] md:h-full md:border-b-0 md:border-r'
+              isHorizontal && 'md:h-full md:w-auto md:border-b-0 md:border-r'
             )}
           >
             <span className="font-mono text-2xl font-bold tracking-widest text-primary/10 select-none">
