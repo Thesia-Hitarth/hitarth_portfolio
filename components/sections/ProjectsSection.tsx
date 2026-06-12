@@ -4,8 +4,10 @@
  * components/sections/ProjectsSection.tsx
  */
 
+import { useState } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import Link from 'next/link';
+import Image from 'next/image';
 import { ExternalLink, CheckCircle2, ArrowRight } from 'lucide-react';
 import type { ReactElement } from 'react';
 import { SectionHeader } from '@/components/ui/SectionHeader';
@@ -74,14 +76,11 @@ export function ProjectsSection({ projects, featured }: ProjectsSectionProps): R
               )}
             >
               {/* Left: Image */}
-              <div className="group relative aspect-video overflow-hidden lg:aspect-auto lg:min-h-[420px]">
-                <ProjectImagePlaceholder
-                  title={project.title}
-                  className="absolute inset-0 transition-transform duration-500 group-hover:scale-[1.03]"
-                />
+              <div className="group relative aspect-video overflow-hidden lg:aspect-auto lg:min-h-[420px] bg-gradient-to-br from-primary/10 to-primary/5 dark:from-primary/20 dark:to-primary/5 border-b lg:border-b-0 lg:border-r border-border">
+                <FeaturedProjectImage project={project} />
                 <div
                   aria-hidden="true"
-                  className="absolute inset-0 bg-gradient-to-t from-background/60 to-transparent"
+                  className="absolute inset-0 bg-gradient-to-t from-background/60 to-transparent pointer-events-none"
                 />
               </div>
 
@@ -184,6 +183,35 @@ export function ProjectsSection({ projects, featured }: ProjectsSectionProps): R
         </div>
       </div>
     </section>
+  );
+}
+
+function FeaturedProjectImage({ project }: { project: Project }): ReactElement {
+  const [imgError, setImgError] = useState(false);
+
+  return (
+    <>
+      {project.coverImage && !imgError ? (
+        <div className="absolute inset-0 flex items-center justify-center p-8 lg:p-12">
+          <div className="relative w-full h-full">
+            <Image
+              src={project.coverImage}
+              alt={project.title}
+              fill
+              sizes="(max-width: 1024px) 100vw, 500px"
+              className="object-contain transition-transform duration-500 group-hover:scale-[1.03]"
+              priority
+              onError={() => setImgError(true)}
+            />
+          </div>
+        </div>
+      ) : (
+        <ProjectImagePlaceholder
+          title={project.title}
+          className="absolute inset-0 transition-transform duration-500 group-hover:scale-[1.03]"
+        />
+      )}
+    </>
   );
 }
 

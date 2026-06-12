@@ -16,9 +16,9 @@ export const projects: Project[] = [
     tagline: "Tiffin ordering and meal subscription platform.",
     year: 2025,
     category: "fullstack",
-    featured: true,
+    featured: false,
     status: "live",
-    coverImage: "/images/projects/daily-dose.png",
+    coverImage: "",
     stack: [
       "React.js",
       "Node.js",
@@ -62,7 +62,7 @@ The frontend is built on React.js using ShadCN/UI, communicating with a Node.js/
     category: "fullstack",
     featured: false,
     status: "live",
-    coverImage: "/images/projects/ecommerce.png",
+    coverImage: "",
     stack: [
       "MongoDB",
       "Express.js",
@@ -104,7 +104,7 @@ Designing this project provided crucial insights into relational schema modeling
     tagline: "Community Q&A platform for developers.",
     year: 2024,
     category: "fullstack",
-    featured: false,
+    featured: true,
     status: "live",
     coverImage: "/images/projects/querious.png",
     stack: [
@@ -133,8 +133,8 @@ By employing MongoDB aggregation pipelines, we implemented high-performance quer
       "Designed REST APIs for questions, answers, and votes with consistent error handling and HTTP status codes.",
       "Modeled a graph-like social data structure (users, questions, answers, votes) in MongoDB with efficient query patterns.",
     ],
-    liveUrl: "",
-    githubUrl: "",
+    liveUrl: "https://querious-hitarth.vercel.app/",
+    githubUrl: "https://github.com/Thesia-Hitarth/Querious",
   },
 ];
 

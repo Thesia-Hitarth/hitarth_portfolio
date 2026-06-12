@@ -4,8 +4,10 @@
  * components/projects/ProjectCard.tsx
  */
 
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
+import Image from 'next/image';
 import { ExternalLink } from 'lucide-react';
 import type { ReactElement } from 'react';
 import { TechBadge } from '@/components/ui/TechBadge';
@@ -35,6 +37,8 @@ export function ProjectImagePlaceholder({ title, className }: { title: string; c
 }
 
 export function ProjectCard({ project, cardProps = {} }: ProjectCardProps): ReactElement {
+  const [imgError, setImgError] = useState(false);
+
   return (
     <motion.article
       {...cardProps}
@@ -45,11 +49,26 @@ export function ProjectCard({ project, cardProps = {} }: ProjectCardProps): Reac
       )}
     >
       {/* Image area */}
-      <div className="relative aspect-video overflow-hidden">
-        <ProjectImagePlaceholder
-          title={project.title}
-          className="absolute inset-0 transition-all duration-500 group-hover:brightness-110 group-hover:scale-105"
-        />
+      <div className="relative aspect-video overflow-hidden border-b border-border bg-gradient-to-br from-primary/10 to-primary/5 dark:from-primary/20 dark:to-primary/5">
+        {project.coverImage && !imgError ? (
+          <div className="absolute inset-0 flex items-center justify-center p-6">
+            <div className="relative w-full h-full">
+              <Image
+                src={project.coverImage}
+                alt={project.title}
+                fill
+                sizes="(max-width: 768px) 100vw, 400px"
+                className="object-contain transition-transform duration-500 group-hover:scale-[1.05]"
+                onError={() => setImgError(true)}
+              />
+            </div>
+          </div>
+        ) : (
+          <ProjectImagePlaceholder
+            title={project.title}
+            className="absolute inset-0 transition-all duration-500 group-hover:brightness-110 group-hover:scale-105"
+          />
+        )}
       </div>
 
       {/* Content */}

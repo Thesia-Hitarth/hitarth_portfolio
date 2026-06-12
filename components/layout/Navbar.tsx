@@ -4,7 +4,7 @@
  * components/layout/Navbar.tsx
  */
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { useTheme } from 'next-themes';
 import { Sun, Moon, Menu, X, Download } from 'lucide-react';
@@ -20,6 +20,7 @@ const SECTION_IDS = siteConfig.nav
 
 export function Navbar(): ReactElement {
   const [scrolled, setScrolled] = useState(false);
+  const [visible, setVisible] = useState(true);
   const [activeSection, setActiveSection] = useState<string>('hero');
   const [mobileOpen, setMobileOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -27,14 +28,38 @@ export function Navbar(): ReactElement {
   const prefersReduced = useReducedMotion();
   const pathname = usePathname();
   const router = useRouter();
+  const lastScrollY = useRef(0);
 
   useEffect(() => { setMounted(true); }, []);
 
   useEffect(() => {
-    const handleScroll = (): void => { setScrolled(window.scrollY > 60); };
+    const handleScroll = (): void => {
+      if (mobileOpen) {
+        setVisible(true);
+        return;
+      }
+
+      const currentScrollY = window.scrollY;
+      
+      // Always show near the top of the page
+      if (currentScrollY <= 100) {
+        setVisible(true);
+      } else {
+        // Hide when scrolling down, show when scrolling up
+        if (currentScrollY > lastScrollY.current) {
+          setVisible(false);
+        } else {
+          setVisible(true);
+        }
+      }
+      
+      setScrolled(currentScrollY > 60);
+      lastScrollY.current = currentScrollY;
+    };
+
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  }, [mobileOpen]);
 
   useEffect(() => {
     if (pathname !== '/') return;
@@ -90,7 +115,8 @@ export function Navbar(): ReactElement {
     <>
       <header
         className={cn(
-          'fixed top-0 left-0 right-0 z-50 transition-all duration-300',
+          'fixed top-0 left-0 right-0 z-50 transition-all duration-300 transform',
+          visible ? 'translate-y-0' : '-translate-y-full',
           scrolled
             ? 'border-b border-border/50 bg-background/80 backdrop-blur-md shadow-sm'
             : 'bg-transparent border-b border-transparent'
