@@ -76,6 +76,18 @@ export function Navbar(): ReactElement {
     });
     return () => observers.forEach((o) => o.disconnect());
   }, [pathname]);
+  
+  useEffect(() => {
+    if (pathname.startsWith('/blog')) {
+      setActiveSection('blog');
+    } else if (pathname.startsWith('/projects')) {
+      setActiveSection('projects');
+    } else if (pathname === '/') {
+      if (typeof window !== 'undefined' && window.scrollY <= 100) {
+        setActiveSection('hero');
+      }
+    }
+  }, [pathname]);
 
   useEffect(() => {
     const onResize = (): void => { if (window.innerWidth >= 768) setMobileOpen(false); };

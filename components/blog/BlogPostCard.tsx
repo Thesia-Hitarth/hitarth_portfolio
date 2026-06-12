@@ -14,9 +14,10 @@ import { cn } from '@/lib/utils';
 interface BlogPostCardProps {
   post: PostMeta;
   layout?: 'horizontal' | 'vertical';
+  priority?: boolean;
 }
 
-export function BlogPostCard({ post, layout = 'horizontal' }: BlogPostCardProps): ReactElement {
+export function BlogPostCard({ post, layout = 'horizontal', priority = false }: BlogPostCardProps): ReactElement {
   const formattedDate = new Date(post.date).toLocaleDateString('en-US', {
     month: 'short',
     day: 'numeric',
@@ -46,7 +47,7 @@ export function BlogPostCard({ post, layout = 'horizontal' }: BlogPostCardProps)
         {post.coverImage ? (
           <div
             className={cn(
-              'relative aspect-video overflow-hidden shrink-0 border-b border-border',
+              'relative aspect-square overflow-hidden shrink-0 border-b border-border',
               isHorizontal && 'md:aspect-auto md:w-[35%] md:h-full md:border-b-0 md:border-r'
             )}
           >
@@ -54,6 +55,7 @@ export function BlogPostCard({ post, layout = 'horizontal' }: BlogPostCardProps)
               src={post.coverImage}
               alt={post.title}
               fill
+              priority={priority}
               className="object-cover transition-transform duration-300 group-hover:scale-102"
               sizes={isHorizontal ? '(max-width: 768px) 100vw, 35vw' : '(max-width: 768px) 100vw, 500px'}
             />
@@ -62,7 +64,7 @@ export function BlogPostCard({ post, layout = 'horizontal' }: BlogPostCardProps)
           // Dynamic gradient placeholder if cover image isn't specified
           <div
             className={cn(
-              'relative aspect-video shrink-0 border-b border-border bg-gradient-to-br from-primary/10 via-primary/5 to-muted flex items-center justify-center p-4',
+              'relative aspect-square shrink-0 border-b border-border bg-gradient-to-br from-primary/10 via-primary/5 to-muted flex items-center justify-center p-4',
               isHorizontal && 'md:aspect-auto md:w-[35%] md:h-full md:border-b-0 md:border-r'
             )}
           >

@@ -264,7 +264,7 @@ export default async function BlogPostPage({ params }: Props) {
                 <h3 className="text-xl font-bold text-foreground mb-6">
                   Related Articles
                 </h3>
-                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                <div className={`grid grid-cols-1 gap-6 sm:grid-cols-2 ${relatedPosts.length === 1 ? 'max-w-md' : 'lg:grid-cols-2 max-w-4xl'}`}>
                   {relatedPosts.map((relatedPost) => (
                     <div key={relatedPost.slug} className="h-full">
                       <BlogPostCard post={relatedPost} layout="vertical" />

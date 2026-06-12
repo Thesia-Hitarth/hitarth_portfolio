@@ -4,7 +4,7 @@
  * components/blog/BlogList.tsx
  */
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useRef } from 'react';
 import type { ReactElement } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { SlidersHorizontal } from 'lucide-react';
@@ -18,6 +18,38 @@ interface BlogListProps {
 
 export function BlogList({ posts }: BlogListProps): ReactElement {
   const [activeTag, setActiveTag] = useState<string>('all');
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const [hasDragged, setHasDragged] = useState(false);
+  const [startX, setStartX] = useState(0);
+  const [scrollLeft, setScrollLeft] = useState(0);
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    if (!scrollContainerRef.current) return;
+    setIsDragging(true);
+    setHasDragged(false);
+    setStartX(e.pageX - scrollContainerRef.current.offsetLeft);
+    setScrollLeft(scrollContainerRef.current.scrollLeft);
+  };
+
+  const handleMouseLeave = () => {
+    setIsDragging(false);
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isDragging || !scrollContainerRef.current) return;
+    e.preventDefault();
+    const x = e.pageX - scrollContainerRef.current.offsetLeft;
+    const walk = (x - startX) * 1.5; // Scroll speed modifier
+    if (Math.abs(x - startX) > 5) {
+      setHasDragged(true);
+    }
+    scrollContainerRef.current.scrollLeft = scrollLeft - walk;
+  };
 
   // Extract all unique tags dynamically
   const uniqueTags = useMemo(() => {
@@ -40,10 +72,18 @@ export function BlogList({ posts }: BlogListProps): ReactElement {
 
   return (
     <div className="space-y-10">
-      {/* Scrollable Tag Filter Pills Bar */}
+      {/* Scrollable & Draggable Tag Filter Pills Bar */}
       <div className="w-full border-b border-border pb-6">
         <div
-          className="flex items-center gap-2 overflow-x-auto pb-2 select-none scrollbar-none"
+          ref={scrollContainerRef}
+          onMouseDown={handleMouseDown}
+          onMouseLeave={handleMouseLeave}
+          onMouseUp={handleMouseUp}
+          onMouseMove={handleMouseMove}
+          className={cn(
+            "flex items-center gap-2 overflow-x-auto pb-3 select-none scrollbar-thin scrollbar-thumb-border/40 scrollbar-track-transparent",
+            isDragging ? "cursor-grabbing" : "cursor-grab"
+          )}
           role="tablist"
           aria-label="Blog tags filter"
         >
@@ -51,12 +91,15 @@ export function BlogList({ posts }: BlogListProps): ReactElement {
           <button
             role="tab"
             aria-selected={activeTag === 'all'}
-            onClick={() => setActiveTag('all')}
+            onClick={() => {
+              if (!hasDragged) setActiveTag('all');
+            }}
             className={cn(
-              'rounded-full px-4 py-2 text-xs font-semibold border transition-all duration-200 cursor-pointer shrink-0',
+              'rounded-full px-4 py-2 text-xs font-semibold border transition-all duration-200 shrink-0',
               activeTag === 'all'
                 ? 'bg-primary text-primary-foreground border-primary shadow-sm'
-                : 'bg-card border-border text-muted-foreground hover:text-foreground hover:border-border-hover'
+                : 'bg-card border-border text-muted-foreground hover:text-foreground hover:border-border-hover',
+              isDragging ? 'cursor-grabbing pointer-events-none' : 'cursor-pointer'
             )}
           >
             All Writing
@@ -70,12 +113,15 @@ export function BlogList({ posts }: BlogListProps): ReactElement {
                 key={tag}
                 role="tab"
                 aria-selected={isActive}
-                onClick={() => setActiveTag(tag)}
+                onClick={() => {
+                  if (!hasDragged) setActiveTag(tag);
+                }}
                 className={cn(
-                  'rounded-full px-4 py-2 text-xs font-semibold border transition-all duration-200 cursor-pointer shrink-0 capitalize',
+                  'rounded-full px-4 py-2 text-xs font-semibold border transition-all duration-200 shrink-0 capitalize',
                   isActive
                     ? 'bg-primary text-primary-foreground border-primary shadow-sm'
-                    : 'bg-card border-border text-muted-foreground hover:text-foreground hover:border-border-hover'
+                    : 'bg-card border-border text-muted-foreground hover:text-foreground hover:border-border-hover',
+                  isDragging ? 'cursor-grabbing pointer-events-none' : 'cursor-pointer'
                 )}
               >
                 {tag}
@@ -89,7 +135,7 @@ export function BlogList({ posts }: BlogListProps): ReactElement {
       <div className="max-w-3xl mx-auto">
         <motion.div layout className="space-y-6">
           <AnimatePresence mode="popLayout">
-            {filteredPosts.map((post) => (
+            {filteredPosts.map((post, index) => (
               <motion.div
                 key={post.slug}
                 layout
@@ -98,7 +144,7 @@ export function BlogList({ posts }: BlogListProps): ReactElement {
                 exit={{ opacity: 0, y: -15 }}
                 transition={{ duration: 0.2 }}
               >
-                <BlogPostCard post={post} />
+                <BlogPostCard post={post} priority={index === 0} />
               </motion.div>
             ))}
           </AnimatePresence>

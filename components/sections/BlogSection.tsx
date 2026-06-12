@@ -39,8 +39,8 @@ export function BlogSection(): ReactElement | null {
 
         {/* Featured Posts Vertical Stack */}
         <div className="flex flex-col gap-6 mt-12 max-w-4xl mx-auto">
-          {posts.map((post) => (
-            <BlogPostCard key={post.slug} post={post} layout="horizontal" />
+          {posts.map((post, index) => (
+            <BlogPostCard key={post.slug} post={post} layout="horizontal" priority={index === 0} />
           ))}
         </div>
 
