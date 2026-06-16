@@ -136,6 +136,46 @@ By employing MongoDB aggregation pipelines, we implemented high-performance quer
     liveUrl: "https://querious-hitarth.vercel.app/",
     githubUrl: "https://github.com/Thesia-Hitarth/Querious",
   },
+
+  // ── 4. TaskFlow (Featured Project) ──────────────────────
+  {
+    slug: "taskflow",
+    title: "Developer Taskflows",
+    tagline: "An interactive developer roadmap and career-guidance platform.",
+    year: 2026,
+    category: "opensource",
+    featured: true,
+    status: "live",
+    coverImage: "/images/projects/taskflow.png",
+    stack: [
+      "Next.js",
+      "React.js",
+      "TypeScript",
+      "Tailwind CSS",
+      "Prisma (PostgreSQL)",
+      "NextAuth",
+    ],
+    description:
+      "An open-source developer roadmap and career guidance platform containing structured learning paths, interactive roadmaps, and a personalized recommendation engine.",
+    longDescription: `
+## Overview
+Developer Taskflows (taskflow.sh) is a community-driven career guidance and roadmap platform built for developers. The goal was to provide high-quality learning paths that guide beginners and advanced engineers alike through the complexities of modern tech stacks.
+
+## Key Features & Architecture
+- **Interactive Roadmaps:** Role-based (Frontend, Backend, DevOps, AI Engineer) and skill-based (JavaScript, Python, Docker, Next.js) learning tracks with duration and difficulty estimates.
+- **Find My Path Recommendation Engine:** A responsive 5-question diagnostic quiz that analyzes a developer's goals and experience to recommend the most optimal path.
+- **Unified Navigation & Command Palette:** A custom-built, accessible search palette that allows quick filtering and keyword lookup across guides and roadmap paths.
+- **Active Community Integrations:** An open contribution framework that maps structural career tracks dynamically and maintains a live, detailed release and changelog timeline.
+    `,
+    highlights: [
+      "Designed and structured role-based and skill-based roadmaps covering 30+ career tracks and technologies.",
+      "Developed a personalized recommendation engine ('Find My Path' quiz) recommending tailored learning tracks based on user inputs.",
+      "Built a highly responsive search command palette for instant navigation across various roadmaps and articles.",
+      "Established an open-source contribution workflow allowing developers to submit new guides and roadmap timelines.",
+    ],
+    liveUrl: "https://task-flow-by-hitarth.vercel.app/",
+    githubUrl: "https://github.com/Thesia-Hitarth/TaskFlow-By-Hitarth-",
+  },
 ];
 
 /** Projects marked as featured, used for the homepage spotlight */
