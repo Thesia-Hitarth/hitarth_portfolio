@@ -51,7 +51,7 @@ export function TestimonialsSection(): ReactElement | null {
 
                 {/* Quote Text */}
                 <blockquote className="text-muted-foreground leading-relaxed italic text-sm md:text-base pr-4">
-                  "{t.content}"
+                  &ldquo;{t.content}&rdquo;
                 </blockquote>
 
                 {/* Author Footer */}

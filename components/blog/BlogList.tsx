@@ -156,7 +156,7 @@ export function BlogList({ posts }: BlogListProps): ReactElement {
             <SlidersHorizontal className="h-10 w-10 text-muted-foreground/60 mb-4 animate-pulse" />
             <h3 className="text-lg font-semibold text-foreground">No articles found</h3>
             <p className="text-sm text-muted-foreground mt-1">
-              There are no articles filed under the "{activeTag}" category.
+              There are no articles filed under the &quot;{activeTag}&quot; category.
             </p>
           </div>
         )}

@@ -23,7 +23,6 @@ import {
 } from 'lucide-react';
 import { projects, getProjectBySlug } from '@/data/projects';
 import { siteConfig } from '@/config/site';
-import { ProjectImagePlaceholder } from '@/components/projects/ProjectCard';
 import { TechBadge } from '@/components/ui/TechBadge';
 import { GithubIcon } from '@/components/ui/BrandIcons';
 import { cn } from '@/lib/utils';

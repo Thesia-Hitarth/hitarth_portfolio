@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
 /**
@@ -43,7 +44,7 @@ export function ProjectCard({ project, cardProps = {} }: ProjectCardProps): Reac
     <motion.article
       {...cardProps}
       className={cn(
-        'group flex flex-col overflow-hidden rounded-2xl border border-border bg-card cursor-pointer',
+        'group relative flex flex-col overflow-hidden rounded-2xl border border-border bg-card cursor-pointer',
         'hover:border-primary/40 hover:-translate-y-1 hover:shadow-md',
         'transition-all duration-300'
       )}
@@ -100,7 +101,7 @@ export function ProjectCard({ project, cardProps = {} }: ProjectCardProps): Reac
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label={`${project.title} — live demo`}
-                className="flex h-8 w-8 items-center justify-center rounded-full text-muted-foreground hover:text-primary transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                className="relative z-20 flex h-8 w-8 items-center justify-center rounded-full text-muted-foreground hover:text-primary transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                 onClick={(e) => e.stopPropagation()}
               >
                 <ExternalLink size={15} />
@@ -112,7 +113,7 @@ export function ProjectCard({ project, cardProps = {} }: ProjectCardProps): Reac
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label={`${project.title} — GitHub repository`}
-                className="flex h-8 w-8 items-center justify-center rounded-full text-muted-foreground hover:text-primary transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                className="relative z-20 flex h-8 w-8 items-center justify-center rounded-full text-muted-foreground hover:text-primary transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                 onClick={(e) => e.stopPropagation()}
               >
                 <GithubIcon size={15} />
@@ -121,7 +122,7 @@ export function ProjectCard({ project, cardProps = {} }: ProjectCardProps): Reac
           </div>
           <Link
             href={`/projects/${project.slug}`}
-            className="text-sm font-medium text-primary hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 rounded-sm"
+            className="text-sm font-medium text-primary hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 rounded-sm after:absolute after:inset-0 after:z-10"
           >
             Details →
           </Link>

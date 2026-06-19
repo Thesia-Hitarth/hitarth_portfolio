@@ -21,12 +21,8 @@ interface TableOfContentsProps {
 export function TableOfContents({ headings }: TableOfContentsProps): ReactElement | null {
   const [activeId, setActiveId] = useState<string>('');
 
-  // If there are fewer than 2 headings, don't show the TOC at all
-  if (!headings || headings.length < 2) {
-    return null;
-  }
-
   useEffect(() => {
+    if (!headings || headings.length < 2) return;
     const headingElements = headings
       .map((h) => document.getElementById(h.id))
       .filter((el): el is HTMLElement => el !== null);
@@ -61,6 +57,10 @@ export function TableOfContents({ headings }: TableOfContentsProps): ReactElemen
       window.removeEventListener('scroll', handleScroll);
     };
   }, [headings]);
+
+  if (!headings || headings.length < 2) {
+    return null;
+  }
 
   const handleClick = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
     e.preventDefault();

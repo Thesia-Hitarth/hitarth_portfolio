@@ -16,8 +16,6 @@ import { GithubIcon, LinkedinIcon } from '@/components/ui/BrandIcons';
 const [firstName, ...restNameParts] = siteConfig.name.split(' ');
 const restName = restNameParts.join(' ');
 
-const EASE = [0.21, 0.47, 0.32, 0.98] as [number, number, number, number];
-
 export function HeroSection(): ReactElement {
   const [scrolled, setScrolled] = useState(false);
   const prefersReduced = useReducedMotion();

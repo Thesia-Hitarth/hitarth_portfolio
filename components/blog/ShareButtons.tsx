@@ -20,7 +20,10 @@ export function ShareButtons({ title, slug }: ShareButtonsProps): ReactElement {
   const [currentUrl, setCurrentUrl] = useState('');
 
   useEffect(() => {
-    setCurrentUrl(window.location.href);
+    const handle = requestAnimationFrame(() => {
+      setCurrentUrl(window.location.href);
+    });
+    return () => cancelAnimationFrame(handle);
   }, []);
 
   const handleCopyLink = async () => {

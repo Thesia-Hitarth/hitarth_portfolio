@@ -126,7 +126,7 @@ export function ProjectsGrid({ initialProjects }: ProjectsGridProps): ReactEleme
           <SlidersHorizontal className="h-10 w-10 text-muted-foreground/60 mb-4 animate-pulse" />
           <h3 className="text-lg font-semibold text-foreground">No projects found</h3>
           <p className="text-sm text-muted-foreground mt-1 max-w-sm">
-            We couldn't find any projects matching "{searchQuery}" under this category.
+            We couldn&apos;t find any projects matching &quot;{searchQuery}&quot; under this category.
           </p>
           <button
             onClick={handleReset}

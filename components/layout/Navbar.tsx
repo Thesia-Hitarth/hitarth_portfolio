@@ -30,7 +30,12 @@ export function Navbar(): ReactElement {
   const router = useRouter();
   const lastScrollY = useRef(0);
 
-  useEffect(() => { setMounted(true); }, []);
+  useEffect(() => {
+    const handle = requestAnimationFrame(() => {
+      setMounted(true);
+    });
+    return () => cancelAnimationFrame(handle);
+  }, []);
 
   useEffect(() => {
     const handleScroll = (): void => {
@@ -78,15 +83,18 @@ export function Navbar(): ReactElement {
   }, [pathname]);
   
   useEffect(() => {
-    if (pathname.startsWith('/blog')) {
-      setActiveSection('blog');
-    } else if (pathname.startsWith('/projects')) {
-      setActiveSection('projects');
-    } else if (pathname === '/') {
-      if (typeof window !== 'undefined' && window.scrollY <= 100) {
-        setActiveSection('hero');
+    const handle = requestAnimationFrame(() => {
+      if (pathname.startsWith('/blog')) {
+        setActiveSection('blog');
+      } else if (pathname.startsWith('/projects')) {
+        setActiveSection('projects');
+      } else if (pathname === '/') {
+        if (typeof window !== 'undefined' && window.scrollY <= 100) {
+          setActiveSection('hero');
+        }
       }
-    }
+    });
+    return () => cancelAnimationFrame(handle);
   }, [pathname]);
 
   useEffect(() => {

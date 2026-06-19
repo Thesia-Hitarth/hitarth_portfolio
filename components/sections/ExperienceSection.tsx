@@ -17,7 +17,6 @@ import {
   MapPin,
   ExternalLink,
 } from 'lucide-react';
-import Link from 'next/link';
 import type { ReactElement } from 'react';
 import { SectionHeader } from '@/components/ui/SectionHeader';
 import { TechBadge } from '@/components/ui/TechBadge';

@@ -23,7 +23,7 @@ const STATS = [
 const BIO_PARAGRAPHS = [
   siteConfig.description,
   "I'm a firm believer that great software is built at the intersection of engineering rigour and product empathy. I care about the developer experience just as much as the end-user experience — because maintainable code is what keeps a product alive long after launch.",
-  "When I'm not writing code, I'm contributing to open-source projects, reading about distributed systems, or mentoring junior developers in my local tech community. I find the most satisfaction in turning complex, ambiguous problems into simple, elegant solutions.",
+  "When I'm not writing code, I'm contributing to open-source projects, exploring system architecture, or collaborating with other developers in local tech groups. I find the most satisfaction in turning complex, ambiguous problems into simple, elegant solutions.",
 ];
 
 const INFO_ITEMS = [
@@ -31,13 +31,6 @@ const INFO_ITEMS = [
   { icon: Briefcase, text: 'Open to Full-time · Onsite / Hybrid / Remote' },
   { icon: GraduationCap, text: 'B.Tech · Computer Engineering' },
 ];
-
-const INITIALS = siteConfig.name
-  .split(' ')
-  .map((w) => w[0])
-  .join('')
-  .toUpperCase()
-  .slice(0, 2);
 
 export function AboutSection(): ReactElement {
   const prefersReduced = useReducedMotion();

@@ -122,10 +122,11 @@ export function ContactSection(): ReactElement {
       // Clear form on success
       setFormData({ name: '', email: '', subject: '', message: '' });
       setErrors({});
-    } catch (err: any) {
-      console.error('[contact] Form submission error: ', err);
+    } catch (err: unknown) {
+      const error = err as Error;
+      console.error('[contact] Form submission error: ', error);
       setStatus('error');
-      setErrorMessage(err.message || 'Failed to dispatch message. Please try again.');
+      setErrorMessage(error.message || 'Failed to dispatch message. Please try again.');
     }
   };
 

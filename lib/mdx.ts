@@ -93,7 +93,11 @@ export function getAllPosts(): PostMeta[] {
 
   // Sort descending by date
   return posts
-    .map(({ content, ...meta }) => meta)
+    .map((post) => {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { content, ...meta } = post;
+      return meta;
+    })
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 }
 

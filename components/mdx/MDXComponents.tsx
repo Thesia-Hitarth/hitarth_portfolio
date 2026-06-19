@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars */
 import type { ReactElement } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -124,15 +125,20 @@ export const MDXComponents = {
       {...props}
     />
   ),
-  code: ({ className, ...props }: any) => (
-    <code
-      className={cn(
-        'bg-muted text-primary font-mono text-xs px-1.5 py-0.5 rounded border border-border',
-        className
-      )}
-      {...props}
-    />
-  ),
+  code: ({ className, ...props }: any) => {
+    const isInline = !className || !className.startsWith('language-');
+    return (
+      <code
+        className={cn(
+          isInline
+            ? 'bg-muted text-primary font-mono text-xs px-1.5 py-0.5 rounded border border-border'
+            : 'bg-transparent text-current border-0 p-0 text-inherit font-mono',
+          className
+        )}
+        {...props}
+      />
+    );
+  },
   pre: ({ className, children, ...props }: any) => {
     // Extract raw text for CopyButton, handling children structures in markdown blocks
     const codeContent = children?.props?.children ?? '';

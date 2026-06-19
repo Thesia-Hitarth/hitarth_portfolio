@@ -12,7 +12,6 @@ import { ArrowRight } from 'lucide-react';
 import { SectionHeader } from '@/components/ui/SectionHeader';
 import { BlogPostCard } from '@/components/blog/BlogPostCard';
 import { getFeaturedPosts } from '@/lib/mdx';
-import { cn } from '@/lib/utils';
 
 export function BlogSection(): ReactElement | null {
   const posts = getFeaturedPosts();

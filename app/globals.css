@@ -123,3 +123,9 @@ body {
   margin-left: auto;
   margin-right: auto;
 }
+
+/* ── Live audio equalizer animation ───────────────────── */
+@keyframes equalize {
+  0%, 100% { height: 4px; }
+  50% { height: 12px; }
+}
