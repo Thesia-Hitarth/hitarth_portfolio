@@ -18,10 +18,10 @@ const SPOTIFY_NOW_PLAYING_URL = 'https://api.spotify.com/v1/me/player/currently-
 
 // Curated list of mock tracks for demo/fallback purposes
 const FALLBACK_TRACKS = [
-  { title: 'Intro', artist: 'The xx', albumArt: '/images/spotify/the-xx.jpg', isPlaying: true },
-  { title: 'Starboy', artist: 'The Weeknd', albumArt: '/images/spotify/starboy.jpg', isPlaying: true },
-  { title: 'Sweater Weather', artist: 'The Neighbourhood', albumArt: '/images/spotify/sweater-weather.jpg', isPlaying: true },
-  { title: 'Stressed Out', artist: 'Twenty One Pilots', albumArt: '/images/spotify/stressed-out.jpg', isPlaying: true },
+  { title: 'Intro', artist: 'The xx', albumArt: 'https://i.scdn.co/image/ab67616d0000b273b4b5c777d56e72c84ccdbd47', isPlaying: true },
+  { title: 'Starboy', artist: 'The Weeknd', albumArt: 'https://i.scdn.co/image/ab67616d0000b2734718dec6954e1105cc08bc6a', isPlaying: true },
+  { title: 'Sweater Weather', artist: 'The Neighbourhood', albumArt: 'https://i.scdn.co/image/ab67616d0000b2733d73507d726b1580ee4f7c1b', isPlaying: true },
+  { title: 'Stressed Out', artist: 'Twenty One Pilots', albumArt: 'https://i.scdn.co/image/ab67616d0000b27341e3ed9fb5390c5aa8417fb7', isPlaying: true },
 ];
 
 async function getSpotifyAccessToken() {

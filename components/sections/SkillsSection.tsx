@@ -53,22 +53,55 @@ interface SkillsSectionProps {
 }
 
 export function SkillsSection({ categories }: SkillsSectionProps): ReactElement {
-  const prefersReduced = useReducedMotion();
+  const uniqueSkillsMap = new Map();
+  categories.forEach((cat) => {
+    cat.skills.forEach((skill) => {
+      if (!uniqueSkillsMap.has(skill.name)) {
+        uniqueSkillsMap.set(skill.name, {
+          ...skill,
+          icon: cat.icon,
+        });
+      }
+    });
+  });
+  const allSkills = Array.from(uniqueSkillsMap.values());
 
-  const containerProps = prefersReduced
-    ? {}
-    : {
-        variants: containerVariants,
-        initial: 'hidden' as const,
-        whileInView: 'visible' as const,
-        viewport: { once: true, amount: 0.1 },
-      };
+  const midpoint = Math.ceil(allSkills.length / 2);
+  const row1 = allSkills.slice(0, midpoint);
+  const row2 = allSkills.slice(midpoint);
+
+  const renderSkillCard = (skill: any, index: number, isCopy: boolean) => {
+    const Icon = ICON_MAP[skill.icon] ?? Monitor;
+    const isLearning = skill.level === 'learning';
+    return (
+      <div
+        key={`${skill.name}-${isCopy ? 'copy' : 'orig'}-${index}`}
+        className={cn(
+          'flex items-center gap-3 rounded-2xl border bg-card py-3 px-5 shrink-0',
+          'transition-all duration-300',
+          isLearning
+            ? 'border-dashed border-primary/30 hover:border-primary/50'
+            : 'border-border hover:border-primary/40'
+        )}
+      >
+        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary">
+          <Icon size={16} className="shrink-0" />
+        </div>
+        <div className="flex flex-col">
+          <span className="text-sm font-semibold text-foreground whitespace-nowrap">{skill.name}</span>
+          <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-wider whitespace-nowrap">
+            {isLearning ? 'Exploring' : LEVEL_LABEL[skill.level] ?? skill.level}
+          </span>
+        </div>
+      </div>
+    );
+  };
 
   return (
     <section
       id="skills"
       aria-labelledby="skills-heading"
-      className="py-24 lg:py-32"
+      className="py-24 lg:py-32 overflow-hidden"
     >
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-6xl">
         <SectionHeader
@@ -78,51 +111,31 @@ export function SkillsSection({ categories }: SkillsSectionProps): ReactElement 
           subtitle="Technologies and tools I use to build things."
         />
 
-        <motion.div
-          {...containerProps}
-          className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3"
-        >
-          {categories.map((category) => {
-            const Icon = ICON_MAP[category.icon] ?? Monitor;
-            const isLearning =
-              category.name.toLowerCase().includes('learning') ||
-              category.name.toLowerCase().includes('exploring');
+        <div className="space-y-6 mt-12 relative w-full">
+          {/* Gradient overlay masks on left and right for fade effect */}
+          <div className="absolute inset-y-0 left-0 w-16 md:w-32 bg-gradient-to-r from-background to-transparent z-10 pointer-events-none" />
+          <div className="absolute inset-y-0 right-0 w-16 md:w-32 bg-gradient-to-l from-background to-transparent z-10 pointer-events-none" />
 
-            return (
-              <motion.div
-                key={category.name}
-                variants={prefersReduced ? undefined : cardItemVariants}
-                className={cn(
-                  'rounded-2xl border bg-card p-6',
-                  'hover:shadow-sm transition-all duration-300',
-                  isLearning
-                    ? 'border-dashed border-primary/30 hover:border-primary/50'
-                    : 'border-border hover:border-primary/40'
-                )}
-              >
-                <div className="flex flex-col">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
-                    <Icon size={20} className="text-primary" />
-                  </div>
-                  <h3 className="mt-3 text-lg font-semibold text-foreground">
-                    {isLearning ? 'Currently Exploring' : category.name}
-                  </h3>
-                </div>
+          {/* Row 1: Left to Right / Reverse Marquee */}
+          <div className="flex overflow-hidden w-full">
+            <div className="flex shrink-0 gap-4 pr-4 animate-marquee">
+              {row1.map((skill, idx) => renderSkillCard(skill, idx, false))}
+            </div>
+            <div className="flex shrink-0 gap-4 pr-4 animate-marquee" aria-hidden="true">
+              {row1.map((skill, idx) => renderSkillCard(skill, idx, true))}
+            </div>
+          </div>
 
-                <div className="mt-4 flex flex-wrap gap-2">
-                  {category.skills.map((skill) => (
-                    <TechBadge
-                      key={skill.name}
-                      name={skill.name}
-                      variant={isLearning ? 'outline' : 'default'}
-                      tooltip={LEVEL_LABEL[skill.level] ?? skill.level}
-                    />
-                  ))}
-                </div>
-              </motion.div>
-            );
-          })}
-        </motion.div>
+          {/* Row 2: Right to Left / Forward Marquee */}
+          <div className="flex overflow-hidden w-full">
+            <div className="flex shrink-0 gap-4 pr-4 animate-marquee-reverse">
+              {row2.map((skill, idx) => renderSkillCard(skill, idx, false))}
+            </div>
+            <div className="flex shrink-0 gap-4 pr-4 animate-marquee-reverse" aria-hidden="true">
+              {row2.map((skill, idx) => renderSkillCard(skill, idx, true))}
+            </div>
+          </div>
+        </div>
       </div>
     </section>
   );

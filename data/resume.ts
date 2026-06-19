@@ -63,7 +63,7 @@ export const resumeData: ResumeData = {
     },
     linkedin: {
       display: "linkedin.com/in/hitarth-thesia",
-      url: "https://linkedin.com/in/hitarth-thesia"
+      url: "https://www.linkedin.com/in/hitarth-thesia-2043b0170/"
     },
     summary: "MERN Stack Developer with internship experience building real products — 90+ Lighthouse score, 45% fewer re-renders, and 30% higher user engagement across two live platforms. Comfortable working on both frontend and backend, from UI design to REST APIs and database work. Experienced with TypeScript, Redux Toolkit, and headless CMS tools. Works well in Agile teams and can lead frontend delivery independently."
   },
