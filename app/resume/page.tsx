@@ -13,7 +13,7 @@ export default function ResumePage(): ReactElement {
       <div className="max-w-4xl mx-auto mb-8 flex justify-between items-center print:hidden">
         <Link
           href="/"
-          className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-primary transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-md px-3 py-1.5 border border-border bg-card"
+          className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-primary transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded-md"
         >
           <ArrowLeft size={16} />
           Back to home
@@ -29,7 +29,7 @@ export default function ResumePage(): ReactElement {
       </div>
 
       {/* Main Resume Sheet */}
-      <article className="max-w-4xl mx-auto bg-card border border-border rounded-2xl p-8 md:p-12 shadow-md print:shadow-none print:border-none print:bg-white print:p-0 print:mx-0 print:max-w-none">
+      <article className="max-w-4xl mx-auto print:shadow-none print:border-none print:bg-white print:p-0 print:mx-0 print:max-w-none">
         
         {/* Header Block */}
         <header className="border-b border-border pb-8 print:pb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
