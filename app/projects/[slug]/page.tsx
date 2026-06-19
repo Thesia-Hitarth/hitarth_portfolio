@@ -21,10 +21,17 @@ import {
   ShieldCheck,
   AlertCircle
 } from 'lucide-react';
+import { MDXRemote } from 'next-mdx-remote/rsc';
+import remarkGfm from 'remark-gfm';
+import rehypeSlug from 'rehype-slug';
+import rehypeAutolink from 'rehype-autolink-headings';
+import rehypeHighlight from 'rehype-highlight';
+
 import { projects, getProjectBySlug } from '@/data/projects';
 import { siteConfig } from '@/config/site';
 import { TechBadge } from '@/components/ui/TechBadge';
 import { GithubIcon } from '@/components/ui/BrandIcons';
+import { MDXComponents } from '@/components/mdx/MDXComponents';
 import { cn } from '@/lib/utils';
 import { JsonLd } from '@/components/seo/JsonLd';
 
@@ -204,9 +211,28 @@ export default async function ProjectDetailPage({ params }: Props) {
               <h2 id="overview-heading" className="text-2xl font-bold text-foreground tracking-tight border-b border-border pb-3">
                 Overview
               </h2>
-              <p className="text-base text-muted-foreground leading-relaxed whitespace-pre-line">
-                {project.description}
-              </p>
+              {project.longDescription ? (
+                <div className="prose-custom max-w-none">
+                  <MDXRemote
+                    source={project.longDescription}
+                    components={MDXComponents}
+                    options={{
+                      mdxOptions: {
+                        remarkPlugins: [remarkGfm],
+                        rehypePlugins: [
+                          rehypeSlug,
+                          [rehypeAutolink, { behavior: 'wrap' }],
+                          [rehypeHighlight, { detect: true }],
+                        ],
+                      },
+                    } as any}
+                  />
+                </div>
+              ) : (
+                <p className="text-base text-muted-foreground leading-relaxed whitespace-pre-line">
+                  {project.description}
+                </p>
+              )}
             </div>
 
             {/* Highlights */}

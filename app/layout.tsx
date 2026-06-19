@@ -14,6 +14,7 @@ import { Footer } from '@/components/layout/Footer';
 import { siteConfig } from '@/config/site';
 import { Analytics } from '@vercel/analytics/react';
 import { LiveActivity } from '@/components/ui/LiveActivity';
+import { CommandPalette } from '@/components/ui/CommandPalette';
 import '@/app/globals.css';
 
 // ── Google Fonts ───────────────────────────────────────
@@ -117,6 +118,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
           <main className="flex-1">{children}</main>
           <Footer />
           <LiveActivity />
+          <CommandPalette />
           <Analytics />
         </ThemeProvider>
       </body>

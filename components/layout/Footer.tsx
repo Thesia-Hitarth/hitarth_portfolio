@@ -63,16 +63,7 @@ export function Footer(): ReactElement {
             {/* Row 3 */}
             <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-between w-full border-t border-border pt-6">
               <p className="text-xs text-muted-foreground">
-                © {currentYear} {siteConfig.name} · Built with{' '}
-                <a
-                  href="https://nextjs.org"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="hover:text-foreground transition-colors underline-offset-2 hover:underline"
-                >
-                  Next.js
-                </a>{' '}
-                &amp; ♥
+                © {currentYear} {siteConfig.name} · Transforming ideas into digital experiences
               </p>
 
               <div className="flex items-center gap-3">

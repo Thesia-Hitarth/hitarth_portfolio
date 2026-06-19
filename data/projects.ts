@@ -18,7 +18,7 @@ export const projects: Project[] = [
     category: "fullstack",
     featured: false,
     status: "live",
-    coverImage: "",
+    coverImage: "/images/projects/daily-dose.png",
     stack: [
       "React.js",
       "Node.js",
@@ -49,8 +49,8 @@ The frontend is built on React.js using ShadCN/UI, communicating with a Node.js/
       "Implemented real-time order tracking and cart state management with REST API integration.",
       "Achieved consistent cross-device experience without a UI framework — custom components only with ShadCN/UI.",
     ],
-    liveUrl: "",
-    githubUrl: "",
+    liveUrl: "https://daily-dose-tiffin.vercel.app/",
+    githubUrl: "https://github.com/Thesia-Hitarth/Daily-Dose-Meal-Ordering",
   },
 
   // ── 2. E-Commerce Platform ──────────────────────────────
@@ -62,7 +62,7 @@ The frontend is built on React.js using ShadCN/UI, communicating with a Node.js/
     category: "fullstack",
     featured: false,
     status: "live",
-    coverImage: "",
+    coverImage: "/images/projects/ecommerce.png",
     stack: [
       "MongoDB",
       "Express.js",
@@ -89,8 +89,8 @@ Designing this project provided crucial insights into relational schema modeling
       "Integrated a third-party payment API with server-side order verification to prevent client-side manipulation.",
       "Designed a normalized MongoDB schema to handle products, users, carts, and orders as separate collections with references.",
     ],
-    liveUrl: "",
-    githubUrl: "",
+    liveUrl: "https://hitarth-ecommerce.vercel.app/",
+    githubUrl: "https://github.com/Thesia-Hitarth/MERN-Ecommerce-Suite",
     challenges: [
       "Securing route endpoints by validating JWT tokens on both frontend and backend handlers.",
       "Implementing custom Express validation middleware to intercept malformed request payloads before they reach controllers."

@@ -1,9 +1,6 @@
 'use client';
 
-/**
- * components/blog/BlogPostCard.tsx
- */
-
+import React, { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Calendar, Clock, ArrowRight } from 'lucide-react';
@@ -18,24 +15,50 @@ interface BlogPostCardProps {
 }
 
 export function BlogPostCard({ post, layout = 'horizontal', priority = false }: BlogPostCardProps): ReactElement {
+  const [coords, setCoords] = useState({ x: 0, y: 0 });
+  const [isHovered, setIsHovered] = useState(false);
+
   const formattedDate = new Date(post.date).toLocaleDateString('en-US', {
     month: 'short',
     day: 'numeric',
     year: 'numeric',
   });
 
+  const handleMouseMove = (e: React.MouseEvent<HTMLElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    setCoords({
+      x: e.clientX - rect.left,
+      y: e.clientY - rect.top,
+    });
+  };
+
   const isHorizontal = layout === 'horizontal';
 
   return (
     <Link href={`/blog/${post.slug}`} className="block group">
       <article
+        onMouseMove={handleMouseMove}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
         className={cn(
           'relative flex flex-col overflow-hidden rounded-2xl border border-border bg-card',
           isHorizontal && 'md:flex-row md:h-[260px]',
-          'hover:border-primary/40 hover:-translate-y-0.5 hover:shadow-sm',
-          'transition-all duration-200 cursor-pointer h-full'
+          'hover:border-primary/45 hover:-translate-y-0.5 hover:shadow-lg',
+          'transition-all duration-300 cursor-pointer h-full select-none'
         )}
+        style={{
+          '--mouse-x': `${coords.x}px`,
+          '--mouse-y': `${coords.y}px`,
+        } as any}
       >
+        {/* Vercel Spotlight Radial Gradient */}
+        <div
+          className="pointer-events-none absolute inset-0 z-0 transition-opacity duration-300 opacity-0 group-hover:opacity-100"
+          style={{
+            background: `radial-gradient(350px circle at var(--mouse-x) var(--mouse-y), var(--primary) / 0.06, transparent 80%)`,
+          }}
+        />
+
         {/* Featured Badge */}
         {post.featured && (
           <div className="absolute right-0 top-0 z-10 rounded-bl-lg bg-primary/15 px-2.5 py-1 text-xs font-semibold text-primary border-l border-b border-primary/20">

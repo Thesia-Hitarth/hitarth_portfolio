@@ -12,6 +12,7 @@ import { siteConfig } from '@/config/site';
 import { GradientText } from '@/components/ui/GradientText';
 import { fadeInUp, fadeIn, floatVariants } from '@/lib/animations';
 import { GithubIcon, LinkedinIcon } from '@/components/ui/BrandIcons';
+import { CanvasBackground } from '@/components/ui/CanvasBackground';
 
 const [firstName, ...restNameParts] = siteConfig.name.split(' ');
 const restName = restNameParts.join(' ');
@@ -46,6 +47,8 @@ export function HeroSection(): ReactElement {
           backgroundSize: '64px 64px',
         }}
       />
+      {/* Interactive canvas particles */}
+      <CanvasBackground />
       {/* Radial fade overlay */}
       <div
         aria-hidden="true"

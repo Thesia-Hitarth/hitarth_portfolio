@@ -9,6 +9,7 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import { ExternalLink } from 'lucide-react';
 import type { ReactElement } from 'react';
 import { TechBadge } from '@/components/ui/TechBadge';
@@ -39,18 +40,62 @@ export function ProjectImagePlaceholder({ title, className }: { title: string; c
 
 export function ProjectCard({ project, cardProps = {} }: ProjectCardProps): ReactElement {
   const [imgError, setImgError] = useState(false);
+  const router = useRouter();
+  
+  // Spotlight Hover State & Coords
+  const [coords, setCoords] = useState({ x: 0, y: 0 });
+  const [isHovered, setIsHovered] = useState(false);
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    setCoords({
+      x: e.clientX - rect.left,
+      y: e.clientY - rect.top,
+    });
+  };
+
+  const handleCardClick = () => {
+    router.push(`/projects/${project.slug}`);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      router.push(`/projects/${project.slug}`);
+    }
+  };
 
   return (
     <motion.article
       {...cardProps}
+      onMouseMove={handleMouseMove}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      onClick={handleCardClick}
+      onKeyDown={handleKeyDown}
+      tabIndex={0}
+      role="link"
+      aria-label={`View details for project ${project.title}`}
       className={cn(
         'group relative flex flex-col overflow-hidden rounded-2xl border border-border bg-card cursor-pointer',
-        'hover:border-primary/40 hover:-translate-y-1 hover:shadow-md',
-        'transition-all duration-300'
+        'hover:border-primary/45 hover:-translate-y-1 hover:shadow-lg',
+        'transition-all duration-300 select-none outline-none focus-visible:ring-2 focus-visible:ring-primary'
       )}
+      style={{
+        '--mouse-x': `${coords.x}px`,
+        '--mouse-y': `${coords.y}px`,
+      } as any}
     >
+      {/* Vercel Spotlight Radial Gradient */}
+      <div
+        className="pointer-events-none absolute inset-0 z-0 transition-opacity duration-300 opacity-0 group-hover:opacity-100"
+        style={{
+          background: `radial-gradient(350px circle at var(--mouse-x) var(--mouse-y), var(--primary) / 0.07, transparent 80%)`,
+        }}
+      />
+
       {/* Image area */}
-      <div className="relative aspect-video overflow-hidden border-b border-border bg-gradient-to-br from-primary/10 to-primary/5 dark:from-primary/20 dark:to-primary/5">
+      <div className="relative aspect-video overflow-hidden border-b border-border bg-gradient-to-br from-primary/10 to-primary/5 dark:from-primary/20 dark:to-primary/5 z-10">
         {project.coverImage && !imgError ? (
           <div className="absolute inset-0 flex items-center justify-center p-6">
             <div className="relative w-full h-full">
@@ -73,7 +118,7 @@ export function ProjectCard({ project, cardProps = {} }: ProjectCardProps): Reac
       </div>
 
       {/* Content */}
-      <div className="flex flex-1 flex-col p-5">
+      <div className="flex flex-grow flex-col p-5 z-10">
         <div className="flex items-center justify-between">
           <span className="font-mono text-xs text-primary capitalize">{project.category}</span>
           <span className="text-xs text-muted-foreground">{project.year}</span>
@@ -120,12 +165,11 @@ export function ProjectCard({ project, cardProps = {} }: ProjectCardProps): Reac
               </a>
             )}
           </div>
-          <Link
-            href={`/projects/${project.slug}`}
-            className="text-sm font-medium text-primary hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 rounded-sm after:absolute after:inset-0 after:z-10"
+          <span
+            className="text-sm font-medium text-primary hover:underline"
           >
             Details →
-          </Link>
+          </span>
         </div>
       </div>
     </motion.article>

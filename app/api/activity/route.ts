@@ -115,12 +115,12 @@ export async function GET() {
   // 2. Determine developer status based on time of day (Ahmedabad timezone)
   let statusText = 'Coding';
   let statusCode: 'coding' | 'learning' | 'resting' = 'coding';
-  
+
   if (hourInKolkata >= 9 && hourInKolkata < 18) {
     statusText = '💻 Building Web Products';
     statusCode = 'coding';
   } else if (hourInKolkata >= 18 && hourInKolkata < 22) {
-    statusText = '📚 Exploring System Architecture';
+    statusText = '⚙️ Improving Development Skills';
     statusCode = 'learning';
   } else {
     statusText = '😴 Offline / Rest Mode';

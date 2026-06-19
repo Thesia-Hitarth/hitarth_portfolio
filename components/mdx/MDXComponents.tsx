@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars */
-import type { ReactElement } from 'react';
+import React, { ReactElement } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Info, AlertTriangle, Lightbulb, XCircle } from 'lucide-react';
@@ -125,8 +125,8 @@ export const MDXComponents = {
       {...props}
     />
   ),
-  code: ({ className, ...props }: any) => {
-    const isInline = !className || !className.startsWith('language-');
+  code: ({ className, isBlock, ...props }: any) => {
+    const isInline = !isBlock && (!className || !className.startsWith('language-'));
     return (
       <code
         className={cn(
@@ -142,6 +142,9 @@ export const MDXComponents = {
   pre: ({ className, children, ...props }: any) => {
     // Extract raw text for CopyButton, handling children structures in markdown blocks
     const codeContent = children?.props?.children ?? '';
+    const enhancedChildren = children && React.isValidElement(children)
+      ? React.cloneElement(children as React.ReactElement<any>, { isBlock: true })
+      : children;
     return (
       <div className="relative group my-6">
         <CopyButton text={codeContent} />
@@ -152,7 +155,7 @@ export const MDXComponents = {
           )}
           {...props}
         >
-          {children}
+          {enhancedChildren}
         </pre>
       </div>
     );

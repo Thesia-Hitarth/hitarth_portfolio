@@ -7,8 +7,9 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { useTheme } from 'next-themes';
-import { Sun, Moon, Menu, X, Download } from 'lucide-react';
+import { Sun, Moon, Menu, X, FileText } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
+import Link from 'next/link';
 import type { ReactElement } from 'react';
 import { siteConfig } from '@/config/site';
 import { cn } from '@/lib/utils';
@@ -210,20 +211,20 @@ export function Navbar(): ReactElement {
                   {theme === 'dark' ? (
                     <motion.span
                       key="sun"
-                      initial={{ opacity: 0, rotate: -90 }}
-                      animate={{ opacity: 1, rotate: 0 }}
-                      exit={{ opacity: 0, rotate: 90 }}
-                      transition={{ duration: 0.2 }}
+                      initial={{ opacity: 0, rotate: -90, scale: 0.8 }}
+                      animate={{ opacity: 1, rotate: 0, scale: 1 }}
+                      exit={{ opacity: 0, rotate: 90, scale: 0.8 }}
+                      transition={{ type: 'spring', stiffness: 200, damping: 15 }}
                     >
                       <Sun size={18} />
                     </motion.span>
                   ) : (
                     <motion.span
                       key="moon"
-                      initial={{ opacity: 0, rotate: 90 }}
-                      animate={{ opacity: 1, rotate: 0 }}
-                      exit={{ opacity: 0, rotate: -90 }}
-                      transition={{ duration: 0.2 }}
+                      initial={{ opacity: 0, rotate: 90, scale: 0.8 }}
+                      animate={{ opacity: 1, rotate: 0, scale: 1 }}
+                      exit={{ opacity: 0, rotate: -90, scale: 0.8 }}
+                      transition={{ type: 'spring', stiffness: 200, damping: 15 }}
                     >
                       <Moon size={18} />
                     </motion.span>
@@ -232,9 +233,8 @@ export function Navbar(): ReactElement {
               </button>
             )}
 
-            <a
-              href={siteConfig.resumeUrl}
-              download
+            <Link
+              href="/resume"
               className={cn(
                 'hidden md:inline-flex items-center gap-1.5',
                 'rounded-lg border border-primary/40 bg-primary/5 px-3 py-1.5',
@@ -243,9 +243,9 @@ export function Navbar(): ReactElement {
                 'focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2'
               )}
             >
-              <Download size={14} />
+              <FileText size={14} />
               Resume
-            </a>
+            </Link>
 
             <button
               onClick={() => setMobileOpen((v) => !v)}
@@ -314,15 +314,14 @@ export function Navbar(): ReactElement {
                 transition={{ delay: siteConfig.nav.length * 0.05 + 0.05 }}
                 className="flex items-center gap-4 mt-6"
               >
-                <a
-                  href={siteConfig.resumeUrl}
-                  download
+                <Link
+                  href="/resume"
                   onClick={() => setMobileOpen(false)}
                   className="flex items-center gap-2 rounded-lg bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
                 >
-                  <Download size={16} />
+                  <FileText size={16} />
                   Resume
-                </a>
+                </Link>
                 <a
                   href={siteConfig.social.github}
                   target="_blank"
