@@ -139,45 +139,21 @@ export default async function ProjectDetailPage({ params }: Props) {
   return (
     <div className="min-h-screen bg-background">
       <JsonLd data={projectSchema} />
-      {/* ZONE 1: Navigation & Breadcrumbs */}
-      <div className="border-b border-border bg-card/20 backdrop-blur-md sticky top-[65px] z-30">
-        <div className="container mx-auto max-w-6xl px-4 py-4 flex items-center justify-between sm:px-6 lg:px-8">
-          <Link
-            href="/projects"
-            className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-primary transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded-md"
-          >
-            <ArrowLeft size={16} />
-            <span>Back to projects</span>
-          </Link>
-
-          <nav aria-label="Breadcrumb" className="hidden sm:block">
-            <ol className="flex items-center gap-2 text-xs text-muted-foreground" role="list">
-              <li>
-                <Link href="/" className="hover:text-primary transition-colors">
-                  Home
-                </Link>
-              </li>
-              <li aria-hidden="true" className="select-none text-muted-foreground/40">/</li>
-              <li>
-                <Link href="/projects" className="hover:text-primary transition-colors">
-                  Projects
-                </Link>
-              </li>
-              <li aria-hidden="true" className="select-none text-muted-foreground/40">/</li>
-              <li className="text-foreground font-medium select-all" aria-current="page">
-                {project.title}
-              </li>
-            </ol>
-          </nav>
-        </div>
-      </div>
-
       {/* ZONE 2: Hero Banner Block */}
       <header className="relative w-full overflow-hidden border-b border-border bg-gradient-to-b from-muted/30 to-background py-16 lg:py-24">
         <div className="absolute inset-0 -z-10 opacity-10 bg-[radial-gradient(#3b82f6_1px,transparent_1px)] [background-size:16px_16px]" />
         
         <div className="container mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
           <div className="max-w-3xl">
+            {/* Back Nav Link */}
+            <Link
+              href="/projects"
+              className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-primary transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded-md mb-8"
+            >
+              <ArrowLeft size={16} />
+              <span>Back to projects</span>
+            </Link>
+
             <div className="flex flex-wrap items-center gap-3 mb-6">
               <span className="font-mono text-xs font-semibold uppercase tracking-wider text-primary bg-primary/10 border border-primary/20 px-2.5 py-1 rounded-full">
                 {project.category === 'fullstack' ? 'Full-Stack' : project.category}
@@ -208,9 +184,11 @@ export default async function ProjectDetailPage({ params }: Props) {
           <div className="lg:col-span-2 space-y-12">
             {/* Overview */}
             <div className="space-y-4">
-              <h2 id="overview-heading" className="text-2xl font-bold text-foreground tracking-tight border-b border-border pb-3">
-                Overview
-              </h2>
+              {!project.longDescription && (
+                <h2 id="overview-heading" className="text-2xl font-bold text-foreground tracking-tight border-b border-border pb-3">
+                  Overview
+                </h2>
+              )}
               {project.longDescription ? (
                 <div className="prose-custom max-w-none">
                   <MDXRemote
