@@ -8,6 +8,8 @@
  */
 
 import type { Metadata } from 'next';
+import Link from 'next/link';
+import { ArrowLeft } from 'lucide-react';
 import { getAllPosts } from '@/lib/mdx';
 import { siteConfig } from '@/config/site';
 import { SectionHeader } from '@/components/ui/SectionHeader';
@@ -32,6 +34,13 @@ export default function BlogPage() {
   return (
     <div className="pt-32 pb-24">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl">
+        <Link
+          href="/"
+          className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-primary transition-colors mb-6 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded-md"
+        >
+          <ArrowLeft size={16} />
+          <span>Back to home</span>
+        </Link>
         {/* Header Block */}
         <header className="mb-12">
           <SectionHeader

@@ -9,7 +9,88 @@
 import type { Project } from "@/lib/types";
 
 export const projects: Project[] = [
-  // ── 1. Daily Dose (Featured Project) ────────────────────
+
+  // ── 1. Querious ──────────────────────────────────────────
+  {
+    slug: "querious",
+    title: "Querious",
+    tagline: "Community Q&A platform for developers.",
+    year: 2024,
+    category: "fullstack",
+    featured: true,
+    status: "live",
+    coverImage: "/images/projects/querious.png",
+    stack: [
+      "MongoDB",
+      "Express.js",
+      "React.js",
+      "Node.js",
+      "Firebase Authentication",
+      "REST APIs",
+    ],
+    description:
+      "A developer community Q&A platform featuring structured posts, answer upvoting, Firebase authentication, and complex data aggregation.",
+    longDescription: `
+## Overview
+Querious is a community-driven Q&A site tailored for software developers. The main engineering challenge was building a low-latency ranking system that scores and bubbles up relevant answers based on community votes and recency.
+
+## Design and Integration
+The platform uses Firebase Authentication to manage user identity securely, decoupling login management from our database layer. In MongoDB, relational-style data schemas represent users, questions, answers, and votes, which are queried through optimized pipelines.
+
+## Outcomes
+By employing MongoDB aggregation pipelines, we implemented high-performance query logic that calculates voting scores on the fly, eliminating the need to cache stale values or run expensive post-processing in application memory.
+    `,
+    highlights: [
+      "Built answer ranking using MongoDB aggregation pipelines that score by upvote count and recency combined.",
+      "Integrated Firebase Authentication for social login, decoupling identity management from the core API.",
+      "Designed REST APIs for questions, answers, and votes with consistent error handling and HTTP status codes.",
+      "Modeled a graph-like social data structure (users, questions, answers, votes) in MongoDB with efficient query patterns.",
+    ],
+    liveUrl: "https://querious-hitarth.vercel.app/",
+    githubUrl: "https://github.com/Thesia-Hitarth/Querious",
+  },
+
+  // ── 2. TaskFlow (Featured Project) ──────────────────────
+  {
+    slug: "taskflow",
+    title: "Developer Taskflows",
+    tagline: "An interactive developer roadmap and career-guidance platform.",
+    year: 2026,
+    category: "opensource",
+    featured: true,
+    status: "live",
+    coverImage: "/images/projects/taskflow.png",
+    stack: [
+      "Next.js",
+      "React.js",
+      "TypeScript",
+      "Tailwind CSS",
+      "Prisma (PostgreSQL)",
+      "NextAuth",
+    ],
+    description:
+      "An open-source developer roadmap and career guidance platform containing structured learning paths, interactive roadmaps, and a personalized recommendation engine.",
+    longDescription: `
+## Overview
+Developer Taskflows (taskflow.sh) is a community-driven career guidance and roadmap platform built for developers. The goal was to provide high-quality learning paths that guide beginners and advanced engineers alike through the complexities of modern tech stacks.
+
+## Key Features & Architecture
+- **Interactive Roadmaps:** Role-based (Frontend, Backend, DevOps, AI Engineer) and skill-based (JavaScript, Python, Docker, Next.js) learning tracks with duration and difficulty estimates.
+- **Find My Path Recommendation Engine:** A responsive 5-question diagnostic quiz that analyzes a developer's goals and experience to recommend the most optimal path.
+- **Unified Navigation & Command Palette:** A custom-built, accessible search palette that allows quick filtering and keyword lookup across guides and roadmap paths.
+- **Active Community Integrations:** An open contribution framework that maps structural career tracks dynamically and maintains a live, detailed release and changelog timeline.
+    `,
+    highlights: [
+      "Designed and structured role-based and skill-based roadmaps covering 30+ career tracks and technologies.",
+      "Developed a personalized recommendation engine ('Find My Path' quiz) recommending tailored learning tracks based on user inputs.",
+      "Built a highly responsive search command palette for instant navigation across various roadmaps and articles.",
+      "Established an open-source contribution workflow allowing developers to submit new guides and roadmap timelines.",
+    ],
+    liveUrl: "https://task-flow-by-hitarth.vercel.app/",
+    githubUrl: "https://github.com/Thesia-Hitarth/TaskFlow-By-Hitarth-",
+  },
+
+  // ── 3. Daily Dose (Featured Project) ────────────────────
   {
     slug: "daily-dose",
     title: "Daily Dose",
@@ -53,7 +134,7 @@ The frontend is built on React.js using ShadCN/UI, communicating with a Node.js/
     githubUrl: "https://github.com/Thesia-Hitarth/Daily-Dose-Meal-Ordering",
   },
 
-  // ── 2. E-Commerce Platform ──────────────────────────────
+  // ── 4. E-Commerce Platform ──────────────────────────────
   {
     slug: "ecommerce-platform",
     title: "E-Commerce Platform",
@@ -97,85 +178,6 @@ Designing this project provided crucial insights into relational schema modeling
     ],
   },
 
-  // ── 3. Querious ──────────────────────────────────────────
-  {
-    slug: "querious",
-    title: "Querious",
-    tagline: "Community Q&A platform for developers.",
-    year: 2024,
-    category: "fullstack",
-    featured: true,
-    status: "live",
-    coverImage: "/images/projects/querious.png",
-    stack: [
-      "MongoDB",
-      "Express.js",
-      "React.js",
-      "Node.js",
-      "Firebase Authentication",
-      "REST APIs",
-    ],
-    description:
-      "A developer community Q&A platform featuring structured posts, answer upvoting, Firebase authentication, and complex data aggregation.",
-    longDescription: `
-## Overview
-Querious is a community-driven Q&A site tailored for software developers. The main engineering challenge was building a low-latency ranking system that scores and bubbles up relevant answers based on community votes and recency.
-
-## Design and Integration
-The platform uses Firebase Authentication to manage user identity securely, decoupling login management from our database layer. In MongoDB, relational-style data schemas represent users, questions, answers, and votes, which are queried through optimized pipelines.
-
-## Outcomes
-By employing MongoDB aggregation pipelines, we implemented high-performance query logic that calculates voting scores on the fly, eliminating the need to cache stale values or run expensive post-processing in application memory.
-    `,
-    highlights: [
-      "Built answer ranking using MongoDB aggregation pipelines that score by upvote count and recency combined.",
-      "Integrated Firebase Authentication for social login, decoupling identity management from the core API.",
-      "Designed REST APIs for questions, answers, and votes with consistent error handling and HTTP status codes.",
-      "Modeled a graph-like social data structure (users, questions, answers, votes) in MongoDB with efficient query patterns.",
-    ],
-    liveUrl: "https://querious-hitarth.vercel.app/",
-    githubUrl: "https://github.com/Thesia-Hitarth/Querious",
-  },
-
-  // ── 4. TaskFlow (Featured Project) ──────────────────────
-  {
-    slug: "taskflow",
-    title: "Developer Taskflows",
-    tagline: "An interactive developer roadmap and career-guidance platform.",
-    year: 2026,
-    category: "opensource",
-    featured: true,
-    status: "live",
-    coverImage: "/images/projects/taskflow.png",
-    stack: [
-      "Next.js",
-      "React.js",
-      "TypeScript",
-      "Tailwind CSS",
-      "Prisma (PostgreSQL)",
-      "NextAuth",
-    ],
-    description:
-      "An open-source developer roadmap and career guidance platform containing structured learning paths, interactive roadmaps, and a personalized recommendation engine.",
-    longDescription: `
-## Overview
-Developer Taskflows (taskflow.sh) is a community-driven career guidance and roadmap platform built for developers. The goal was to provide high-quality learning paths that guide beginners and advanced engineers alike through the complexities of modern tech stacks.
-
-## Key Features & Architecture
-- **Interactive Roadmaps:** Role-based (Frontend, Backend, DevOps, AI Engineer) and skill-based (JavaScript, Python, Docker, Next.js) learning tracks with duration and difficulty estimates.
-- **Find My Path Recommendation Engine:** A responsive 5-question diagnostic quiz that analyzes a developer's goals and experience to recommend the most optimal path.
-- **Unified Navigation & Command Palette:** A custom-built, accessible search palette that allows quick filtering and keyword lookup across guides and roadmap paths.
-- **Active Community Integrations:** An open contribution framework that maps structural career tracks dynamically and maintains a live, detailed release and changelog timeline.
-    `,
-    highlights: [
-      "Designed and structured role-based and skill-based roadmaps covering 30+ career tracks and technologies.",
-      "Developed a personalized recommendation engine ('Find My Path' quiz) recommending tailored learning tracks based on user inputs.",
-      "Built a highly responsive search command palette for instant navigation across various roadmaps and articles.",
-      "Established an open-source contribution workflow allowing developers to submit new guides and roadmap timelines.",
-    ],
-    liveUrl: "https://task-flow-by-hitarth.vercel.app/",
-    githubUrl: "https://github.com/Thesia-Hitarth/TaskFlow-By-Hitarth-",
-  },
 ];
 
 /** Projects marked as featured, used for the homepage spotlight */

@@ -7,6 +7,8 @@
  */
 
 import type { Metadata } from 'next';
+import Link from 'next/link';
+import { ArrowLeft } from 'lucide-react';
 import { projects } from '@/data/projects';
 import { siteConfig } from '@/config/site';
 import { ProjectsGrid } from '@/components/projects/ProjectsGrid';
@@ -30,7 +32,14 @@ export default function ProjectsPage() {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-6xl">
         {/* Header Section */}
         <header className="mb-12 max-w-2xl">
-          <span className="font-mono text-xs font-semibold uppercase tracking-wider text-primary">
+          <Link
+            href="/"
+            className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-primary transition-colors mb-6 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded-md"
+          >
+            <ArrowLeft size={16} />
+            <span>Back to home</span>
+          </Link>
+          <span className="block font-mono text-xs font-semibold uppercase tracking-wider text-primary">
             05 / Projects
           </span>
           <h1 className="mt-3 text-4xl font-extrabold tracking-tight text-foreground sm:text-5xl">
