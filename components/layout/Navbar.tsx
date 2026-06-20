@@ -4,7 +4,7 @@
  * components/layout/Navbar.tsx
  */
 
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { useTheme } from 'next-themes';
 import { Sun, Moon, Menu, X, FileText } from 'lucide-react';
@@ -15,9 +15,11 @@ import { siteConfig } from '@/config/site';
 import { cn } from '@/lib/utils';
 import { GithubIcon, LinkedinIcon } from '@/components/ui/BrandIcons';
 
-const SECTION_IDS = siteConfig.nav
-  .map((item) => item.href.replace('#', ''))
-  .filter(Boolean);
+// --- Tunable constants (previously magic numbers) ---
+const SHOW_AT_TOP_THRESHOLD = 100; // px from top where navbar always shows
+const SCROLLED_BG_THRESHOLD = 60; // px before navbar gets bg/blur/shadow
+const SCROLL_RESTORE_DELAY = 300; // ms to wait before scrolling to a stored section
+const SECTION_OBSERVER_MARGIN = '-40% 0px -55% 0px';
 
 export function Navbar(): ReactElement {
   const [scrolled, setScrolled] = useState(false);
@@ -29,134 +31,223 @@ export function Navbar(): ReactElement {
   const prefersReduced = useReducedMotion();
   const pathname = usePathname();
   const router = useRouter();
+
   const lastScrollY = useRef(0);
+  const tickingRef = useRef(false);
+  const mobileOpenRef = useRef(mobileOpen);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
+  const firstMenuItemRef = useRef<HTMLButtonElement>(null);
+
+  // Section ids derived from nav config — memoized once, recalculated only
+  // if siteConfig.nav reference changes (it won't for a static config, but
+  // this keeps the component correct if that ever changes).
+  const sectionIds = useMemo(
+    () => siteConfig.nav.map((item) => item.href.replace('#', '')).filter(Boolean),
+    []
+  );
 
   useEffect(() => {
-    const handle = requestAnimationFrame(() => {
-      setMounted(true);
-    });
+    mobileOpenRef.current = mobileOpen;
+  }, [mobileOpen]);
+
+  useEffect(() => {
+    const handle = requestAnimationFrame(() => setMounted(true));
     return () => cancelAnimationFrame(handle);
   }, []);
 
+  // --- Scroll show/hide + background, throttled via rAF ---
   useEffect(() => {
     const handleScroll = (): void => {
-      if (mobileOpen) {
-        setVisible(true);
-        return;
-      }
+      if (tickingRef.current) return;
+      tickingRef.current = true;
 
-      const currentScrollY = window.scrollY;
-      
-      // Always show near the top of the page
-      if (currentScrollY <= 100) {
-        setVisible(true);
-      } else {
-        // Hide when scrolling down, show when scrolling up
-        if (currentScrollY > lastScrollY.current) {
+      requestAnimationFrame(() => {
+        if (mobileOpenRef.current) {
+          setVisible(true);
+          tickingRef.current = false;
+          return;
+        }
+
+        const currentScrollY = window.scrollY;
+
+        if (currentScrollY <= SHOW_AT_TOP_THRESHOLD) {
+          setVisible(true);
+        } else if (currentScrollY > lastScrollY.current) {
           setVisible(false);
         } else {
           setVisible(true);
         }
-      }
-      
-      setScrolled(currentScrollY > 60);
-      lastScrollY.current = currentScrollY;
+
+        setScrolled(currentScrollY > SCROLLED_BG_THRESHOLD);
+        lastScrollY.current = currentScrollY;
+        tickingRef.current = false;
+      });
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [mobileOpen]);
+  }, []);
 
+  // --- Single source of truth for activeSection ---
+  // Combines route-based section (for /blog, /projects) and in-page
+  // IntersectionObserver tracking (for '/'), without two effects
+  // fighting over state on navigation.
   useEffect(() => {
+    if (pathname.startsWith('/blog')) {
+      setActiveSection('blog');
+      return;
+    }
+    if (pathname.startsWith('/projects')) {
+      setActiveSection('projects');
+      return;
+    }
     if (pathname !== '/') return;
+
+    // On the homepage: default to hero, then let the observer take over
+    // once sections start intersecting.
+    if (window.scrollY <= SHOW_AT_TOP_THRESHOLD) {
+      setActiveSection('hero');
+    }
+
     const observers: IntersectionObserver[] = [];
-    SECTION_IDS.forEach((id) => {
+    sectionIds.forEach((id) => {
       const el = document.getElementById(id);
       if (!el) return;
       const observer = new IntersectionObserver(
-        ([entry]) => { if (entry.isIntersecting) setActiveSection(id); },
-        { rootMargin: '-40% 0px -55% 0px', threshold: 0 }
+        ([entry]) => {
+          if (entry.isIntersecting) setActiveSection(id);
+        },
+        { rootMargin: SECTION_OBSERVER_MARGIN, threshold: 0 }
       );
       observer.observe(el);
       observers.push(observer);
     });
+
     return () => observers.forEach((o) => o.disconnect());
-  }, [pathname]);
-  
-  useEffect(() => {
-    const handle = requestAnimationFrame(() => {
-      if (pathname.startsWith('/blog')) {
-        setActiveSection('blog');
-      } else if (pathname.startsWith('/projects')) {
-        setActiveSection('projects');
-      } else if (pathname === '/') {
-        if (typeof window !== 'undefined' && window.scrollY <= 100) {
-          setActiveSection('hero');
-        }
-      }
-    });
-    return () => cancelAnimationFrame(handle);
-  }, [pathname]);
+  }, [pathname, sectionIds]);
 
   useEffect(() => {
-    const onResize = (): void => { if (window.innerWidth >= 768) setMobileOpen(false); };
+    const onResize = (): void => {
+      if (window.innerWidth >= 768) setMobileOpen(false);
+    };
     window.addEventListener('resize', onResize);
     return () => window.removeEventListener('resize', onResize);
   }, []);
 
   useEffect(() => {
     document.body.style.overflow = mobileOpen ? 'hidden' : '';
-    return () => { document.body.style.overflow = ''; };
+    return () => {
+      document.body.style.overflow = '';
+    };
   }, [mobileOpen]);
 
+  // --- Restore scroll position after navigating back to '/' ---
   useEffect(() => {
     if (pathname !== '/') return;
+
+    let target: string | null = null;
     try {
-      const target = sessionStorage.getItem('scroll-to-section');
-      if (target) {
-        sessionStorage.removeItem('scroll-to-section');
-        const timer = setTimeout(() => {
-          const el = document.getElementById(target);
-          if (el) {
-            el.scrollIntoView({ behavior: 'smooth' });
-            setActiveSection(target);
+      target = sessionStorage.getItem('scroll-to-section');
+      if (target) sessionStorage.removeItem('scroll-to-section');
+    } catch {
+      // sessionStorage may be blocked (privacy mode, etc.) — fail silently
+      return;
+    }
+
+    if (!target) return;
+
+    const sectionId = target;
+    const timer = setTimeout(() => {
+      const el = document.getElementById(sectionId);
+      if (el) {
+        el.scrollIntoView({ behavior: prefersReduced ? 'auto' : 'smooth' });
+        setActiveSection(sectionId);
+      }
+    }, SCROLL_RESTORE_DELAY);
+
+    return () => clearTimeout(timer);
+  }, [pathname, prefersReduced]);
+
+  // --- Focus trap + Escape-to-close for the mobile menu ---
+  useEffect(() => {
+    if (!mobileOpen) return;
+
+    // Move focus into the menu when it opens
+    const focusTimer = setTimeout(() => {
+      firstMenuItemRef.current?.focus();
+    }, 0);
+
+    const handleKeyDown = (e: KeyboardEvent): void => {
+      if (e.key === 'Escape') {
+        setMobileOpen(false);
+        menuButtonRef.current?.focus();
+        return;
+      }
+
+      if (e.key !== 'Tab' || !menuRef.current) return;
+
+      const focusable = menuRef.current.querySelectorAll<HTMLElement>(
+        'button, a[href], [tabindex]:not([tabindex="-1"])'
+      );
+      if (focusable.length === 0) return;
+
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      clearTimeout(focusTimer);
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [mobileOpen]);
+
+  const handleNavClick = useCallback(
+    (href: string) => {
+      setMobileOpen(false);
+      if (href.startsWith('#')) {
+        const sectionId = href.slice(1);
+        if (pathname !== '/') {
+          try {
+            sessionStorage.setItem('scroll-to-section', sectionId);
+          } catch {
+            // Fallback if sessionStorage is blocked — navigation still works,
+            // it just won't auto-scroll to the section.
           }
-        }, 300);
-        return () => clearTimeout(timer);
-      }
-    } catch (err) {
-      // Handle potential storage access issues gracefully
-    }
-  }, [pathname]);
-
-  const handleNavClick = useCallback((href: string) => {
-    setMobileOpen(false);
-    if (href.startsWith('#')) {
-      const sectionId = href.slice(1);
-      if (pathname !== '/') {
-        try {
-          sessionStorage.setItem('scroll-to-section', sectionId);
-        } catch (err) {
-          // Fallback if sessionStorage is blocked
+          router.push('/');
+        } else {
+          const el = document.getElementById(sectionId);
+          el?.scrollIntoView({ behavior: prefersReduced ? 'auto' : 'smooth' });
+          setActiveSection(sectionId);
         }
-        router.push('/');
       } else {
-        const el = document.getElementById(sectionId);
-        el?.scrollIntoView({ behavior: 'smooth' });
+        router.push(href);
       }
-    } else {
-      router.push(href);
-    }
-  }, [pathname, router]);
+    },
+    [pathname, router, prefersReduced]
+  );
 
-  const toggleTheme = (): void => { setTheme(theme === 'dark' ? 'light' : 'dark'); };
+  const toggleTheme = (): void => setTheme(theme === 'dark' ? 'light' : 'dark');
 
-  const initials = siteConfig.name
-    .split(' ')
-    .map((w) => w[0])
-    .join('')
-    .toUpperCase()
-    .slice(0, 2);
+  const initials = useMemo(
+    () =>
+      siteConfig.name
+        .split(' ')
+        .map((w) => w[0])
+        .join('')
+        .toUpperCase()
+        .slice(0, 2),
+    []
+  );
 
   return (
     <>
@@ -197,6 +288,7 @@ export function Navbar(): ReactElement {
                 <li key={item.href} className="relative">
                   <button
                     onClick={() => handleNavClick(item.href)}
+                    aria-current={isActive ? 'true' : undefined}
                     className={cn(
                       'relative px-3 py-1.5 text-sm font-medium rounded-md transition-colors duration-200',
                       'focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2',
@@ -274,6 +366,7 @@ export function Navbar(): ReactElement {
             </Link>
 
             <button
+              ref={menuButtonRef}
               onClick={() => setMobileOpen((v) => !v)}
               aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
               aria-expanded={mobileOpen}
@@ -296,6 +389,7 @@ export function Navbar(): ReactElement {
         {mobileOpen && (
           <motion.div
             id="mobile-menu"
+            ref={menuRef}
             role="dialog"
             aria-modal="true"
             aria-label="Mobile navigation"
@@ -314,11 +408,13 @@ export function Navbar(): ReactElement {
                     key={item.href}
                     initial={{ opacity: 0, y: 12 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: i * 0.05, duration: 0.3 }}
+                    transition={{ delay: prefersReduced ? 0 : i * 0.05, duration: 0.3 }}
                     className="w-full max-w-xs"
                   >
                     <button
+                      ref={i === 0 ? firstMenuItemRef : undefined}
                       onClick={() => handleNavClick(item.href)}
+                      aria-current={isActive ? 'true' : undefined}
                       className={cn(
                         'w-full rounded-xl px-6 py-4 text-xl font-semibold text-center',
                         'transition-colors duration-200',
@@ -337,7 +433,9 @@ export function Navbar(): ReactElement {
               <motion.div
                 initial={{ opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: siteConfig.nav.length * 0.05 + 0.05 }}
+                transition={{
+                  delay: prefersReduced ? 0 : siteConfig.nav.length * 0.05 + 0.05,
+                }}
                 className="flex items-center gap-4 mt-6"
               >
                 <Link
