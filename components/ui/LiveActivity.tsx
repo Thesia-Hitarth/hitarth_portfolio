@@ -90,7 +90,7 @@ export function LiveActivity(): ReactElement {
     timerRef.current = setInterval(() => {
       const elapsedMs = new Date().getTime() - startLocal.getTime();
       const currentServerTime = new Date(serverDate.getTime() + elapsedMs);
-      
+
       setTimeText(
         currentServerTime.toLocaleTimeString('en-US', {
           hour: 'numeric',
@@ -300,21 +300,15 @@ interface SpotifyCoverArtProps {
 function SpotifyCoverArt({ art, isPlaying, title }: SpotifyCoverArtProps): ReactElement {
   return (
     <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-lg bg-muted border border-border/60">
-      {art ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
-          src={art}
-          alt={title}
-          className={cn(
-            'h-full w-full object-cover rounded-lg transition-transform duration-500',
-            isPlaying && 'animate-[spin_10s_linear_infinite]'
-          )}
-        />
-      ) : (
-        <div className="flex h-full w-full items-center justify-center bg-emerald-500/10 text-emerald-500">
-          <Music size={16} />
-        </div>
-      )}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src="/Music.png"
+        alt={title}
+        className={cn(
+          'h-full w-full object-cover rounded-lg transition-transform duration-500',
+          isPlaying && 'animate-[spin_10s_linear_infinite]'
+        )}
+      />
       {/* Vinyl record middle pinhole overlay */}
       {isPlaying && (
         <div className="absolute inset-0 m-auto h-2 w-2 rounded-full border border-black/30 bg-card shadow-inner" />

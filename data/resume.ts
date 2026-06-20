@@ -131,6 +131,17 @@ export const resumeData: ResumeData = {
       ]
     },
     {
+      title: "Querious",
+      subtitle: "Community-Driven Q&A Platform",
+      techStack: ["MongoDB", "Express.js", "React.js", "Node.js", "Firebase Authentication"],
+      year: "2024–2025",
+      bullets: [
+        "A developer Q&A community platform with upvoting, answer ranking, and user profiles — similar to Stack Overflow.",
+        "Built a Q&A platform with upvoting, answer ranking using MongoDB aggregation, and Firebase login",
+        "Designed REST APIs for questions, answers, and votes with proper error handling"
+      ]
+    },
+    {
       title: "Daily Dose",
       subtitle: "Tiffin Ordering & Subscription Platform",
       techStack: ["React.js", "Node.js", "Express.js", "MongoDB", "ShadCN/UI", "REST APIs"],
@@ -152,17 +163,6 @@ export const resumeData: ResumeData = {
         "Added JWT-based login with protected routes on both frontend and backend"
       ]
     },
-    {
-      title: "Querious",
-      subtitle: "Community-Driven Q&A Platform",
-      techStack: ["MongoDB", "Express.js", "React.js", "Node.js", "Firebase Authentication"],
-      year: "2024–2025",
-      bullets: [
-        "A developer Q&A community platform with upvoting, answer ranking, and user profiles — similar to Stack Overflow.",
-        "Built a Q&A platform with upvoting, answer ranking using MongoDB aggregation, and Firebase login",
-        "Designed REST APIs for questions, answers, and votes with proper error handling"
-      ]
-    }
   ],
   education: [
     {
@@ -179,7 +179,7 @@ export const resumeData: ResumeData = {
     },
     {
       institution: "Shree Swaminarayan Gurukul Gyanbag International School, Junagadh",
-      degree: "CBSE Secondary School Certificate (SSC) · Percentage: 85.60%",
+      degree: "CBSE Secondary School Certificate (SSC)",
       timeline: "2018–2019",
       gpaOrPercentage: "Percentage: 85.60%"
     }

@@ -274,14 +274,12 @@ export function AboutSection(): ReactElement {
 
               {activity?.spotify && (
                 <div className="flex items-center gap-2.5 rounded-xl border border-border/30 bg-muted/30 p-2">
-                  {activity.spotify.albumArt && (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
-                      src={activity.spotify.albumArt}
-                      alt="album cover"
-                      className="h-8 w-8 rounded-lg object-cover"
-                    />
-                  )}
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src="/Music.png"
+                    alt="album cover"
+                    className="h-8 w-8 rounded-lg object-cover"
+                  />
                   <div className="min-w-0">
                     <p className="text-xs font-bold text-foreground truncate max-w-[120px]">{activity.spotify.title}</p>
                     <p className="text-[9px] text-muted-foreground truncate max-w-[120px] mt-0.5">{activity.spotify.artist}</p>

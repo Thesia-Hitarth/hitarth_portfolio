@@ -95,6 +95,52 @@ export const experiences: Experience[] = [
       "Operating Systems",
     ],
   },
+
+  // ── 4. Government Polytechnic, Gandhinagar (Education) ───
+  {
+    id: "government-polytechnic-diploma",
+    type: "education",
+    company: "Government Polytechnic, Gandhinagar",
+    companyUrl: "",
+    role: "Diploma in Computer Engineering",
+    startDate: "2019-06",
+    endDate: "2022-06",
+    location: "Gandhinagar, Gujarat",
+    locationType: "onsite",
+    description:
+      "Diploma in Computer Engineering from Government Polytechnic, Gandhinagar. CGPA: 8.96 / 10.",
+    bullets: [
+      "Completed core coursework in computer programming, database systems, computer networks, and operating systems.",
+    ],
+    technologies: [
+      "C",
+      "C++",
+      "HTML",
+      "CSS",
+      "JavaScript",
+      "DBMS",
+      "Computer Networks",
+    ],
+  },
+
+  // ── 5. Shree Swaminarayan Gurukul Gyanbag (Education) ────
+  {
+    id: "swaminarayan-gurukul-ssc",
+    type: "education",
+    company: "Shree Swaminarayan Gurukul Gyanbag International School, Junagadh",
+    companyUrl: "",
+    role: "CBSE Secondary School Certificate (SSC)",
+    startDate: "2018-06",
+    endDate: "2019-05",
+    location: "Junagadh, Gujarat",
+    locationType: "onsite",
+    description:
+      "Secondary School Certificate (Class X) under the Central Board of Secondary Education (CBSE). Percentage: 85.60%.",
+    bullets: [
+      "Completed secondary school education with high performance in Science, Mathematics, and Computer Applications.",
+    ],
+    technologies: [],
+  },
 ];
 
 /** Work and freelance entries only */
