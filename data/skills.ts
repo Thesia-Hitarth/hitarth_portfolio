@@ -62,7 +62,7 @@ export const skillCategories: SkillCategory[] = [
   // ── 5. Languages ──────────────────────────────────────
   {
     name: "Languages",
-    icon: "Wrench",
+    icon: "Terminal",
     skills: [
       { name: "JavaScript", level: "expert" },
       { name: "TypeScript", level: "proficient" },

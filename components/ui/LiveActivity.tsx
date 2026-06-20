@@ -9,107 +9,16 @@
  * ─────────────────────────────────────────────────────────
  */
 
-import { useState, useEffect, useRef } from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MapPin, Clock, Music, ChevronUp, ChevronDown } from 'lucide-react';
 import type { ReactElement } from 'react';
 import { cn } from '@/lib/utils';
-
-interface ActivityState {
-  localTime: string;
-  location: string;
-  activity: {
-    status: string;
-    code: 'coding' | 'learning' | 'resting';
-  };
-  spotify?: {
-    isPlaying: boolean;
-    title: string;
-    artist: string;
-    album: string;
-    albumArt: string;
-    songUrl: string;
-  };
-}
+import { usePresence } from '@/context/PresenceContext';
 
 export function LiveActivity(): ReactElement {
-  const [data, setData] = useState<ActivityState | null>(null);
+  const { data, timeText, hasError, mounted } = usePresence();
   const [isExpanded, setIsExpanded] = useState(false);
-  const [timeText, setTimeText] = useState('');
-  const [mounted, setMounted] = useState(false);
-  const [hasError, setHasError] = useState(false);
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
-
-  useEffect(() => {
-    const handle = requestAnimationFrame(() => {
-      setMounted(true);
-    });
-    return () => cancelAnimationFrame(handle);
-  }, []);
-
-  // Fetch initial activity data
-  useEffect(() => {
-    async function fetchActivity() {
-      try {
-        const res = await fetch('/api/activity');
-        if (res.ok) {
-          const json: ActivityState = await res.json();
-          setData(json);
-          setTimeText(json.localTime);
-          setHasError(false);
-        } else {
-          setHasError(true);
-        }
-      } catch (err) {
-        console.error('Failed to fetch activity status: ', err);
-        setHasError(true);
-      }
-    }
-
-    fetchActivity();
-    // Poll for status updates every 15 seconds
-    const interval = setInterval(fetchActivity, 15000);
-    return () => clearInterval(interval);
-  }, []);
-
-  // Sync clock locally every second based on initial server offset
-  useEffect(() => {
-    if (!data) return;
-
-    const startLocal = new Date();
-    // Parse the current server time string (e.g. "2:34:56 PM") to set up the baseline
-    const match = data.localTime.match(/(\d+):(\d+):(\d+)\s*(AM|PM)/i);
-    if (!match) return;
-
-    let serverHours = parseInt(match[1], 10);
-    const serverMinutes = parseInt(match[2], 10);
-    const serverSeconds = parseInt(match[3], 10);
-    const isPM = match[4].toUpperCase() === 'PM';
-
-    if (isPM && serverHours < 12) serverHours += 12;
-    if (!isPM && serverHours === 12) serverHours = 0;
-
-    const serverDate = new Date();
-    serverDate.setHours(serverHours, serverMinutes, serverSeconds);
-
-    timerRef.current = setInterval(() => {
-      const elapsedMs = new Date().getTime() - startLocal.getTime();
-      const currentServerTime = new Date(serverDate.getTime() + elapsedMs);
-
-      setTimeText(
-        currentServerTime.toLocaleTimeString('en-US', {
-          hour: 'numeric',
-          minute: '2-digit',
-          second: '2-digit',
-          hour12: true,
-        })
-      );
-    }, 1000);
-
-    return () => {
-      if (timerRef.current) clearInterval(timerRef.current);
-    };
-  }, [data]);
 
   if (hasError) {
     return (

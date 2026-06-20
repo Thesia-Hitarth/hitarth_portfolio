@@ -30,7 +30,7 @@ export function BlogSection(): ReactElement | null {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-6xl">
         <SectionHeader
           id="blog-heading"
-          label="08 / Writing"
+          label="07 / Writing"
           title="Recent writing"
           subtitle="Technical posts on what I'm building and learning."
           align="left"

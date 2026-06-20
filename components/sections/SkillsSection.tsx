@@ -10,6 +10,7 @@ import {
   Database,
   Wrench,
   Sparkles,
+  Terminal,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import type { ReactElement } from 'react';
@@ -23,6 +24,7 @@ const ICON_MAP: Record<string, LucideIcon> = {
   Database,
   Wrench,
   Sparkles,
+  Terminal,
 };
 
 const LEVEL_LABEL: Record<string, string> = {

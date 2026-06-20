@@ -1,8 +1,19 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import { ArrowLeft, Download, Mail, Phone } from 'lucide-react';
 import type { ReactElement } from 'react';
 import { resumeData } from '@/data/resume';
 import { GithubIcon, LinkedinIcon } from '@/components/ui/BrandIcons';
+import { siteConfig } from '@/config/site';
+import { getAbsoluteUrl } from '@/lib/utils';
+
+export const metadata: Metadata = {
+  title: 'Resume',
+  description: 'Professional work history, technical skills, and education credentials for Hitarth Thesia.',
+  alternates: {
+    canonical: getAbsoluteUrl('/resume'),
+  },
+};
 
 export default function ResumePage(): ReactElement {
   return (
@@ -17,8 +28,8 @@ export default function ResumePage(): ReactElement {
           Back to home
         </Link>
         <a
-          href="/Resume_Thesia_Hitarth.pdf"
-          download="Resume_Thesia_Hitarth.pdf"
+          href={siteConfig.resumeUrl}
+          download={siteConfig.resumeUrl.split('/').pop()}
           className="inline-flex items-center gap-2 text-sm font-semibold text-primary-foreground bg-primary hover:opacity-90 transition-opacity focus:outline-none focus:ring-2 focus:ring-primary rounded-md px-4 py-2 shadow-sm"
         >
           <Download size={16} />

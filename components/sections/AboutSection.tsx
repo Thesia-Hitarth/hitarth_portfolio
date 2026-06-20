@@ -1,6 +1,5 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { MapPin, Clock, Music, ArrowUpRight, Sparkles, FileText, Code } from 'lucide-react';
 import Image from 'next/image';
@@ -12,6 +11,7 @@ import { siteConfig } from '@/config/site';
 import { fadeInUp } from '@/lib/animations';
 import { GithubIcon, LinkedinIcon, TwitterIcon } from '@/components/ui/BrandIcons';
 import { skillCategories } from '@/data/skills';
+import { usePresence } from '@/context/PresenceContext';
 
 const STATS = [
   { value: '2', label: 'Dev Internships' },
@@ -24,85 +24,9 @@ const BIO_PARAGRAPHS = [
   "I'm a firm believer that great software is built at the intersection of engineering rigour and product empathy. I care about the developer experience just as much as the end-user experience — because maintainable code is what keeps a product alive long after launch.",
 ];
 
-interface ActivityState {
-  localTime: string;
-  location: string;
-  activity: {
-    status: string;
-    code: 'coding' | 'learning' | 'resting';
-  };
-  spotify?: {
-    isPlaying: boolean;
-    title: string;
-    artist: string;
-    album: string;
-    albumArt: string;
-    songUrl: string;
-  };
-}
-
 export function AboutSection(): ReactElement {
   const prefersReduced = useReducedMotion();
-  const [activity, setActivity] = useState<ActivityState | null>(null);
-  const [timeText, setTimeText] = useState('');
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
-
-  // Fetch activity status (clocks, focus, spotify)
-  useEffect(() => {
-    async function fetchActivity() {
-      try {
-        const res = await fetch('/api/activity');
-        if (res.ok) {
-          const json: ActivityState = await res.json();
-          setActivity(json);
-          setTimeText(json.localTime);
-        }
-      } catch (err) {
-        console.error('Bento Clock fetch error:', err);
-      }
-    }
-    fetchActivity();
-    const interval = setInterval(fetchActivity, 15000);
-    return () => clearInterval(interval);
-  }, []);
-
-  // Tick clock locally every second
-  useEffect(() => {
-    if (!activity) return;
-
-    const startLocal = new Date();
-    const match = activity.localTime.match(/(\d+):(\d+):(\d+)\s*(AM|PM)/i);
-    if (!match) return;
-
-    let serverHours = parseInt(match[1], 10);
-    const serverMinutes = parseInt(match[2], 10);
-    const serverSeconds = parseInt(match[3], 10);
-    const isPM = match[4].toUpperCase() === 'PM';
-
-    if (isPM && serverHours < 12) serverHours += 12;
-    if (!isPM && serverHours === 12) serverHours = 0;
-
-    const serverDate = new Date();
-    serverDate.setHours(serverHours, serverMinutes, serverSeconds);
-
-    timerRef.current = setInterval(() => {
-      const elapsedMs = new Date().getTime() - startLocal.getTime();
-      const currentServerTime = new Date(serverDate.getTime() + elapsedMs);
-      
-      setTimeText(
-        currentServerTime.toLocaleTimeString('en-US', {
-          hour: 'numeric',
-          minute: '2-digit',
-          second: '2-digit',
-          hour12: true,
-        })
-      );
-    }, 1000);
-
-    return () => {
-      if (timerRef.current) clearInterval(timerRef.current);
-    };
-  }, [activity]);
+  const { data: activity, timeText } = usePresence();
 
   const blockAnimation = prefersReduced ? {} : fadeInUp;
 

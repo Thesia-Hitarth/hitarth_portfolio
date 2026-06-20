@@ -8,18 +8,13 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
-import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { ExternalLink, ArrowRight } from 'lucide-react';
 import type { ReactElement } from 'react';
 import { TechBadge } from '@/components/ui/TechBadge';
 import type { Project } from '@/lib/types';
 import { cn } from '@/lib/utils';
 import { GithubIcon } from '@/components/ui/BrandIcons';
-
-interface ProjectCardProps {
-  project: Project;
-  cardProps?: any;
-}
 
 export function ProjectImagePlaceholder({ title, className }: { title: string; className?: string }): ReactElement {
   return (
@@ -39,9 +34,6 @@ export function ProjectImagePlaceholder({ title, className }: { title: string; c
 
 export function ProjectCard({ project, cardProps = {} }: ProjectCardProps): ReactElement {
   const [imgError, setImgError] = useState(false);
-  const router = useRouter();
-  
-  // Spotlight Hover State & Coords
   const [coords, setCoords] = useState({ x: 0, y: 0 });
 
   const handleMouseMove = (e: React.MouseEvent<HTMLElement>) => {
@@ -52,30 +44,14 @@ export function ProjectCard({ project, cardProps = {} }: ProjectCardProps): Reac
     });
   };
 
-  const handleCardClick = () => {
-    router.push(`/projects/${project.slug}`);
-  };
-
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      router.push(`/projects/${project.slug}`);
-    }
-  };
-
   return (
-    <motion.article
+    <motion.div
       {...cardProps}
       onMouseMove={handleMouseMove}
-      onClick={handleCardClick}
-      onKeyDown={handleKeyDown}
-      tabIndex={0}
-      role="link"
-      aria-label={`View details for project ${project.title}`}
       className={cn(
-        'group relative flex flex-col overflow-hidden rounded-2xl border border-border bg-card cursor-pointer',
+        'group relative flex flex-col overflow-hidden rounded-2xl border border-border bg-card',
         'hover:border-primary/45 hover:-translate-y-1 hover:shadow-lg',
-        'transition-all duration-300 select-none outline-none focus-visible:ring-2 focus-visible:ring-primary'
+        'transition-all duration-300 select-none outline-none'
       )}
       style={{
         '--mouse-x': `${coords.x}px`,
@@ -120,7 +96,14 @@ export function ProjectCard({ project, cardProps = {} }: ProjectCardProps): Reac
           <span className="text-xs text-muted-foreground">{project.year}</span>
         </div>
 
-        <h3 className="mt-1 text-lg font-semibold text-foreground">{project.title}</h3>
+        <h3 className="mt-1 text-lg font-semibold text-foreground">
+          <Link
+            href={`/projects/${project.slug}`}
+            className="focus:outline-none focus-visible:underline decoration-primary decoration-2 after:absolute after:inset-0 after:z-10 rounded-sm"
+          >
+            {project.title}
+          </Link>
+        </h3>
         <p className="mt-1 text-sm text-muted-foreground line-clamp-2">{project.tagline}</p>
 
         <div className="mt-3 flex flex-wrap gap-1.5">
@@ -134,7 +117,7 @@ export function ProjectCard({ project, cardProps = {} }: ProjectCardProps): Reac
           )}
         </div>
 
-        <div className="mt-auto pt-4 border-t border-border flex items-center justify-between gap-4 flex-wrap">
+        <div className="mt-auto pt-4 border-t border-border flex items-center justify-between gap-4 flex-wrap relative z-20">
           <div className="flex items-center gap-3">
             {project.liveUrl && (
               <a
@@ -142,8 +125,7 @@ export function ProjectCard({ project, cardProps = {} }: ProjectCardProps): Reac
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label={`${project.title} — live demo`}
-                className="relative z-20 inline-flex items-center gap-1.5 text-xs font-semibold text-primary hover:underline focus:outline-none focus-visible:ring-1 focus-visible:ring-primary rounded-sm"
-                onClick={(e) => e.stopPropagation()}
+                className="inline-flex items-center gap-1.5 text-xs font-semibold text-primary hover:underline focus:outline-none focus-visible:ring-1 focus-visible:ring-primary rounded-sm"
               >
                 <ExternalLink size={12} />
                 Demo
@@ -155,8 +137,7 @@ export function ProjectCard({ project, cardProps = {} }: ProjectCardProps): Reac
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label={`${project.title} — GitHub repository`}
-                className="relative z-20 inline-flex items-center gap-1.5 text-xs font-semibold text-muted-foreground hover:text-foreground hover:underline focus:outline-none focus-visible:ring-1 focus-visible:ring-primary rounded-sm"
-                onClick={(e) => e.stopPropagation()}
+                className="inline-flex items-center gap-1.5 text-xs font-semibold text-muted-foreground hover:text-foreground hover:underline focus:outline-none focus-visible:ring-1 focus-visible:ring-primary rounded-sm"
               >
                 <GithubIcon size={12} />
                 Code
@@ -164,13 +145,18 @@ export function ProjectCard({ project, cardProps = {} }: ProjectCardProps): Reac
             )}
           </div>
           <span
-            className="text-xs font-semibold text-primary group-hover:underline flex items-center gap-0.5"
+            className="text-xs font-semibold text-primary group-hover:underline flex items-center gap-0.5 pointer-events-none"
           >
             Case Study
             <ArrowRight size={12} className="transition-transform duration-250 group-hover:translate-x-0.5" />
           </span>
         </div>
       </div>
-    </motion.article>
+    </motion.div>
   );
+}
+
+interface ProjectCardProps {
+  project: Project;
+  cardProps?: any;
 }

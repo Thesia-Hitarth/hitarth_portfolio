@@ -48,13 +48,20 @@ export function formatDate(isoDate: string): string {
  * Returns a string like "1 yr 3 mos".
  */
 export function getDuration(start: string, end: string | "present"): string {
-  const startDate = new Date(start + "-01");
-  const endDate = end === "present" ? new Date() : new Date(end + "-01");
+  const [startYear, startMonth] = start.split("-").map(Number);
+  let endYear: number, endMonth: number;
 
-  const months =
-    (endDate.getFullYear() - startDate.getFullYear()) * 12 +
-    (endDate.getMonth() - startDate.getMonth());
+  if (end === "present") {
+    const now = new Date();
+    endYear = now.getFullYear();
+    endMonth = now.getMonth() + 1; // getMonth() is 0-indexed, align to 1-indexed startMonth
+  } else {
+    const [yr, mo] = end.split("-").map(Number);
+    endYear = yr;
+    endMonth = mo;
+  }
 
+  const months = (endYear - startYear) * 12 + (endMonth - startMonth);
   const years = Math.floor(months / 12);
   const remainingMonths = months % 12;
 

@@ -39,7 +39,7 @@ export function BlogPostCard({ post, layout = 'horizontal', priority = false }: 
         onMouseMove={handleMouseMove}
         className={cn(
           'relative flex flex-col overflow-hidden rounded-2xl border border-border bg-card',
-          isHorizontal && 'md:flex-row md:h-[260px]',
+          isHorizontal && 'md:flex-row md:min-h-[260px]',
           'hover:border-primary/45 hover:-translate-y-0.5 hover:shadow-lg',
           'transition-all duration-300 cursor-pointer h-full select-none'
         )}

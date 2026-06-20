@@ -139,7 +139,7 @@ export function ContactSection(): ReactElement {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-6xl">
         <SectionHeader
           id="contact-heading"
-          label="07 / Contact"
+          label="08 / Contact"
           title="Let's work together"
           subtitle="I'm currently open to full-time roles and freelance projects. Have something in mind? Send a message — I reply within 24 hours."
           align="center"

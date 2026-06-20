@@ -70,9 +70,15 @@ export default function AnalyticsPage(): ReactElement {
           <span className="font-mono text-xs font-semibold uppercase tracking-wider text-primary">
             08 / Public Analytics
           </span>
-          <h1 className="mt-3 text-4xl font-extrabold tracking-tight text-foreground sm:text-5xl">
-            Site Dashboard
-          </h1>
+          <div className="flex flex-wrap items-center gap-3 mt-3">
+            <h1 className="text-4xl font-extrabold tracking-tight text-foreground sm:text-5xl">
+              Site Dashboard
+            </h1>
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-500/10 border border-amber-500/20 px-3 py-1 text-xs font-semibold text-amber-600 dark:text-amber-400">
+              <ShieldAlert size={12} className="shrink-0" />
+              Simulated Interactive Data
+            </span>
+          </div>
           <p className="mt-4 text-base text-muted-foreground">
             A public dashboard tracking portfolio interactions, click analytics, and real-time response latency on the Edge network.
           </p>

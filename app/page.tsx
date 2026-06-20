@@ -23,6 +23,7 @@ import { skillCategories } from '@/data/skills';
 import { experiences } from '@/data/experience';
 import { siteConfig } from '@/config/site';
 import { JsonLd } from '@/components/seo/JsonLd';
+import { getAbsoluteUrl } from '@/lib/utils';
 
 export const metadata: Metadata = {
   title: {
@@ -38,7 +39,7 @@ export default function HomePage(): ReactElement {
     name: siteConfig.name,
     jobTitle: siteConfig.title,
     url: siteConfig.url,
-    image: `${siteConfig.url}Passportsize_Hitarth.png`,
+    image: getAbsoluteUrl('/Passportsize_Hitarth.png'),
     sameAs: [
       siteConfig.social.github,
       siteConfig.social.linkedin,

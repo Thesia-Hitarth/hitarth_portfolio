@@ -71,7 +71,7 @@ const nextConfig: NextConfig = {
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
               "font-src 'self' https://fonts.gstatic.com",
               "img-src 'self' data: https://avatars.githubusercontent.com https://res.cloudinary.com",
-              "connect-src 'self'",
+              "connect-src 'self' https://*.vercel-analytics.com https://va.vercel-analytics.com",
               "frame-ancestors 'none'",
             ].join('; '),
           },

@@ -1,90 +1,58 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextResponse } from 'next/server';
 
 /**
  * app/api/activity/route.ts
  * ─────────────────────────────────────────────────────────
  * Dynamic developer activity and presence API route.
- * Returns local time, WakaTime/coding simulation, and Spotify
- * player status (real integration if env variables set, fallback
- * to realistic mock status otherwise).
+ * Returns local time, WakaTime/coding simulation, and a mock
+ * Spotify player status displaying curated tracks in rotation.
  * ─────────────────────────────────────────────────────────
  */
 
 export const dynamic = 'force-dynamic';
 
-const SPOTIFY_TOKEN_URL = 'https://accounts.spotify.com/api/token';
-const SPOTIFY_NOW_PLAYING_URL = 'https://api.spotify.com/v1/me/player/currently-playing';
-
-
-
-async function getSpotifyAccessToken() {
-  const clientId = process.env.SPOTIFY_CLIENT_ID;
-  const clientSecret = process.env.SPOTIFY_CLIENT_SECRET;
-  const refreshToken = process.env.SPOTIFY_REFRESH_TOKEN;
-
-  if (!clientId || !clientSecret || !refreshToken) {
-    return null;
+const MOCK_TRACKS = [
+  {
+    title: 'Starboy',
+    artist: 'The Weeknd',
+    album: 'Starboy',
+    albumArt: '/Music.png',
+    songUrl: 'https://open.spotify.com/track/7MXVkk9YMctZqd1Srtv4MB',
+    isPlaying: true,
+  },
+  {
+    title: 'Sweater Weather',
+    artist: 'The Neighbourhood',
+    album: 'I Love You.',
+    albumArt: '/Music.png',
+    songUrl: 'https://open.spotify.com/track/2QjOHCTQ1Jl3zawyYOpxh6',
+    isPlaying: true,
+  },
+  {
+    title: 'Stressed Out',
+    artist: 'Twenty One Pilots',
+    album: 'Blurryface',
+    albumArt: '/Music.png',
+    songUrl: 'https://open.spotify.com/artist/3YQKmKGau1PzlVlkL1iodx',
+    isPlaying: true,
+  },
+  {
+    title: 'Intro',
+    artist: 'The xx',
+    album: 'xx',
+    albumArt: '/Music.png',
+    songUrl: 'https://open.spotify.com/track/2usrT8QIbIk9y0NEtQwS4j',
+    isPlaying: true,
+  },
+  {
+    title: 'Circles',
+    artist: 'Post Malone',
+    album: "Hollywood's Bleeding",
+    albumArt: '/Music.png',
+    songUrl: 'https://open.spotify.com/track/21jGcNKet2qwijlDFuPiPb',
+    isPlaying: true,
   }
-
-  const basicAuth = Buffer.from(`${clientId}:${clientSecret}`).toString('base64');
-  try {
-    const response = await fetch(SPOTIFY_TOKEN_URL, {
-      method: 'POST',
-      headers: {
-        Authorization: `Basic ${basicAuth}`,
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
-      body: new URLSearchParams({
-        grant_type: 'refresh_token',
-        refresh_token: refreshToken,
-      }),
-      cache: 'no-store',
-    });
-
-    if (!response.ok) {
-      return null;
-    }
-
-    const data = await response.json();
-    return data.access_token as string;
-  } catch (err) {
-    console.error('[spotify] Failed to refresh token: ', err);
-    return null;
-  }
-}
-
-async function fetchRealSpotifyData(accessToken: string) {
-  try {
-    const response = await fetch(SPOTIFY_NOW_PLAYING_URL, {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-      cache: 'no-store',
-    });
-
-    if (response.status === 204 || response.status > 400) {
-      return null;
-    }
-
-    const song = await response.json();
-    if (!song.item) {
-      return null;
-    }
-
-    return {
-      isPlaying: song.is_playing,
-      title: song.item.name,
-      artist: song.item.artists.map((art: any) => art.name).join(', '),
-      album: song.item.album.name,
-      albumArt: song.item.album.images[0]?.url || '',
-      songUrl: song.item.external_urls.spotify,
-    };
-  } catch (err) {
-    console.error('[spotify] Error fetching current track: ', err);
-    return null;
-  }
-}
+];
 
 export async function GET() {
   // 1. Calculate local time in Ahmedabad, Gujarat, India (UTC+5:30)
@@ -121,25 +89,9 @@ export async function GET() {
     statusCode = 'resting';
   }
 
-  // 3. Spotify Now Playing Integration
-  let spotifyData = null;
-  const accessToken = await getSpotifyAccessToken();
-
-  if (accessToken) {
-    spotifyData = await fetchRealSpotifyData(accessToken);
-  }
-
-  // Fallback if no Spotify data found/configured
-  if (!spotifyData) {
-    spotifyData = {
-      isPlaying: false,
-      title: 'Not playing',
-      artist: 'Spotify Offline',
-      albumArt: '',
-      album: '',
-      songUrl: '',
-    };
-  }
+  // 3. Cycle through the mock tracks based on current time (stable but changes every minute)
+  const trackIndex = Math.floor(now.getTime() / 60000) % MOCK_TRACKS.length;
+  const spotifyData = MOCK_TRACKS[trackIndex];
 
   return NextResponse.json({
     localTime: timeString,

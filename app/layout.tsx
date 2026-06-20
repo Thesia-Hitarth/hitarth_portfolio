@@ -12,9 +12,11 @@ import { ThemeProvider } from '@/components/layout/ThemeProvider';
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
 import { siteConfig } from '@/config/site';
+import { getAbsoluteUrl } from '@/lib/utils';
 import { Analytics } from '@vercel/analytics/react';
 import { LiveActivity } from '@/components/ui/LiveActivity';
 import { CommandPalette } from '@/components/ui/CommandPalette';
+import { PresenceProvider } from '@/context/PresenceContext';
 import '@/app/globals.css';
 
 // ── Google Fonts ───────────────────────────────────────
@@ -87,7 +89,7 @@ export const metadata: Metadata = {
     },
   },
   alternates: {
-    canonical: siteConfig.url,
+    canonical: getAbsoluteUrl(''),
   },
 };
 
@@ -114,12 +116,14 @@ export default function RootLayout({ children }: RootLayoutProps) {
           enableSystem
           disableTransitionOnChange
         >
-          <Navbar />
-          <main className="flex-1">{children}</main>
-          <Footer />
-          <LiveActivity />
-          <CommandPalette />
-          <Analytics />
+          <PresenceProvider>
+            <Navbar />
+            <main className="flex-1">{children}</main>
+            <Footer />
+            <LiveActivity />
+            <CommandPalette />
+            <Analytics />
+          </PresenceProvider>
         </ThemeProvider>
       </body>
     </html>
