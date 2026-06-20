@@ -37,6 +37,7 @@ export function LiveActivity(): ReactElement {
   const [isExpanded, setIsExpanded] = useState(false);
   const [timeText, setTimeText] = useState('');
   const [mounted, setMounted] = useState(false);
+  const [hasError, setHasError] = useState(false);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
@@ -55,9 +56,13 @@ export function LiveActivity(): ReactElement {
           const json: ActivityState = await res.json();
           setData(json);
           setTimeText(json.localTime);
+          setHasError(false);
+        } else {
+          setHasError(true);
         }
       } catch (err) {
         console.error('Failed to fetch activity status: ', err);
+        setHasError(true);
       }
     }
 
@@ -105,6 +110,15 @@ export function LiveActivity(): ReactElement {
       if (timerRef.current) clearInterval(timerRef.current);
     };
   }, [data]);
+
+  if (hasError) {
+    return (
+      <div className="fixed bottom-6 right-6 z-40 flex items-center gap-2 rounded-full border border-border bg-card/60 backdrop-blur-md px-3.5 py-1.5 text-xs text-muted-foreground font-semibold shadow-md select-none">
+        <span className="h-1.5 w-1.5 rounded-full bg-red-500/80" />
+        <span>Status offline</span>
+      </div>
+    );
+  }
 
   if (!mounted || !data) {
     return <div className="fixed bottom-6 right-6 z-40 h-10 w-36 rounded-full border border-border bg-card/60 backdrop-blur-md animate-pulse" />;

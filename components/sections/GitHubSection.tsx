@@ -27,7 +27,47 @@ export async function GitHubSection(): Promise<ReactElement> {
   const username = siteConfig.social.github.split('/').pop() || 'Thesia-Hitarth';
 
   // Load github profile, streaks, and contribution grid data
-  const { stats, pinnedRepos, contributions } = await getGitHubData(username);
+  const { stats, pinnedRepos, contributions, error } = await getGitHubData(username);
+
+  if (error) {
+    return (
+      <section
+        id="github"
+        aria-labelledby="github-heading"
+        className="py-24 lg:py-32 border-t border-border bg-muted/5"
+      >
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-6xl">
+          <SectionHeader
+            id="github-heading"
+            label="06 / GitHub"
+            title="Open-Source & Activity"
+            subtitle="A live view into my contributions, active coding streaks, and pinned projects."
+          />
+
+          <div className="mt-12 flex flex-col items-center justify-center rounded-2xl border border-dashed border-border bg-card/50 p-8 text-center max-w-2xl mx-auto shadow-sm">
+            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-amber-500/10 text-amber-500 mb-4 animate-pulse">
+              <Activity size={24} />
+            </div>
+            <h3 className="text-lg font-bold text-foreground">GitHub Data Offline</h3>
+            <p className="text-sm text-muted-foreground mt-2 leading-relaxed max-w-md">
+              We couldn&apos;t connect to the GitHub API to load stats right now (likely due to rate limiting). You can view my live contribution heatmap and repositories directly on my profile.
+            </p>
+            <div className="mt-6">
+              <a
+                href={siteConfig.social.github}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 rounded-lg bg-primary px-5 py-2.5 text-xs font-semibold text-primary-foreground transition-opacity hover:opacity-90 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+              >
+                Visit GitHub Profile
+                <ArrowUpRight size={14} />
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section

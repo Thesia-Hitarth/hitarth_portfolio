@@ -6,8 +6,9 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
-import { ArrowRight, Download, ChevronDown } from 'lucide-react';
+import { ArrowRight, FileText, ChevronDown } from 'lucide-react';
 import type { ReactElement } from 'react';
+import Link from 'next/link';
 import { siteConfig } from '@/config/site';
 import { GradientText } from '@/components/ui/GradientText';
 import { fadeInUp, fadeIn, floatVariants } from '@/lib/animations';
@@ -145,14 +146,13 @@ export function HeroSection(): ReactElement {
                 />
               </button>
 
-              <a
-                href={siteConfig.resumeUrl}
-                download
+              <Link
+                href="/resume"
                 className="inline-flex items-center gap-2 rounded-lg border border-border px-6 py-3 text-sm font-medium text-foreground transition-colors duration-200 hover:bg-muted focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
               >
-                <Download size={16} />
+                <FileText size={16} />
                 Resume
-              </a>
+              </Link>
 
               <div className="flex items-center gap-2">
                 <a

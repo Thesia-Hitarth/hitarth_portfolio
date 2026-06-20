@@ -10,7 +10,7 @@ import { motion } from 'framer-motion';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { ExternalLink } from 'lucide-react';
+import { ExternalLink, ArrowRight } from 'lucide-react';
 import type { ReactElement } from 'react';
 import { TechBadge } from '@/components/ui/TechBadge';
 import type { Project } from '@/lib/types';
@@ -138,18 +138,19 @@ export function ProjectCard({ project, cardProps = {} }: ProjectCardProps): Reac
           )}
         </div>
 
-        <div className="mt-auto pt-4 border-t border-border flex items-center justify-between">
-          <div className="flex items-center gap-2">
+        <div className="mt-auto pt-4 border-t border-border flex items-center justify-between gap-4 flex-wrap">
+          <div className="flex items-center gap-3">
             {project.liveUrl && (
               <a
                 href={project.liveUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label={`${project.title} — live demo`}
-                className="relative z-20 flex h-8 w-8 items-center justify-center rounded-full text-muted-foreground hover:text-primary transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                className="relative z-20 inline-flex items-center gap-1.5 text-xs font-semibold text-primary hover:underline focus:outline-none focus-visible:ring-1 focus-visible:ring-primary rounded-sm"
                 onClick={(e) => e.stopPropagation()}
               >
-                <ExternalLink size={15} />
+                <ExternalLink size={12} />
+                Demo
               </a>
             )}
             {project.githubUrl && (
@@ -158,17 +159,19 @@ export function ProjectCard({ project, cardProps = {} }: ProjectCardProps): Reac
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label={`${project.title} — GitHub repository`}
-                className="relative z-20 flex h-8 w-8 items-center justify-center rounded-full text-muted-foreground hover:text-primary transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                className="relative z-20 inline-flex items-center gap-1.5 text-xs font-semibold text-muted-foreground hover:text-foreground hover:underline focus:outline-none focus-visible:ring-1 focus-visible:ring-primary rounded-sm"
                 onClick={(e) => e.stopPropagation()}
               >
-                <GithubIcon size={15} />
+                <GithubIcon size={12} />
+                Code
               </a>
             )}
           </div>
           <span
-            className="text-sm font-medium text-primary hover:underline"
+            className="text-xs font-semibold text-primary group-hover:underline flex items-center gap-0.5"
           >
-            Details →
+            Case Study
+            <ArrowRight size={12} className="transition-transform duration-250 group-hover:translate-x-0.5" />
           </span>
         </div>
       </div>

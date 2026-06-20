@@ -32,6 +32,7 @@ export interface GitHubData {
   };
   pinnedRepos: GitHubRepo[];
   contributions: ContributionDay[];
+  error?: boolean;
 }
 
 const DEFAULT_HEADERS = {
@@ -217,6 +218,8 @@ export async function getGitHubData(username: string): Promise<GitHubData> {
   ]);
 
   const { currentStreak, longestStreak } = calculateStreaks(contributionInfo.contributions);
+  
+  const hasError = profile.publicRepos === 0 && pinned.length === 0 && contributionInfo.total === 0;
 
   return {
     stats: {
@@ -228,5 +231,6 @@ export async function getGitHubData(username: string): Promise<GitHubData> {
     },
     pinnedRepos: pinned,
     contributions: contributionInfo.contributions,
+    error: hasError,
   };
 }

@@ -14,9 +14,9 @@ import { GithubIcon, LinkedinIcon, TwitterIcon } from '@/components/ui/BrandIcon
 import { skillCategories } from '@/data/skills';
 
 const STATS = [
-  { value: '8+', label: 'Projects built' },
-  { value: '10+', label: 'Tech Stack' },
-  { value: '12+', label: 'Months exp.' },
+  { value: '2', label: 'Dev Internships' },
+  { value: '6+', label: 'MERN & Next.js Apps' },
+  { value: '90+', label: 'Lighthouse Score' },
 ];
 
 const BIO_PARAGRAPHS = [
