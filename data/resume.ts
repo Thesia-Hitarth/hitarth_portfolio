@@ -142,6 +142,17 @@ export const resumeData: ResumeData = {
       ]
     },
     {
+      title: "Cartza E-Commerce",
+      subtitle: "Full Stack MERN Application",
+      techStack: ["MongoDB", "Express.js", "React.js", "Node.js", "Third-party Payment API"],
+      year: "2025",
+      bullets: [
+        "A complete online shopping platform with product browsing, cart management, and secure payment checkout.",
+        "Built a complete e-commerce site with product listing, cart, and secure payment integration",
+        "Added JWT-based login with protected routes on both frontend and backend"
+      ]
+    },
+    {
       title: "Daily Dose",
       subtitle: "Tiffin Ordering & Subscription Platform",
       techStack: ["React.js", "Node.js", "Express.js", "MongoDB", "ShadCN/UI", "REST APIs"],
@@ -150,17 +161,6 @@ export const resumeData: ResumeData = {
         "A live food subscription web app where users can order daily tiffin meals, manage plans, and track orders in real time.",
         "Sole frontend developer; built a component library with consistent UI across 10+ pages for desktop and mobile",
         "Worked with backend team using shared API contracts to reduce integration issues"
-      ]
-    },
-    {
-      title: "E-Commerce Platform",
-      subtitle: "Full Stack MERN Application",
-      techStack: ["MongoDB", "Express.js", "React.js", "Node.js", "Third-party Payment API"],
-      year: "2025",
-      bullets: [
-        "A complete online shopping platform with product browsing, cart management, and secure payment checkout.",
-        "Built a complete e-commerce site with product listing, cart, and secure payment integration",
-        "Added JWT-based login with protected routes on both frontend and backend"
       ]
     },
   ],

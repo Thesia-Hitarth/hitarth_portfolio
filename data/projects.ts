@@ -10,7 +10,7 @@ import type { Project } from "@/lib/types";
 
 export const projects: Project[] = [
 
-  // ── 1. Querious ──────────────────────────────────────────
+  // ── 1. Querious (Featured Project) ────────────────────
   {
     slug: "querious",
     title: "Querious",
@@ -90,7 +90,51 @@ Developer Taskflows (taskflow.sh) is a community-driven career guidance and road
     githubUrl: "https://github.com/Thesia-Hitarth/TaskFlow-By-Hitarth-",
   },
 
-  // ── 3. Daily Dose (Featured Project) ────────────────────
+  // ── 3. Cartza E-Commerce ──────────────────────────────
+  {
+    slug: "ecommerce-platform",
+    title: "Cartza E-Commerce",
+    tagline: "Full-stack MERN shopping platform with secure checkout.",
+    year: 2025,
+    category: "fullstack",
+    featured: false,
+    status: "live",
+    coverImage: "/images/projects/ecommerce.png",
+    stack: [
+      "MongoDB",
+      "Express.js",
+      "React.js",
+      "Node.js",
+      "JWT",
+      "REST APIs",
+    ],
+    description:
+      "A complete online shopping platform supporting product browsing, shopping cart state persistence, secure payments, and token-based session verification.",
+    longDescription: `
+## Overview
+This full-stack MERN application was built to deeply explore database security, session handling, and backend authorization patterns. The focus was on securing checkout pathways and validating client inputs at the route boundaries.
+
+## Technical Decisions
+To handle state securely, authentication is implemented using JWT tokens with protected routes enforced on both the React client-side router and the Express.js server middleware. The checkout flow features third-party payment API integrations and server-side verification checks to prevent fraud.
+
+## Learnings
+Designing this project provided crucial insights into relational schema modeling in MongoDB, token storage strategies (such as HTTP-only cookies), and the orchestration of transactional order lifecycles.
+    `,
+    highlights: [
+      "Built end-to-end from product listing to checkout, covering the complete MERN stack without any scaffolding.",
+      "Implemented JWT-based authentication with protected routes enforced on both the React frontend and Express backend.",
+      "Integrated a third-party payment API with server-side order verification to prevent client-side manipulation.",
+      "Designed a normalized MongoDB schema to handle products, users, carts, and orders as separate collections with references.",
+    ],
+    liveUrl: "https://cartza-by-hitarth.vercel.app/",
+    githubUrl: "https://github.com/Thesia-Hitarth/Cartza-by-hitarth",
+    challenges: [
+      "Securing route endpoints by validating JWT tokens on both frontend and backend handlers.",
+      "Implementing custom Express validation middleware to intercept malformed request payloads before they reach controllers."
+    ],
+  },
+
+  // ── 4. Daily Dose ──────────────────────────────────────
   {
     slug: "daily-dose",
     title: "Daily Dose",
@@ -132,50 +176,6 @@ The frontend is built on React.js using ShadCN/UI, communicating with a Node.js/
     ],
     liveUrl: "https://daily-dose-tiffin.vercel.app/",
     githubUrl: "https://github.com/Thesia-Hitarth/Daily-Dose-Meal-Ordering",
-  },
-
-  // ── 4. E-Commerce Platform ──────────────────────────────
-  {
-    slug: "ecommerce-platform",
-    title: "E-Commerce Platform",
-    tagline: "Full-stack MERN shopping platform with secure checkout.",
-    year: 2025,
-    category: "fullstack",
-    featured: false,
-    status: "live",
-    coverImage: "/images/projects/ecommerce.png",
-    stack: [
-      "MongoDB",
-      "Express.js",
-      "React.js",
-      "Node.js",
-      "JWT",
-      "REST APIs",
-    ],
-    description:
-      "A complete online shopping platform supporting product browsing, shopping cart state persistence, secure payments, and token-based session verification.",
-    longDescription: `
-## Overview
-This full-stack MERN application was built to deeply explore database security, session handling, and backend authorization patterns. The focus was on securing checkout pathways and validating client inputs at the route boundaries.
-
-## Technical Decisions
-To handle state securely, authentication is implemented using JWT tokens with protected routes enforced on both the React client-side router and the Express.js server middleware. The checkout flow features third-party payment API integrations and server-side verification checks to prevent fraud.
-
-## Learnings
-Designing this project provided crucial insights into relational schema modeling in MongoDB, token storage strategies (such as HTTP-only cookies), and the orchestration of transactional order lifecycles.
-    `,
-    highlights: [
-      "Built end-to-end from product listing to checkout, covering the complete MERN stack without any scaffolding.",
-      "Implemented JWT-based authentication with protected routes enforced on both the React frontend and Express backend.",
-      "Integrated a third-party payment API with server-side order verification to prevent client-side manipulation.",
-      "Designed a normalized MongoDB schema to handle products, users, carts, and orders as separate collections with references.",
-    ],
-    liveUrl: "https://hitarth-ecommerce.vercel.app/",
-    githubUrl: "https://github.com/Thesia-Hitarth/MERN-Ecommerce-Suite",
-    challenges: [
-      "Securing route endpoints by validating JWT tokens on both frontend and backend handlers.",
-      "Implementing custom Express validation middleware to intercept malformed request payloads before they reach controllers."
-    ],
   },
 
 ];
