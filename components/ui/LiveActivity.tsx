@@ -22,7 +22,7 @@ export function LiveActivity(): ReactElement {
 
   if (hasError) {
     return (
-      <div className="fixed bottom-6 right-6 z-40 flex items-center gap-2 rounded-full border border-border bg-card/60 backdrop-blur-md px-3.5 py-1.5 text-xs text-muted-foreground font-semibold shadow-md select-none">
+      <div className="fixed bottom-6 left-6 z-40 flex items-center gap-2 rounded-full border border-border bg-card/60 backdrop-blur-md px-3.5 py-1.5 text-xs text-muted-foreground font-semibold shadow-md select-none">
         <span className="h-1.5 w-1.5 rounded-full bg-red-500/80" />
         <span>Status offline</span>
       </div>
@@ -30,7 +30,7 @@ export function LiveActivity(): ReactElement {
   }
 
   if (!mounted || !data) {
-    return <div className="fixed bottom-6 right-6 z-40 h-10 w-36 rounded-full border border-border bg-card/60 backdrop-blur-md animate-pulse" />;
+    return <div className="fixed bottom-6 left-6 z-40 h-10 w-36 rounded-full border border-border bg-card/60 backdrop-blur-md animate-pulse" />;
   }
 
   const isListening = !!(data.spotify && data.spotify.isPlaying);
@@ -38,7 +38,7 @@ export function LiveActivity(): ReactElement {
   const isLearning = data.activity.code === 'learning';
 
   return (
-    <div className="fixed bottom-6 right-6 z-40 font-sans select-none pointer-events-auto">
+    <div className="fixed bottom-6 left-6 z-40 font-sans select-none pointer-events-auto">
       <AnimatePresence mode="wait">
         {!isExpanded ? (
           // COLLAPSED CAPSULE BADGE

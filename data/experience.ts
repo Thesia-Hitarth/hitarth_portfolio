@@ -74,7 +74,7 @@ export const experiences: Experience[] = [
     id: "charusat-btech",
     type: "education",
     company: "CHARUSAT University",
-    companyUrl: "https://www.charusat.ac.in",
+    companyUrl: "",
     role: "B.Tech in Computer Engineering",
     startDate: "2022-07",
     endDate: "2025-06",

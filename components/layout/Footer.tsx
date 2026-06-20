@@ -32,10 +32,16 @@ export function Footer(): ReactElement {
 
   const handleNavClick = useCallback((href: string) => {
     if (href.startsWith('#')) {
+      const sectionId = href.slice(1);
       if (pathname !== '/') {
-        router.push(`/${href}`);
+        try {
+          sessionStorage.setItem('scroll-to-section', sectionId);
+        } catch (err) {
+          // Fallback if sessionStorage is blocked
+        }
+        router.push('/');
       } else {
-        const el = document.getElementById(href.slice(1));
+        const el = document.getElementById(sectionId);
         el?.scrollIntoView({ behavior: 'smooth' });
       }
     } else {
@@ -126,7 +132,7 @@ export function Footer(): ReactElement {
             onClick={scrollToTop}
             aria-label="Back to top"
             className={cn(
-              'fixed bottom-6 left-6 z-30',
+              'fixed bottom-6 right-6 z-30',
               'flex h-10 w-10 items-center justify-center',
               'rounded-full bg-primary text-primary-foreground shadow-md',
               'hover:opacity-90 transition-opacity duration-200',

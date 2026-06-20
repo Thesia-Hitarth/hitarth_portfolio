@@ -109,13 +109,39 @@ export function Navbar(): ReactElement {
     return () => { document.body.style.overflow = ''; };
   }, [mobileOpen]);
 
+  useEffect(() => {
+    if (pathname !== '/') return;
+    try {
+      const target = sessionStorage.getItem('scroll-to-section');
+      if (target) {
+        sessionStorage.removeItem('scroll-to-section');
+        const timer = setTimeout(() => {
+          const el = document.getElementById(target);
+          if (el) {
+            el.scrollIntoView({ behavior: 'smooth' });
+            setActiveSection(target);
+          }
+        }, 300);
+        return () => clearTimeout(timer);
+      }
+    } catch (err) {
+      // Handle potential storage access issues gracefully
+    }
+  }, [pathname]);
+
   const handleNavClick = useCallback((href: string) => {
     setMobileOpen(false);
     if (href.startsWith('#')) {
+      const sectionId = href.slice(1);
       if (pathname !== '/') {
-        router.push(`/${href}`);
+        try {
+          sessionStorage.setItem('scroll-to-section', sectionId);
+        } catch (err) {
+          // Fallback if sessionStorage is blocked
+        }
+        router.push('/');
       } else {
-        const el = document.getElementById(href.slice(1));
+        const el = document.getElementById(sectionId);
         el?.scrollIntoView({ behavior: 'smooth' });
       }
     } else {

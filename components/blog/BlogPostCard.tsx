@@ -68,7 +68,7 @@ export function BlogPostCard({ post, layout = 'horizontal', priority = false }: 
           <div
             className={cn(
               'relative aspect-square overflow-hidden shrink-0 border-b border-border',
-              isHorizontal && 'md:h-full md:w-auto md:border-b-0 md:border-r'
+              isHorizontal && 'md:w-[260px] md:h-auto md:aspect-auto md:border-b-0 md:border-r'
             )}
           >
             <Image
@@ -85,7 +85,7 @@ export function BlogPostCard({ post, layout = 'horizontal', priority = false }: 
           <div
             className={cn(
               'relative aspect-square shrink-0 border-b border-border bg-gradient-to-br from-primary/10 via-primary/5 to-muted flex items-center justify-center p-4',
-              isHorizontal && 'md:h-full md:w-auto md:border-b-0 md:border-r'
+              isHorizontal && 'md:w-[260px] md:h-auto md:aspect-auto md:border-b-0 md:border-r'
             )}
           >
             <span className="font-mono text-2xl font-bold tracking-widest text-primary/10 select-none">
