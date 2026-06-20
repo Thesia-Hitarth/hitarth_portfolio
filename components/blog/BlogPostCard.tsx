@@ -16,7 +16,6 @@ interface BlogPostCardProps {
 
 export function BlogPostCard({ post, layout = 'horizontal', priority = false }: BlogPostCardProps): ReactElement {
   const [coords, setCoords] = useState({ x: 0, y: 0 });
-  const [isHovered, setIsHovered] = useState(false);
 
   const formattedDate = new Date(post.date).toLocaleDateString('en-US', {
     month: 'short',
@@ -38,8 +37,6 @@ export function BlogPostCard({ post, layout = 'horizontal', priority = false }: 
     <Link href={`/blog/${post.slug}`} className="block group">
       <article
         onMouseMove={handleMouseMove}
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
         className={cn(
           'relative flex flex-col overflow-hidden rounded-2xl border border-border bg-card',
           isHorizontal && 'md:flex-row md:h-[260px]',
@@ -49,7 +46,7 @@ export function BlogPostCard({ post, layout = 'horizontal', priority = false }: 
         style={{
           '--mouse-x': `${coords.x}px`,
           '--mouse-y': `${coords.y}px`,
-        } as any}
+        } as React.CSSProperties}
       >
         {/* Vercel Spotlight Radial Gradient */}
         <div

@@ -13,7 +13,7 @@ export default function PlaygroundPage(): ReactElement {
   const [color, setColor] = useState('#6366f1');
   const [opacity, setOpacity] = useState(25);
   const [radius, setRadius] = useState(24);
-  const [copied, setCopied] = useState(false);
+  const [copiedFormat, setCopiedFormat] = useState<'tailwind' | 'css' | null>(null);
 
   // Convert hex color to rgba
   const hexToRgba = (hex: string, op: number) => {
@@ -31,10 +31,10 @@ export default function PlaygroundPage(): ReactElement {
   const tailwindCode = `shadow-[${hOffset}px_${vOffset}px_${blur}px_${spread}px_${rgbaColor.replace(/\s+/g, '')}] rounded-[${radius}px]`;
   const cssCode = `box-shadow: ${boxShadowValue};\nborder-radius: ${borderRadiusValue};`;
 
-  const handleCopy = (text: string) => {
+  const handleCopy = (text: string, format: 'tailwind' | 'css') => {
     navigator.clipboard.writeText(text);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    setCopiedFormat(format);
+    setTimeout(() => setCopiedFormat(null), 2000);
   };
 
   const handleReset = () => {
@@ -232,11 +232,11 @@ export default function PlaygroundPage(): ReactElement {
                 <div className="flex items-center justify-between text-zinc-400">
                   <span className="font-bold text-[10px] uppercase tracking-wider text-emerald-500">Tailwind CSS Classes</span>
                   <button
-                    onClick={() => handleCopy(tailwindCode)}
+                    onClick={() => handleCopy(tailwindCode, 'tailwind')}
                     className="flex items-center gap-1 hover:text-white transition-colors cursor-pointer"
                   >
-                    {copied ? <Check size={13} className="text-green-500" /> : <Copy size={13} />}
-                    {copied ? 'Copied!' : 'Copy'}
+                    {copiedFormat === 'tailwind' ? <Check size={13} className="text-green-500" /> : <Copy size={13} />}
+                    {copiedFormat === 'tailwind' ? 'Copied!' : 'Copy'}
                   </button>
                 </div>
                 <pre className="bg-zinc-900 dark:bg-zinc-950/60 p-3 rounded-lg text-zinc-100 overflow-x-auto select-all border border-zinc-800/40 whitespace-pre-wrap leading-relaxed break-all">
@@ -249,11 +249,11 @@ export default function PlaygroundPage(): ReactElement {
                 <div className="flex items-center justify-between text-zinc-400">
                   <span className="font-bold text-[10px] uppercase tracking-wider text-primary">Vanilla CSS Code</span>
                   <button
-                    onClick={() => handleCopy(cssCode)}
+                    onClick={() => handleCopy(cssCode, 'css')}
                     className="flex items-center gap-1 hover:text-white transition-colors cursor-pointer"
                   >
-                    {copied ? <Check size={13} className="text-green-500" /> : <Copy size={13} />}
-                    {copied ? 'Copied!' : 'Copy'}
+                    {copiedFormat === 'css' ? <Check size={13} className="text-green-500" /> : <Copy size={13} />}
+                    {copiedFormat === 'css' ? 'Copied!' : 'Copy'}
                   </button>
                 </div>
                 <pre className="bg-zinc-900 dark:bg-zinc-950/60 p-3 rounded-lg text-zinc-100 overflow-x-auto select-all border border-zinc-800/40 whitespace-pre-wrap leading-relaxed">

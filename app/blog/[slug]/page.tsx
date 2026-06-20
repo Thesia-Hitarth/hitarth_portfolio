@@ -20,6 +20,7 @@ import rehypeHighlight from 'rehype-highlight';
 
 import { getAllPosts, getPostBySlug, getRelatedPosts } from '@/lib/mdx';
 import { siteConfig } from '@/config/site';
+import { getAbsoluteUrl } from '@/lib/utils';
 import { MDXComponents } from '@/components/mdx/MDXComponents';
 import { ShareButtons } from '@/components/blog/ShareButtons';
 import { TableOfContents } from '@/components/blog/TableOfContents';
@@ -50,7 +51,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     return { title: 'Post Not Found' };
   }
 
-  const url = `${siteConfig.url}/blog/${post.slug}`;
+  const url = getAbsoluteUrl(`/blog/${post.slug}`);
 
   return {
     title: post.title,
@@ -145,10 +146,8 @@ export default async function BlogPostPage({ params }: Props) {
       '@type': 'Person',
       name: siteConfig.name,
     },
-    url: `${siteConfig.url}blog/${post.slug}`,
-    image: post.coverImage
-      ? `${siteConfig.url.replace(/\/$/, '')}${post.coverImage}`
-      : `${siteConfig.url.replace(/\/$/, '')}${siteConfig.ogImage}`,
+    url: getAbsoluteUrl(`/blog/${post.slug}`),
+    image: getAbsoluteUrl(post.coverImage || siteConfig.ogImage),
   };
 
   return (

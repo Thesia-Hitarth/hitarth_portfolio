@@ -306,7 +306,7 @@ export function LiveActivity(): ReactElement {
 }
 
 interface SpotifyCoverArtProps {
-  art: string;
+  art?: string;
   isPlaying: boolean;
   title: string;
 }
@@ -316,7 +316,7 @@ function SpotifyCoverArt({ art, isPlaying, title }: SpotifyCoverArtProps): React
     <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-lg bg-muted border border-border/60">
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
-        src="/Music.png"
+        src={art || "/Music.png"}
         alt={title}
         className={cn(
           'h-full w-full object-cover rounded-lg transition-transform duration-500',

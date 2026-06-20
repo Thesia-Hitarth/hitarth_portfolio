@@ -7,7 +7,6 @@
 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { ExternalLink, ArrowRight } from 'lucide-react';
@@ -44,7 +43,6 @@ export function ProjectCard({ project, cardProps = {} }: ProjectCardProps): Reac
   
   // Spotlight Hover State & Coords
   const [coords, setCoords] = useState({ x: 0, y: 0 });
-  const [isHovered, setIsHovered] = useState(false);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLElement>) => {
     const rect = e.currentTarget.getBoundingClientRect();
@@ -69,8 +67,6 @@ export function ProjectCard({ project, cardProps = {} }: ProjectCardProps): Reac
     <motion.article
       {...cardProps}
       onMouseMove={handleMouseMove}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
       onClick={handleCardClick}
       onKeyDown={handleKeyDown}
       tabIndex={0}
@@ -84,7 +80,7 @@ export function ProjectCard({ project, cardProps = {} }: ProjectCardProps): Reac
       style={{
         '--mouse-x': `${coords.x}px`,
         '--mouse-y': `${coords.y}px`,
-      } as any}
+      } as React.CSSProperties}
     >
       {/* Vercel Spotlight Radial Gradient */}
       <div

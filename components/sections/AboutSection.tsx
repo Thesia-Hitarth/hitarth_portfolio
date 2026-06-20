@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
-import { MapPin, Clock, Music, ArrowUpRight, GraduationCap, Briefcase, Sparkles, FileText, Code } from 'lucide-react';
+import { MapPin, Clock, Music, ArrowUpRight, Sparkles, FileText, Code } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import profilePic from '../../public/Passportsize_Hitarth.png';
@@ -276,7 +276,7 @@ export function AboutSection(): ReactElement {
                 <div className="flex items-center gap-2.5 rounded-xl border border-border/30 bg-muted/30 p-2">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
-                    src="/Music.png"
+                    src={activity.spotify.albumArt || "/Music.png"}
                     alt="album cover"
                     className="h-8 w-8 rounded-lg object-cover"
                   />

@@ -8,6 +8,7 @@
 
 import type { Metadata } from "next";
 import { siteConfig } from "@/config/site";
+import { getAbsoluteUrl } from "@/lib/utils";
 
 interface GeneratePageMetadataParams {
   /** Page-level title — will be suffixed with siteConfig.name */
@@ -27,8 +28,8 @@ interface GeneratePageMetadataParams {
  *
  * @example
  * export const metadata = generatePageMetadata({
- *   title: "Projects",
- *   description: "A showcase of my full-stack work.",
+ *   title: "Codebase",
+ *   description: "A showcase of my work.",
  *   path: "/projects",
  * });
  */
@@ -39,8 +40,9 @@ export function generatePageMetadata({
   noIndex = false,
   path = "",
 }: GeneratePageMetadataParams): Metadata {
-  const ogImage = image ?? siteConfig.ogImage;
-  const canonicalUrl = `${siteConfig.url}${path}`;
+  const resolvedImage = image ?? siteConfig.ogImage;
+  const ogImage = resolvedImage.startsWith("http") ? resolvedImage : getAbsoluteUrl(resolvedImage);
+  const canonicalUrl = getAbsoluteUrl(path);
   const fullTitle = `${title} | ${siteConfig.name}`;
 
   return {

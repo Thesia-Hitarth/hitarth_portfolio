@@ -1,5 +1,6 @@
 import type { ContactFormData } from './validations';
 import { siteConfig } from '@/config/site';
+import { getAbsoluteUrl } from '@/lib/utils';
 
 /**
  * lib/email-templates.ts
@@ -105,7 +106,7 @@ export function generateConfirmationHTML({ name }: { name: string }): string {
 
         <!-- CTA Button -->
         <div style="margin-bottom: 32px;">
-          <a href="${siteConfig.url}/projects" style="background-color: ${PRIMARY_COLOR}; color: #ffffff; padding: 12px 24px; border-radius: 8px; display: inline-block; text-decoration: none; font-weight: 600; font-size: 14px; box-shadow: 0 2px 4px rgba(99, 102, 241, 0.2);">
+          <a href="${getAbsoluteUrl('/projects')}" style="background-color: ${PRIMARY_COLOR}; color: #ffffff; padding: 12px 24px; border-radius: 8px; display: inline-block; text-decoration: none; font-weight: 600; font-size: 14px; box-shadow: 0 2px 4px rgba(99, 102, 241, 0.2);">
             View Projects Portfolio →
           </a>
         </div>
@@ -138,7 +139,7 @@ Hi ${firstName},
 
 Thanks for reaching out! I have successfully received your message and will get back to you within 24 to 48 hours.
 
-In the meantime, feel free to view my projects here: ${siteConfig.url}/projects
+In the meantime, feel free to view my projects here: ${getAbsoluteUrl('/projects')}
 
 — Hitarth Thesia
 Full-Stack Developer

@@ -32,7 +32,7 @@ import { siteConfig } from '@/config/site';
 import { TechBadge } from '@/components/ui/TechBadge';
 import { GithubIcon } from '@/components/ui/BrandIcons';
 import { MDXComponents } from '@/components/mdx/MDXComponents';
-import { cn } from '@/lib/utils';
+import { cn, getAbsoluteUrl } from '@/lib/utils';
 import { JsonLd } from '@/components/seo/JsonLd';
 
 // ── Static generation ──────────────────────────────────
@@ -58,7 +58,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     return { title: 'Project Not Found' };
   }
 
-  const url = `${siteConfig.url}/projects/${project.slug}`;
+  const url = getAbsoluteUrl(`/projects/${project.slug}`);
 
   return {
     title: project.title,
@@ -127,7 +127,7 @@ export default async function ProjectDetailPage({ params }: Props) {
     description: project.description,
     applicationCategory: 'WebApplication',
     operatingSystem: 'All',
-    url: `${siteConfig.url}projects/${project.slug}`,
+    url: getAbsoluteUrl(`/projects/${project.slug}`),
     downloadUrl: project.liveUrl || undefined,
     softwareRequirements: project.stack.join(', '),
     author: {
@@ -203,7 +203,7 @@ export default async function ProjectDetailPage({ params }: Props) {
                           [rehypeHighlight, { detect: true }],
                         ],
                       },
-                    } as any}
+                    } as unknown as Parameters<typeof MDXRemote>[0]['options']}
                   />
                 </div>
               ) : (

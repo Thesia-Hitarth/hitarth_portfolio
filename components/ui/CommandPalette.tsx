@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef, useMemo } from 'react';
+import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useRouter, usePathname } from 'next/navigation';
 import { useTheme } from 'next-themes';
@@ -13,7 +13,6 @@ import {
   Mail,
   FileText,
   Briefcase,
-  ArrowRight,
   FolderKanban,
   BookOpen,
   Code
@@ -27,7 +26,7 @@ interface CommandItem {
   title: string;
   subtitle?: string;
   category: 'Pages & Sections' | 'Actions' | 'Projects' | 'Articles';
-  icon: any;
+  icon: React.ComponentType<{ className?: string; size?: number }>;
   action: () => void;
   shortcut?: string[];
 }
@@ -36,7 +35,7 @@ export function CommandPalette(): ReactElement {
   const [isOpen, setIsOpen] = useState(false);
   const [search, setSearch] = useState('');
   const [activeIndex, setActiveIndex] = useState(0);
-  const [blogs, setBlogs] = useState<any[]>([]);
+  const [blogs, setBlogs] = useState<Array<{ slug: string; title: string; excerpt: string }>>([]);
   const { theme, setTheme } = useTheme();
   const router = useRouter();
   const pathname = usePathname();
@@ -77,9 +76,11 @@ export function CommandPalette(): ReactElement {
   // Focus input when opened
   useEffect(() => {
     if (isOpen) {
-      setTimeout(() => inputRef.current?.focus(), 50);
-      setSearch('');
-      setActiveIndex(0);
+      setTimeout(() => {
+        inputRef.current?.focus();
+        setSearch('');
+        setActiveIndex(0);
+      }, 50);
       document.body.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = '';
@@ -87,7 +88,7 @@ export function CommandPalette(): ReactElement {
   }, [isOpen]);
 
   // Navigate to sections smoothly
-  const handleSectionClick = (sectionId: string) => {
+  const handleSectionClick = useCallback((sectionId: string) => {
     setIsOpen(false);
     if (pathname !== '/') {
       router.push(`/#${sectionId}`);
@@ -97,7 +98,7 @@ export function CommandPalette(): ReactElement {
         el.scrollIntoView({ behavior: 'smooth' });
       }
     }
-  };
+  }, [pathname, router]);
 
   // List of all static commands
   const staticCommands = useMemo<CommandItem[]>(() => {
@@ -203,7 +204,7 @@ export function CommandPalette(): ReactElement {
         },
       },
     ];
-  }, [theme, pathname, router, setTheme]);
+  }, [theme, router, setTheme, handleSectionClick]);
 
   // Combine static commands, projects, and blogs
   const allItems = useMemo<CommandItem[]>(() => {
@@ -254,10 +255,7 @@ export function CommandPalette(): ReactElement {
     );
   }, [allItems, search]);
 
-  // Reset index when search changes
-  useEffect(() => {
-    setActiveIndex(0);
-  }, [search]);
+  // Reset activeIndex directly on search input changes instead of using useEffect.
 
   // Handle keyboard traversal
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -316,7 +314,10 @@ export function CommandPalette(): ReactElement {
                   type="text"
                   placeholder="Type a command or search..."
                   value={search}
-                  onChange={(e) => setSearch(e.target.value)}
+                  onChange={(e) => {
+                    setSearch(e.target.value);
+                    setActiveIndex(0);
+                  }}
                   onKeyDown={handleKeyDown}
                   className="w-full text-sm text-foreground bg-transparent outline-none placeholder-zinc-400 dark:placeholder-zinc-500 font-sans"
                 />

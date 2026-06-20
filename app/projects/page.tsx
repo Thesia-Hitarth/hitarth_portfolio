@@ -12,17 +12,18 @@ import { ArrowLeft } from 'lucide-react';
 import { projects } from '@/data/projects';
 import { siteConfig } from '@/config/site';
 import { ProjectsGrid } from '@/components/projects/ProjectsGrid';
+import { getAbsoluteUrl } from '@/lib/utils';
 
 export const metadata: Metadata = {
   title: 'Projects',
   description: 'Explore my projects ranging from full-stack applications to open-source contributions.',
   alternates: {
-    canonical: `${siteConfig.url}/projects`,
+    canonical: getAbsoluteUrl('/projects'),
   },
   openGraph: {
     title: `Projects | ${siteConfig.name}`,
     description: 'Explore my projects ranging from full-stack applications to open-source contributions.',
-    url: `${siteConfig.url}/projects`,
+    url: getAbsoluteUrl('/projects'),
   },
 };
 

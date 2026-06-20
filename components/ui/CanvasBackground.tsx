@@ -68,10 +68,12 @@ export function CanvasBackground(): ReactElement {
       mouse.y = null;
     };
 
+    const parent = canvas.parentElement;
+
     // Listeners
     window.addEventListener('resize', handleResize);
-    canvas.parentElement?.addEventListener('mousemove', handleMouseMove);
-    canvas.parentElement?.addEventListener('mouseleave', handleMouseLeave);
+    parent?.addEventListener('mousemove', handleMouseMove);
+    parent?.addEventListener('mouseleave', handleMouseLeave);
 
     // Initial setup
     handleResize();
@@ -142,8 +144,8 @@ export function CanvasBackground(): ReactElement {
 
     return () => {
       window.removeEventListener('resize', handleResize);
-      canvas.parentElement?.removeEventListener('mousemove', handleMouseMove);
-      canvas.parentElement?.removeEventListener('mouseleave', handleMouseLeave);
+      parent?.removeEventListener('mousemove', handleMouseMove);
+      parent?.removeEventListener('mouseleave', handleMouseLeave);
       cancelAnimationFrame(animationFrameId);
     };
   }, [resolvedTheme]);

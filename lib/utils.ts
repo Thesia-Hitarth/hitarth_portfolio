@@ -7,6 +7,17 @@
 
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
+import { siteConfig } from "@/config/site";
+
+/**
+ * Constructs an absolute URL using siteConfig.url, guaranteeing no double slashes.
+ */
+export function getAbsoluteUrl(path: string): string {
+  const baseUrl = siteConfig.url.endsWith("/") ? siteConfig.url.slice(0, -1) : siteConfig.url;
+  const cleanPath = path.startsWith("/") ? path : `/${path}`;
+  return `${baseUrl}${cleanPath}`;
+}
+
 
 /**
  * Merges class names with Tailwind CSS conflict resolution.

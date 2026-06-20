@@ -38,6 +38,8 @@ export function BlogList({ posts }: BlogListProps): ReactElement {
 
   const handleMouseUp = () => {
     setIsDragging(false);
+    // Reset hasDragged after click events have had a chance to fire
+    setTimeout(() => setHasDragged(false), 50);
   };
 
   const handleMouseMove = (e: React.MouseEvent) => {

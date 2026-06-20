@@ -4,7 +4,6 @@
  * components/sections/SkillsSection.tsx
  */
 
-import { motion, useReducedMotion } from 'framer-motion';
 import {
   Monitor,
   Server,
@@ -15,9 +14,7 @@ import {
 import type { LucideIcon } from 'lucide-react';
 import type { ReactElement } from 'react';
 import { SectionHeader } from '@/components/ui/SectionHeader';
-import { TechBadge } from '@/components/ui/TechBadge';
-import { containerVariants } from '@/lib/animations';
-import type { SkillCategory } from '@/lib/types';
+import type { SkillCategory, Skill } from '@/lib/types';
 import { cn } from '@/lib/utils';
 
 const ICON_MAP: Record<string, LucideIcon> = {
@@ -35,18 +32,9 @@ const LEVEL_LABEL: Record<string, string> = {
   expert: 'Expert',
 };
 
-// Card entrance variant — ease as 4-tuple
-const EASE = [0.21, 0.47, 0.32, 0.98] as [number, number, number, number];
-
-const cardItemVariants = {
-  hidden: { opacity: 0, scale: 0.96, y: 12 },
-  visible: {
-    opacity: 1,
-    scale: 1,
-    y: 0,
-    transition: { duration: 0.4, ease: EASE },
-  },
-};
+interface SkillWithIcon extends Skill {
+  icon: string;
+}
 
 interface SkillsSectionProps {
   categories: SkillCategory[];
@@ -70,7 +58,7 @@ export function SkillsSection({ categories }: SkillsSectionProps): ReactElement 
   const row1 = allSkills.slice(0, midpoint);
   const row2 = allSkills.slice(midpoint);
 
-  const renderSkillCard = (skill: any, index: number, isCopy: boolean) => {
+  const renderSkillCard = (skill: SkillWithIcon, index: number, isCopy: boolean) => {
     const Icon = ICON_MAP[skill.icon] ?? Monitor;
     const isLearning = skill.level === 'learning';
     return (

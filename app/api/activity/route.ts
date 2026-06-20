@@ -16,13 +16,7 @@ export const dynamic = 'force-dynamic';
 const SPOTIFY_TOKEN_URL = 'https://accounts.spotify.com/api/token';
 const SPOTIFY_NOW_PLAYING_URL = 'https://api.spotify.com/v1/me/player/currently-playing';
 
-// Curated list of mock tracks for demo/fallback purposes
-const FALLBACK_TRACKS = [
-  { title: 'Intro', artist: 'The xx', albumArt: 'https://i.scdn.co/image/ab67616d0000b273b4b5c777d56e72c84ccdbd47', isPlaying: true },
-  { title: 'Starboy', artist: 'The Weeknd', albumArt: 'https://i.scdn.co/image/ab67616d0000b2734718dec6954e1105cc08bc6a', isPlaying: true },
-  { title: 'Sweater Weather', artist: 'The Neighbourhood', albumArt: 'https://i.scdn.co/image/ab67616d0000b2733d73507d726b1580ee4f7c1b', isPlaying: true },
-  { title: 'Stressed Out', artist: 'Twenty One Pilots', albumArt: 'https://i.scdn.co/image/ab67616d0000b27341e3ed9fb5390c5aa8417fb7', isPlaying: true },
-];
+
 
 async function getSpotifyAccessToken() {
   const clientId = process.env.SPOTIFY_CLIENT_ID;
@@ -135,28 +129,16 @@ export async function GET() {
     spotifyData = await fetchRealSpotifyData(accessToken);
   }
 
-  // Fallback to simulated activity if no Spotify data found/configured
+  // Fallback if no Spotify data found/configured
   if (!spotifyData) {
-    // Only simulate listening during waking/active hours (8 AM to Midnight)
-    const isWakingHours = hourInKolkata >= 8 && hourInKolkata < 24;
-    if (isWakingHours) {
-      // Pick a track based on the current minute to keep it stable but dynamic
-      const trackIndex = now.getMinutes() % FALLBACK_TRACKS.length;
-      spotifyData = {
-        ...FALLBACK_TRACKS[trackIndex],
-        album: 'Featured Collection',
-        songUrl: 'https://open.spotify.com',
-      };
-    } else {
-      spotifyData = {
-        isPlaying: false,
-        title: 'Not playing',
-        artist: 'Spotify Offline',
-        albumArt: '',
-        album: '',
-        songUrl: '',
-      };
-    }
+    spotifyData = {
+      isPlaying: false,
+      title: 'Not playing',
+      artist: 'Spotify Offline',
+      albumArt: '',
+      album: '',
+      songUrl: '',
+    };
   }
 
   return NextResponse.json({

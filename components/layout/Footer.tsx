@@ -8,6 +8,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { ChevronUp } from 'lucide-react';
 import type { ReactElement } from 'react';
+import { usePathname, useRouter } from 'next/navigation';
 import { siteConfig } from '@/config/site';
 import { cn } from '@/lib/utils';
 import { GithubIcon, LinkedinIcon, TwitterIcon } from '@/components/ui/BrandIcons';
@@ -15,6 +16,9 @@ import { GithubIcon, LinkedinIcon, TwitterIcon } from '@/components/ui/BrandIcon
 export function Footer(): ReactElement {
   const [showTop, setShowTop] = useState(false);
   const prefersReduced = useReducedMotion();
+
+  const router = useRouter();
+  const pathname = usePathname();
 
   useEffect(() => {
     const handleScroll = (): void => setShowTop(window.scrollY > 400);
@@ -25,6 +29,19 @@ export function Footer(): ReactElement {
   const scrollToTop = useCallback((): void => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, []);
+
+  const handleNavClick = useCallback((href: string) => {
+    if (href.startsWith('#')) {
+      if (pathname !== '/') {
+        router.push(`/${href}`);
+      } else {
+        const el = document.getElementById(href.slice(1));
+        el?.scrollIntoView({ behavior: 'smooth' });
+      }
+    } else {
+      router.push(href);
+    }
+  }, [pathname, router]);
 
   const currentYear = new Date().getFullYear();
 
@@ -46,11 +63,7 @@ export function Footer(): ReactElement {
                 {siteConfig.nav.map((item) => (
                   <li key={item.href}>
                     <button
-                      onClick={() => {
-                        if (item.href.startsWith('#')) {
-                          document.getElementById(item.href.slice(1))?.scrollIntoView({ behavior: 'smooth' });
-                        }
-                      }}
+                      onClick={() => handleNavClick(item.href)}
                       className="text-sm text-muted-foreground hover:text-foreground transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 rounded-sm"
                     >
                       {item.label}

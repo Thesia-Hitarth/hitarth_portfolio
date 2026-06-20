@@ -14,17 +14,18 @@ import { getAllPosts } from '@/lib/mdx';
 import { siteConfig } from '@/config/site';
 import { SectionHeader } from '@/components/ui/SectionHeader';
 import { BlogList } from '@/components/blog/BlogList';
+import { getAbsoluteUrl } from '@/lib/utils';
 
 export const metadata: Metadata = {
   title: 'Blog',
   description: 'Technical writing on React, Next.js, Node.js, MongoDB, and full-stack web development.',
   alternates: {
-    canonical: `${siteConfig.url}/blog`,
+    canonical: getAbsoluteUrl('/blog'),
   },
   openGraph: {
     title: `Blog | ${siteConfig.name}`,
     description: 'Technical writing on React, Next.js, Node.js, MongoDB, and full-stack web development.',
-    url: `${siteConfig.url}/blog`,
+    url: getAbsoluteUrl('/blog'),
   },
 };
 

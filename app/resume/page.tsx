@@ -1,7 +1,5 @@
-'use client';
-
 import Link from 'next/link';
-import { ArrowLeft, Download, Mail, MapPin, Phone } from 'lucide-react';
+import { ArrowLeft, Download, Mail, Phone } from 'lucide-react';
 import type { ReactElement } from 'react';
 import { resumeData } from '@/data/resume';
 import { GithubIcon, LinkedinIcon } from '@/components/ui/BrandIcons';
