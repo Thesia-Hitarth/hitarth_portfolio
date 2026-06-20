@@ -133,7 +133,7 @@ export const resumeData: ResumeData = {
     {
       title: "Querious",
       subtitle: "Community-Driven Q&A Platform",
-      techStack: ["MongoDB", "Express.js", "React.js", "Node.js", "Firebase Authentication"],
+      techStack: ["MongoDB", "Express.js", "React.js", "Node.js", "JWT Authentication"],
       year: "2024–2025",
       bullets: [
         "A developer Q&A community platform with upvoting, answer ranking, and user profiles — similar to Stack Overflow.",

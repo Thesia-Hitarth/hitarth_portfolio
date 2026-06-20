@@ -25,24 +25,24 @@ export const projects: Project[] = [
       "Express.js",
       "React.js",
       "Node.js",
-      "Firebase Authentication",
+      "JWT Authentication",
       "REST APIs",
     ],
     description:
-      "A developer community Q&A platform featuring structured posts, answer upvoting, Firebase authentication, and complex data aggregation.",
+      "A developer community Q&A platform featuring structured posts, answer upvoting, JWT authentication, and complex data aggregation.",
     longDescription: `
 ## Overview
 Querious is a community-driven Q&A site tailored for software developers. The main engineering challenge was building a low-latency ranking system that scores and bubbles up relevant answers based on community votes and recency.
 
 ## Design and Integration
-The platform uses Firebase Authentication to manage user identity securely, decoupling login management from our database layer. In MongoDB, relational-style data schemas represent users, questions, answers, and votes, which are queried through optimized pipelines.
+The platform uses JWT Authentication to manage user identity securely, decoupling login management from our database layer. In MongoDB, relational-style data schemas represent users, questions, answers, and votes, which are queried through optimized pipelines.
 
 ## Outcomes
 By employing MongoDB aggregation pipelines, we implemented high-performance query logic that calculates voting scores on the fly, eliminating the need to cache stale values or run expensive post-processing in application memory.
     `,
     highlights: [
       "Built answer ranking using MongoDB aggregation pipelines that score by upvote count and recency combined.",
-      "Integrated Firebase Authentication for social login, decoupling identity management from the core API.",
+      "Integrated JWT Authentication for social login, decoupling identity management from the core API.",
       "Designed REST APIs for questions, answers, and votes with consistent error handling and HTTP status codes.",
       "Modeled a graph-like social data structure (users, questions, answers, votes) in MongoDB with efficient query patterns.",
     ],

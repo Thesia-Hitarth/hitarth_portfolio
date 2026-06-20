@@ -101,28 +101,31 @@ export function SkillsSection({ categories }: SkillsSectionProps): ReactElement 
           subtitle="Technologies and tools I use to build things."
         />
 
-        <div className="space-y-8 mt-16 relative w-full">
+        <div className="relative mt-16 w-full">
           {/* Gradient overlay masks on left and right for fade effect */}
           <div className="absolute inset-y-0 left-0 w-16 md:w-32 bg-gradient-to-r from-background to-transparent z-10 pointer-events-none" />
           <div className="absolute inset-y-0 right-0 w-16 md:w-32 bg-gradient-to-l from-background to-transparent z-10 pointer-events-none" />
 
-          {/* Row 1: Left to Right / Reverse Marquee */}
-          <div className="flex overflow-hidden w-full">
-            <div className="flex shrink-0 gap-6 pr-6 animate-marquee">
-              {row1.map((skill, idx) => renderSkillCard(skill, idx, false))}
+          {/* Marquee rows wrapped in a flex-col container with gap to prevent vertical clipping */}
+          <div className="flex flex-col gap-8 py-3">
+            {/* Row 1: Left to Right / Reverse Marquee */}
+            <div className="flex overflow-hidden w-full py-3 -my-3">
+              <div className="flex shrink-0 gap-6 pr-6 animate-marquee">
+                {row1.map((skill, idx) => renderSkillCard(skill, idx, false))}
+              </div>
+              <div className="flex shrink-0 gap-6 pr-6 animate-marquee" aria-hidden="true">
+                {row1.map((skill, idx) => renderSkillCard(skill, idx, true))}
+              </div>
             </div>
-            <div className="flex shrink-0 gap-6 pr-6 animate-marquee" aria-hidden="true">
-              {row1.map((skill, idx) => renderSkillCard(skill, idx, true))}
-            </div>
-          </div>
 
-          {/* Row 2: Right to Left / Forward Marquee */}
-          <div className="flex overflow-hidden w-full">
-            <div className="flex shrink-0 gap-6 pr-6 animate-marquee-reverse">
-              {row2.map((skill, idx) => renderSkillCard(skill, idx, false))}
-            </div>
-            <div className="flex shrink-0 gap-6 pr-6 animate-marquee-reverse" aria-hidden="true">
-              {row2.map((skill, idx) => renderSkillCard(skill, idx, true))}
+            {/* Row 2: Right to Left / Forward Marquee */}
+            <div className="flex overflow-hidden w-full py-3 -my-3">
+              <div className="flex shrink-0 gap-6 pr-6 animate-marquee-reverse">
+                {row2.map((skill, idx) => renderSkillCard(skill, idx, false))}
+              </div>
+              <div className="flex shrink-0 gap-6 pr-6 animate-marquee-reverse" aria-hidden="true">
+                {row2.map((skill, idx) => renderSkillCard(skill, idx, true))}
+              </div>
             </div>
           </div>
         </div>
