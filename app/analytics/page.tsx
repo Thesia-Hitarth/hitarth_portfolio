@@ -50,17 +50,28 @@ export default function AnalyticsPage(): ReactElement {
   const topProjects = [
     { name: 'Developer Taskflows', views: 824, share: '43.5%' },
     { name: 'Querious Developer Q&A', views: 512, share: '27.0%' },
-    { name: 'Daily Dose Meal Platform', views: 320, share: '16.9%' },
-    { name: 'E-Commerce Shopping Suite', views: 238, share: '12.6%' },
+    { name: 'Cartza E-Commerce Shopping', views: 320, share: '16.9%' },
+    { name: 'Daily Dose Meal Platform', views: 238, share: '12.6%' },
   ];
 
   return (
     <div className="min-h-screen bg-background text-foreground py-24 lg:py-32">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-6xl">
-        
+
         {/* Header */}
         <header className="mb-12 max-w-2xl">
           <Link
+            href="/"
+            className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-primary transition-colors mb-6 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded-md"
+          >
+            <ArrowLeft size={16} />
+            <span>Back to home</span>
+          </Link>
+          <span className="block font-mono text-xs font-semibold uppercase tracking-wider text-primary">
+            08 / Public Analytics
+          </span>
+
+          {/* <Link
             href="/"
             className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-primary transition-colors mb-6"
           >
@@ -69,7 +80,7 @@ export default function AnalyticsPage(): ReactElement {
           </Link>
           <span className="font-mono text-xs font-semibold uppercase tracking-wider text-primary">
             08 / Public Analytics
-          </span>
+          </span> */}
           <div className="flex flex-wrap items-center gap-3 mt-3">
             <h1 className="text-4xl font-extrabold tracking-tight text-foreground sm:text-5xl">
               Site Dashboard
@@ -115,7 +126,7 @@ export default function AnalyticsPage(): ReactElement {
 
         {/* Dynamic Charts Section */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          
+
           {/* Main Traffic Chart */}
           <div className="lg:col-span-2 bg-card border border-border rounded-2xl p-6 flex flex-col justify-between">
             <div>
@@ -175,7 +186,7 @@ export default function AnalyticsPage(): ReactElement {
 
           {/* Side Panels: Project Views & Real-time Edge Latency */}
           <div className="lg:col-span-1 space-y-6">
-            
+
             {/* Top Projects */}
             <div className="bg-card border border-border rounded-2xl p-6 space-y-4">
               <h3 className="font-bold text-sm text-foreground">Top Viewed Projects</h3>

@@ -92,7 +92,7 @@ Developer Taskflows (taskflow.sh) is a community-driven career guidance and road
 
   // ── 3. Cartza E-Commerce ──────────────────────────────
   {
-    slug: "ecommerce-platform",
+    slug: "Cartza-ecommerce",
     title: "Cartza E-Commerce",
     tagline: "Full-stack MERN shopping platform with secure checkout.",
     year: 2025,
