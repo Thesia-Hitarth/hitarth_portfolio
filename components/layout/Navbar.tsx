@@ -15,9 +15,9 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import type { ReactElement } from 'react';
 import { MobileMenu } from '@/components/ui/MobileMenu';
-import { siteConfig } from '@/config/site';
 import { useMagneticButton } from '@/hooks/useMagneticButton';
 
 const NAV_LINKS = [
@@ -30,6 +30,7 @@ const NAV_LINKS = [
 const SECTION_IDS = ['hero', 'about', 'skills', 'experience', 'projects', 'github', 'contact'];
 
 export function Navbar(): ReactElement {
+  const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState('hero');
   const [menuOpen, setMenuOpen] = useState(false);
@@ -44,6 +45,7 @@ export function Navbar(): ReactElement {
 
   // Active section via IntersectionObserver
   useEffect(() => {
+    if (pathname !== '/') return;
     const observers: IntersectionObserver[] = [];
 
     SECTION_IDS.forEach((id) => {
@@ -61,7 +63,7 @@ export function Navbar(): ReactElement {
     });
 
     return () => observers.forEach((o) => o.disconnect());
-  }, []);
+  }, [pathname]);
 
   const handleNavClick = useCallback((href: string) => {
     const el = document.querySelector(href);
@@ -179,7 +181,7 @@ export function Navbar(): ReactElement {
           className="btn-magnetic hidden md:inline-flex"
           style={{ marginLeft: '2rem', fontSize: '0.7rem' }}
         >
-          <span>Let's talk ↗</span>
+          <span>Let&apos;s talk ↗</span>
         </a>
 
         {/* Mobile hamburger */}

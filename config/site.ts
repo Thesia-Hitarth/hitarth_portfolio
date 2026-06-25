@@ -79,7 +79,6 @@ export const siteConfig = {
       { label: "Experience", href: "#experience" },
       { label: "Projects", href: "#projects" },
       { label: "GitHub", href: "#github" },
-      { label: "Blog", href: "#blog" },
       { label: "Contact", href: "#contact" },
    ] as Array<{ label: string; href: string }>,
 } as const;

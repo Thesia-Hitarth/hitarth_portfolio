@@ -7,7 +7,6 @@
 import { useMemo } from 'react';
 import type { ReactElement } from 'react';
 import type { ContributionDay } from '@/lib/github';
-import { cn } from '@/lib/utils';
 
 interface ContributionGraphProps {
   contributions: ContributionDay[];

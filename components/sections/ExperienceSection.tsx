@@ -199,7 +199,27 @@ interface WorkRowProps {
 
 function WorkRow({ item, isOpen, onToggle }: WorkRowProps): ReactElement {
   return (
-    <div style={{ borderBottom: '1px solid var(--color-border)' }}>
+    <div
+      style={{
+        border: '1px solid rgba(0, 0, 0, 0.12)',
+        borderRadius: '12px',
+        background: 'var(--color-bg-2)',
+        marginBottom: '1.25rem',
+        padding: '0 1.5rem',
+        transition: 'border-color var(--dur-base) var(--ease-out-expo), background var(--dur-base) var(--ease-out-expo)',
+        overflow: 'hidden',
+      }}
+      onMouseEnter={(e) => {
+        const el = e.currentTarget as HTMLDivElement;
+        el.style.borderColor = 'rgba(0, 0, 0, 0.24)';
+        el.style.background = 'var(--color-bg-4)';
+      }}
+      onMouseLeave={(e) => {
+        const el = e.currentTarget as HTMLDivElement;
+        el.style.borderColor = 'rgba(0, 0, 0, 0.12)';
+        el.style.background = 'var(--color-bg-2)';
+      }}
+    >
       {/* Clickable Header */}
       <button
         onClick={onToggle}
@@ -398,7 +418,27 @@ interface EduRowProps {
 
 function EduRow({ item, isOpen, onToggle }: EduRowProps): ReactElement {
   return (
-    <div style={{ borderBottom: '1px solid var(--color-border)' }}>
+    <div
+      style={{
+        border: '1px solid rgba(0, 0, 0, 0.12)',
+        borderRadius: '12px',
+        background: 'var(--color-bg-2)',
+        marginBottom: '1.25rem',
+        padding: '0 1.5rem',
+        transition: 'border-color var(--dur-base) var(--ease-out-expo), background var(--dur-base) var(--ease-out-expo)',
+        overflow: 'hidden',
+      }}
+      onMouseEnter={(e) => {
+        const el = e.currentTarget as HTMLDivElement;
+        el.style.borderColor = 'rgba(0, 0, 0, 0.24)';
+        el.style.background = 'var(--color-bg-4)';
+      }}
+      onMouseLeave={(e) => {
+        const el = e.currentTarget as HTMLDivElement;
+        el.style.borderColor = 'rgba(0, 0, 0, 0.12)';
+        el.style.background = 'var(--color-bg-2)';
+      }}
+    >
       {/* Clickable Header */}
       <button
         onClick={onToggle}

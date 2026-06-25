@@ -10,15 +10,12 @@ import { useState, useEffect, useRef } from 'react';
 const CHARSET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%';
 
 export function useTextScramble(finalText: string, enabled = true): string {
-  const [output, setOutput] = useState<string>(enabled ? '' : finalText);
+  const [output, setOutput] = useState<string>('');
   const frameRef = useRef<number | null>(null);
   const startRef = useRef<number | null>(null);
 
   useEffect(() => {
-    if (!enabled) {
-      setOutput(finalText);
-      return;
-    }
+    if (!enabled) return;
 
     const totalDuration = 800; // ms
     const chars = finalText.split('');
@@ -55,5 +52,5 @@ export function useTextScramble(finalText: string, enabled = true): string {
     };
   }, [finalText, enabled]);
 
-  return output;
+  return enabled ? output : finalText;
 }

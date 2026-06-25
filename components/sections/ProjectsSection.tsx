@@ -18,7 +18,6 @@ import type { Project } from '@/lib/types';
 import { useMagneticButton } from '@/hooks/useMagneticButton';
 
 interface ProjectsSectionProps {
-  projects: Project[];
   featured: Project[];
 }
 
@@ -44,7 +43,7 @@ function FeaturedCard({ project, index }: { project: Project; index: number }): 
         background: 'var(--color-bg-3)',
         transition: 'border-color var(--dur-base) var(--ease-out-expo)',
       }}
-      className={`grid-cols-1 ${isOdd ? 'lg:grid-cols-[45fr_55fr]' : 'lg:grid-cols-[55fr_45fr]'}`}
+      className={`group grid-cols-1 ${isOdd ? 'lg:grid-cols-[45fr_55fr]' : 'lg:grid-cols-[55fr_45fr]'}`}
       onMouseEnter={(e) => {
         (e.currentTarget as HTMLDivElement).style.borderColor = 'var(--color-border-hover)';
       }}
@@ -61,39 +60,39 @@ function FeaturedCard({ project, index }: { project: Project; index: number }): 
         data-cursor="project"
         style={{
           position: 'relative',
-          aspectRatio: '16/9',
           overflow: 'hidden',
-          background: 'var(--color-bg-4)',
-          minHeight: '280px',
+          background: 'var(--color-bg)',
         }}
-        className={`lg:aspect-auto lg:min-h-[420px] ${isOdd ? 'lg:order-2' : 'lg:order-1'}`}
+        className={`aspect-[3/2] min-h-[280px] lg:aspect-auto lg:min-h-[420px] ${isOdd ? 'lg:order-2' : 'lg:order-1'}`}
       >
-        {project.coverImage && !imgError ? (
-          <Image
-            src={project.coverImage}
-            alt={project.title}
-            fill
-            sizes="(max-width: 1024px) 100vw, 55vw"
-            style={{ objectFit: 'cover', transition: 'transform var(--dur-slower) var(--ease-out-expo)' }}
-            onError={() => setImgError(true)}
-            className="group-hover:scale-[1.04]"
-          />
-        ) : (
+        <Link href={`/projects/${project.slug}`} className="absolute inset-0 block w-full h-full">
+          {project.coverImage && !imgError ? (
+            <Image
+              src={project.coverImage}
+              alt={project.title}
+              fill
+              sizes="(max-width: 1024px) 100vw, 55vw"
+              style={{ objectFit: 'cover', transition: 'transform var(--dur-slower) var(--ease-out-expo)' }}
+              onError={() => setImgError(true)}
+              className="group-hover:scale-[1.04]"
+            />
+          ) : (
+            <div style={{
+              position: 'absolute', inset: 0,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontFamily: 'var(--font-display)', fontSize: '3rem', fontWeight: 700,
+              color: 'var(--color-border-2)',
+            }}>
+              {project.title[0]}
+            </div>
+          )}
+          {/* Bottom gradient */}
           <div style={{
-            position: 'absolute', inset: 0,
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontFamily: 'var(--font-display)', fontSize: '3rem', fontWeight: 700,
-            color: 'var(--color-border-2)',
-          }}>
-            {project.title[0]}
-          </div>
-        )}
-        {/* Bottom gradient */}
-        <div style={{
-          position: 'absolute', bottom: 0, left: 0, right: 0, height: '40%',
-          background: 'linear-gradient(to top, rgba(245,245,245,0.6) 0%, transparent 100%)',
-          pointerEvents: 'none',
-        }} />
+            position: 'absolute', bottom: 0, left: 0, right: 0, height: '40%',
+            background: 'linear-gradient(to top, rgba(255, 255, 255, 0.4) 0%, transparent 100%)',
+            pointerEvents: 'none',
+          }} />
+        </Link>
       </motion.div>
 
       {/* Info column */}
@@ -116,7 +115,9 @@ function FeaturedCard({ project, index }: { project: Project; index: number }): 
         </p>
 
         <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '1.8rem', fontWeight: 500, letterSpacing: 'var(--tracking-snug)', color: 'var(--color-text-1)', margin: 0 }}>
-          {project.title}
+          <Link href={`/projects/${project.slug}`} style={{ color: 'inherit', textDecoration: 'none' }} className="hover:underline">
+            {project.title}
+          </Link>
         </h3>
 
         <p style={{ fontFamily: 'var(--font-mono)', fontSize: 'var(--text-micro)', color: 'var(--color-text-3)', letterSpacing: 'var(--tracking-wider)', textTransform: 'uppercase', margin: 0 }}>
@@ -166,7 +167,7 @@ function FeaturedCard({ project, index }: { project: Project; index: number }): 
   );
 }
 
-export function ProjectsSection({ projects, featured }: ProjectsSectionProps): ReactElement {
+export function ProjectsSection({ featured }: ProjectsSectionProps): ReactElement {
   return (
     <section
       id="projects"

@@ -24,7 +24,7 @@
   /* Text */
   --color-text-1:      #0a0a0a;           /* near-black primary */
   --color-text-2:      #525252;           /* mid-gray secondary */
-  --color-text-3:      #a3a3a3;           /* muted / ghost */
+  --color-text-3:      #737373;           /* muted / ghost */
   --color-text-inv:    #ffffff;           /* inverted — on dark buttons */
 
   /* Accent: near-black (typographic contrast, Snellenberg style) */

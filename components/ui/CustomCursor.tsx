@@ -24,7 +24,10 @@ export function CustomCursor(): ReactElement | null {
   const [state, setState] = useState<CursorState>('default');
   const [mounted, setMounted] = useState(false);
 
-  useEffect(() => { setMounted(true); }, []);
+  useEffect(() => {
+    const handle = requestAnimationFrame(() => setMounted(true));
+    return () => cancelAnimationFrame(handle);
+  }, []);
 
   useEffect(() => {
     if (!mounted) return;

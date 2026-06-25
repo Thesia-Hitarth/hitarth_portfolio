@@ -15,7 +15,7 @@ import { AlertCircle, CheckCircle2, Send, Loader2, RefreshCw, X } from 'lucide-r
 import { SectionLabel } from '@/components/shared/SectionLabel';
 import { siteConfig } from '@/config/site';
 import { contactFormSchema, type ContactFormData, type ContactFormErrors } from '@/lib/validations';
-import { motion } from 'framer-motion';
+import { useMagneticButton } from '@/hooks/useMagneticButton';
 
 const inputStyle: React.CSSProperties = {
   width: '100%',
@@ -43,6 +43,8 @@ const labelStyle: React.CSSProperties = {
 };
 
 export function ContactSection(): ReactElement {
+  const submitRef = useMagneticButton<HTMLButtonElement>();
+  const resetRef = useMagneticButton<HTMLButtonElement>();
   const [formData, setFormData] = useState<ContactFormData>({ name: '', email: '', subject: '', message: '' });
   const [errors, setErrors] = useState<ContactFormErrors>({});
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
@@ -380,7 +382,9 @@ export function ContactSection(): ReactElement {
                     I&apos;ve received your message and will reply within 24 hours.
                   </p>
                   <button
+                    ref={resetRef}
                     onClick={() => setStatus('idle')}
+                    data-cursor="magnetic"
                     className="btn-magnetic"
                     style={{ fontSize: '0.65rem' }}
                   >
@@ -507,8 +511,10 @@ export function ContactSection(): ReactElement {
 
                   {/* Submit */}
                   <button
+                    ref={submitRef}
                     type="submit"
                     disabled={status === 'loading'}
+                    data-cursor={status === 'loading' ? undefined : 'magnetic'}
                     className={status === 'loading' ? '' : 'btn-magnetic btn-filled'}
                     style={{
                       width: '100%',

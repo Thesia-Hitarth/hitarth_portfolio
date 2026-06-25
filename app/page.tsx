@@ -15,7 +15,7 @@ import { ExperienceSection } from '@/components/sections/ExperienceSection';
 import { ProjectsSection } from '@/components/sections/ProjectsSection';
 import { GitHubSection } from '@/components/sections/GitHubSection';
 import { ContactSection } from '@/components/sections/ContactSection';
-import { projects, featuredProjects } from '@/data/projects';
+import { featuredProjects } from '@/data/projects';
 import { skillCategories } from '@/data/skills';
 import { experiences } from '@/data/experience';
 import { siteConfig } from '@/config/site';
@@ -57,7 +57,7 @@ export default function HomePage(): ReactElement {
       <AboutSection />
       <SkillsSection categories={skillCategories} />
       <ExperienceSection experiences={experiences} />
-      <ProjectsSection projects={projects} featured={featuredProjects} />
+      <ProjectsSection featured={featuredProjects} />
       <GitHubSection />
       <ContactSection />
     </>
