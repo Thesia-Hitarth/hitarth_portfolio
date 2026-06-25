@@ -15,10 +15,10 @@ interface ContributionGraphProps {
 
 const LEVEL_STYLES: Record<number, React.CSSProperties> = {
   0: { background: 'var(--color-bg-4)', border: '1px solid var(--color-border)' },
-  1: { background: 'rgba(232, 201, 122, 0.15)', border: '1px solid rgba(232, 201, 122, 0.1)' },
-  2: { background: 'rgba(232, 201, 122, 0.35)', border: '1px solid rgba(232, 201, 122, 0.2)' },
-  3: { background: 'rgba(232, 201, 122, 0.65)', border: '1px solid rgba(232, 201, 122, 0.4)' },
-  4: { background: 'var(--color-accent)',        border: '1px solid rgba(232, 201, 122, 0.6)' },
+  1: { background: '#bbf7d0', border: '1px solid #86efac' },  /* emerald-200 / emerald-300 */
+  2: { background: '#4ade80', border: '1px solid #22c55e' },  /* emerald-400 / emerald-500 */
+  3: { background: '#16a34a', border: '1px solid #15803d' },  /* emerald-600 / emerald-700 */
+  4: { background: '#14532d', border: '1px solid #052e16' },  /* emerald-900 / emerald-950 */
 };
 
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];

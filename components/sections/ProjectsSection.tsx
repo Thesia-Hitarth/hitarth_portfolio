@@ -91,7 +91,7 @@ function FeaturedCard({ project, index }: { project: Project; index: number }): 
         {/* Bottom gradient */}
         <div style={{
           position: 'absolute', bottom: 0, left: 0, right: 0, height: '40%',
-          background: 'linear-gradient(to top, rgba(12,12,12,0.6) 0%, transparent 100%)',
+          background: 'linear-gradient(to top, rgba(245,245,245,0.6) 0%, transparent 100%)',
           pointerEvents: 'none',
         }} />
       </motion.div>

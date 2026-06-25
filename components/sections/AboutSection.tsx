@@ -177,7 +177,7 @@ export function AboutSection(): ReactElement {
                   position: 'absolute',
                   bottom: 0, left: 0, right: 0,
                   height: '40%',
-                  background: 'linear-gradient(to top, rgba(12,12,12,0.8) 0%, transparent 100%)',
+                  background: 'linear-gradient(to top, rgba(245,245,245,0.85) 0%, transparent 100%)',
                   pointerEvents: 'none',
                 }}
               />
@@ -189,7 +189,7 @@ export function AboutSection(): ReactElement {
                   bottom: '1rem',
                   left: '1rem',
                   right: '1rem',
-                  background: 'rgba(12, 12, 12, 0.7)',
+                  background: 'rgba(255, 255, 255, 0.88)',
                   backdropFilter: 'blur(12px)',
                   WebkitBackdropFilter: 'blur(12px)',
                   border: '1px solid var(--color-border)',

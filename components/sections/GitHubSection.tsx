@@ -68,7 +68,7 @@ export async function GitHubSection(): Promise<ReactElement> {
               width: '48px', height: '48px',
               borderRadius: '50%',
               background: 'var(--color-accent-dim)',
-              border: '1px solid rgba(232,201,122,0.2)',
+              border: '1px solid rgba(0,0,0,0.1)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               margin: '0 auto 1.25rem',
             }}>

@@ -82,7 +82,7 @@ export function CustomCursor(): ReactElement | null {
 
   const ringBg =
     state === 'link' || state === 'magnetic' || state === 'project'
-      ? 'rgba(232, 201, 122, 0.08)'
+      ? 'rgba(0, 0, 0, 0.05)'
       : 'transparent';
 
   const dotVisible = state !== 'link' && state !== 'project' && state !== 'magnetic';

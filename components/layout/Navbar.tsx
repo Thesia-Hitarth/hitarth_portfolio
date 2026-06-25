@@ -87,7 +87,7 @@ export function Navbar(): ReactElement {
           alignItems: 'center',
           padding: '0 clamp(1.5rem, 5vw, 4rem)',
           transition: 'height 400ms cubic-bezier(0.16,1,0.3,1), background 400ms cubic-bezier(0.16,1,0.3,1), border-color 400ms cubic-bezier(0.16,1,0.3,1), backdrop-filter 400ms cubic-bezier(0.16,1,0.3,1)',
-          background: scrolled ? 'rgba(12, 12, 12, 0.85)' : 'transparent',
+          background: scrolled ? 'rgba(255, 255, 255, 0.85)' : 'transparent',
           backdropFilter: scrolled ? 'blur(20px)' : 'none',
           WebkitBackdropFilter: scrolled ? 'blur(20px)' : 'none',
           borderBottom: scrolled ? '1px solid var(--color-border)' : '1px solid transparent',

@@ -88,7 +88,7 @@ export function HeroSection(): ReactElement {
         style={{
           position: 'absolute',
           inset: 0,
-          background: 'radial-gradient(ellipse 60% 40% at 20% 50%, rgba(232,201,122,0.04) 0%, transparent 70%)',
+          background: 'radial-gradient(ellipse 60% 40% at 20% 50%, rgba(0,0,0,0.03) 0%, transparent 70%)',
           pointerEvents: 'none',
         }}
       />
@@ -184,7 +184,7 @@ export function HeroSection(): ReactElement {
                 data-cursor="magnetic"
                 className="btn-magnetic hero-cta"
               >
-                <span>Download CV</span>
+                <span> Resume </span>
               </Link>
             </div>
 
