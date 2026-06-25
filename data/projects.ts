@@ -103,7 +103,7 @@ By employing MongoDB aggregation pipelines, we implemented high-performance quer
     category: "opensource",
     featured: true,
     status: "live",
-    coverImage: "/images/projects/TaskFlow.png",
+    coverImage: "/images/projects/taskflow.png",
     stack: [
       "Next.js",
       "React.js",
