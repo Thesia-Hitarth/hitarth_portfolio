@@ -4,7 +4,7 @@
   1. Verify LinkedIn URL slug and update social.linkedin
   2. Drop your actual resume PDF at /public/resume.pdf
   3. Add real project screenshots to /public/images/projects/
-     Filenames: daily-dose.png, ecommerce.png, querious.png
+     Filenames: daily-dose.png, Cartza.png, Quereious.png
      Recommended size: 1200×675px (16:9), under 200KB each
   4. Add real liveUrl and githubUrl to every project in
      data/projects.ts

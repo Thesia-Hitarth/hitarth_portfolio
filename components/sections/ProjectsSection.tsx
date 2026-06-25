@@ -22,12 +22,11 @@ interface ProjectsSectionProps {
   featured: Project[];
 }
 
-const gridProjects = (projects: Project[]) => projects.filter((p) => !p.featured);
-
 function FeaturedCard({ project, index }: { project: Project; index: number }): ReactElement {
   const [imgError, setImgError] = useState(false);
   const liveRef = useMagneticButton<HTMLAnchorElement>();
   const codeRef = useMagneticButton<HTMLAnchorElement>();
+  const isOdd = index % 2 === 1;
 
   return (
     <motion.div
@@ -45,7 +44,7 @@ function FeaturedCard({ project, index }: { project: Project; index: number }): 
         background: 'var(--color-bg-3)',
         transition: 'border-color var(--dur-base) var(--ease-out-expo)',
       }}
-      className="grid-cols-1 lg:grid-cols-[55fr_45fr]"
+      className={`grid-cols-1 ${isOdd ? 'lg:grid-cols-[45fr_55fr]' : 'lg:grid-cols-[55fr_45fr]'}`}
       onMouseEnter={(e) => {
         (e.currentTarget as HTMLDivElement).style.borderColor = 'var(--color-border-hover)';
       }}
@@ -53,9 +52,9 @@ function FeaturedCard({ project, index }: { project: Project; index: number }): 
         (e.currentTarget as HTMLDivElement).style.borderColor = 'var(--color-border)';
       }}
     >
-      {/* Left: Image */}
+      {/* Image column */}
       <motion.div
-        initial={{ opacity: 0, x: -40 }}
+        initial={{ opacity: 0, x: isOdd ? 40 : -40 }}
         whileInView={{ opacity: 1, x: 0 }}
         viewport={{ once: true, margin: '-80px' }}
         transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
@@ -67,7 +66,7 @@ function FeaturedCard({ project, index }: { project: Project; index: number }): 
           background: 'var(--color-bg-4)',
           minHeight: '280px',
         }}
-        className="lg:aspect-auto lg:min-h-[420px]"
+        className={`lg:aspect-auto lg:min-h-[420px] ${isOdd ? 'lg:order-2' : 'lg:order-1'}`}
       >
         {project.coverImage && !imgError ? (
           <Image
@@ -97,9 +96,9 @@ function FeaturedCard({ project, index }: { project: Project; index: number }): 
         }} />
       </motion.div>
 
-      {/* Right: Info */}
+      {/* Info column */}
       <motion.div
-        initial={{ opacity: 0, x: 40 }}
+        initial={{ opacity: 0, x: isOdd ? -40 : 40 }}
         whileInView={{ opacity: 1, x: 0 }}
         viewport={{ once: true, margin: '-80px' }}
         transition={{ duration: 0.7, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
@@ -110,6 +109,7 @@ function FeaturedCard({ project, index }: { project: Project; index: number }): 
           justifyContent: 'center',
           gap: '1rem',
         }}
+        className={isOdd ? 'lg:order-1' : 'lg:order-2'}
       >
         <p style={{ fontFamily: 'var(--font-mono)', fontSize: 'var(--text-micro)', color: 'var(--color-text-3)', letterSpacing: 'var(--tracking-wide)', margin: 0 }}>
           {String(index + 1).padStart(2, '0')}
@@ -166,76 +166,7 @@ function FeaturedCard({ project, index }: { project: Project; index: number }): 
   );
 }
 
-function GridCard({ project, index }: { project: Project; index: number }): ReactElement {
-  const [imgError, setImgError] = useState(false);
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 40 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: '-40px' }}
-      transition={{ duration: 0.5, delay: index * 0.1, ease: [0.16, 1, 0.3, 1] }}
-      data-cursor="project"
-    >
-      <div className="project-card">
-        {/* Image */}
-        <div className="project-card__image-wrap">
-          {project.coverImage && !imgError ? (
-            <Image
-              src={project.coverImage}
-              alt={project.title}
-              fill
-              sizes="(max-width: 768px) 100vw, 33vw"
-              style={{ objectFit: 'cover' }}
-              onError={() => setImgError(true)}
-            />
-          ) : (
-            <div style={{
-              position: 'absolute', inset: 0,
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontFamily: 'var(--font-display)', fontSize: '3rem', fontWeight: 700,
-              color: 'var(--color-border-2)',
-              background: 'var(--color-bg-4)',
-            }}>
-              {project.title[0]}
-            </div>
-          )}
-          <div className="project-card__overlay">
-            <span>View Project</span>
-          </div>
-        </div>
-
-        {/* Body */}
-        <div className="project-card__body">
-          <p className="project-card__index">{String(index + 1).padStart(2, '0')}</p>
-          <h3 className="project-card__title">{project.title}</h3>
-          <p className="project-card__desc">{project.description}</p>
-          <div className="project-card__tags">
-            {project.stack.slice(0, 4).map((tech) => (
-              <span key={tech} className="tag">{tech}</span>
-            ))}
-          </div>
-          <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
-            {project.liveUrl && (
-              <a href={project.liveUrl} target="_blank" rel="noopener noreferrer" className="link-underline" data-cursor="link">
-                Live ↗
-              </a>
-            )}
-            {project.githubUrl && (
-              <a href={project.githubUrl} target="_blank" rel="noopener noreferrer" className="link-underline" data-cursor="link">
-                Code ↗
-              </a>
-            )}
-          </div>
-        </div>
-      </div>
-    </motion.div>
-  );
-}
-
 export function ProjectsSection({ projects, featured }: ProjectsSectionProps): ReactElement {
-  const grid = gridProjects(projects);
-
   return (
     <section
       id="projects"
@@ -263,33 +194,6 @@ export function ProjectsSection({ projects, featured }: ProjectsSectionProps): R
         {featured.map((project, i) => (
           <FeaturedCard key={project.slug} project={project} index={i} />
         ))}
-
-        {/* Grid */}
-        {grid.length > 0 && (
-          <>
-            <p style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: 'var(--text-micro)',
-              color: 'var(--color-text-3)',
-              letterSpacing: 'var(--tracking-widest)',
-              textTransform: 'uppercase',
-              marginBottom: '2rem',
-            }}>
-              Other Projects
-            </p>
-            <div
-              style={{
-                display: 'grid',
-                gap: '1.5rem',
-              }}
-              className="grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
-            >
-              {grid.map((project, i) => (
-                <GridCard key={project.slug} project={project} index={i} />
-              ))}
-            </div>
-          </>
-        )}
 
         {/* View all */}
         <div style={{ marginTop: '3rem', textAlign: 'center' }}>
