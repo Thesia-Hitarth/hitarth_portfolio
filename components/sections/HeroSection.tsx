@@ -2,265 +2,318 @@
 
 /**
  * components/sections/HeroSection.tsx
+ * ─────────────────────────────────────────────────────────
+ * Premium hero: HITARTH / THESIA big display type,
+ * italic editorial role, code block right column,
+ * bottom strip with live clock, GSAP entrance.
+ * ─────────────────────────────────────────────────────────
  */
 
-import { useState, useEffect } from 'react';
-import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
-import { ArrowRight, FileText, ChevronDown } from 'lucide-react';
+import { useEffect, useRef } from 'react';
 import type { ReactElement } from 'react';
 import Link from 'next/link';
 import { siteConfig } from '@/config/site';
-import { GradientText } from '@/components/ui/GradientText';
-import { fadeInUp, fadeIn, floatVariants } from '@/lib/animations';
-import { GithubIcon, LinkedinIcon } from '@/components/ui/BrandIcons';
-import { CanvasBackground } from '@/components/ui/CanvasBackground';
+import { StatusBadge } from '@/components/shared/StatusBadge';
+import { useLiveClock } from '@/hooks/useLiveClock';
+import { useTextScramble } from '@/hooks/useTextScramble';
+import { useMagneticButton } from '@/hooks/useMagneticButton';
+import { useLoader } from '@/providers/LoaderProvider';
+import gsap from 'gsap';
 
-const [firstName, ...restNameParts] = siteConfig.name.split(' ');
-const restName = restNameParts.join(' ');
+// Typing animation component for code block
+function TypedString({ text }: { text: string }): ReactElement {
+  const ref = useRef<HTMLSpanElement | null>(null);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    let i = 0;
+    el.textContent = '';
+    const id = setInterval(() => {
+      el.textContent += text[i];
+      i++;
+      if (i >= text.length) clearInterval(id);
+    }, 35);
+    return () => clearInterval(id);
+  }, [text]);
+  return <span ref={ref} />;
+}
 
 export function HeroSection(): ReactElement {
-  const [scrolled, setScrolled] = useState(false);
-  const prefersReduced = useReducedMotion();
+  const clock = useLiveClock();
+  const { isLoaded } = useLoader();
+  const scrambledName = useTextScramble('HITARTH', isLoaded);
+  const scrambledLast = useTextScramble('THESIA', isLoaded);
+  const ctaViewRef = useMagneticButton<HTMLButtonElement>();
+  const ctaDownRef = useMagneticButton<HTMLAnchorElement>();
+  const sectionRef = useRef<HTMLElement | null>(null);
 
+  // GSAP entrance after loader
   useEffect(() => {
-    const handleScroll = (): void => setScrolled(window.scrollY > 100);
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+    if (!isLoaded) return;
 
-  const handleViewWork = (): void => {
+    const tl = gsap.timeline({ delay: 0.1 });
+    tl.from('.hero-status', { opacity: 0, y: 10, duration: 0.5, ease: 'power3.out' })
+      .from('.hero-name', { opacity: 0, y: 30, duration: 0.7, stagger: 0.08, ease: 'power3.out' }, '-=0.2')
+      .from('.hero-role', { opacity: 0, y: 20, duration: 0.5, ease: 'power3.out' }, '-=0.4')
+      .from('.hero-copy', { opacity: 0, y: 15, duration: 0.5, ease: 'power3.out' }, '-=0.3')
+      .from('.hero-cta', { opacity: 0, y: 15, duration: 0.5, stagger: 0.1, ease: 'power3.out' }, '-=0.3')
+      .from('.hero-location', { opacity: 0, y: 10, duration: 0.5, ease: 'power3.out' }, '-=0.3')
+      .from('.hero-code', { opacity: 0, x: 30, duration: 0.7, ease: 'power3.out' }, '-=0.5')
+      .from('.hero-bottom', { opacity: 0, duration: 0.5, ease: 'power3.out' }, '-=0.2');
+  }, [isLoaded]);
+
+  const handleViewWork = () => {
     document.getElementById('projects')?.scrollIntoView({ behavior: 'smooth' });
   };
 
   return (
     <section
       id="hero"
+      ref={sectionRef}
       aria-labelledby="hero-heading"
-      className="relative min-h-screen flex flex-col justify-center pt-16 overflow-hidden"
+      style={{
+        minHeight: '100dvh',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        position: 'relative',
+        padding: '0 clamp(1.5rem, 5vw, 4rem)',
+        paddingTop: '80px',
+        overflow: 'hidden',
+      }}
     >
-      {/* Grid background */}
+      {/* Subtle amber radial gradient */}
       <div
         aria-hidden="true"
-        className="absolute inset-0 pointer-events-none"
         style={{
-          backgroundImage:
-            'linear-gradient(var(--border) 1px, transparent 1px), linear-gradient(90deg, var(--border) 1px, transparent 1px)',
-          backgroundSize: '64px 64px',
-        }}
-      />
-      {/* Interactive canvas particles */}
-      <CanvasBackground />
-      {/* Radial fade overlay */}
-      <div
-        aria-hidden="true"
-        className="absolute inset-0 pointer-events-none"
-        style={{
-          background:
-            'radial-gradient(ellipse 80% 80% at 50% 50%, transparent 30%, var(--background) 100%)',
+          position: 'absolute',
+          inset: 0,
+          background: 'radial-gradient(ellipse 60% 40% at 20% 50%, rgba(232,201,122,0.04) 0%, transparent 70%)',
+          pointerEvents: 'none',
         }}
       />
 
-      <div className="relative z-10 mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8 py-16 lg:py-0">
-        <div className="grid grid-cols-1 gap-12 lg:grid-cols-2 lg:gap-16 lg:items-center">
-
+      {/* Main grid wrapper to center it and prevent overlap */}
+      <div style={{ flex: 1, display: 'flex', alignItems: 'center', width: '100%', padding: '2rem 0' }}>
+        {/* Main grid */}
+        <div
+          style={{
+            maxWidth: 'var(--container-max)',
+            margin: '0 auto',
+            width: '100%',
+            display: 'grid',
+            gap: '3rem',
+            alignItems: 'center',
+          }}
+          className="grid-cols-1 lg:grid-cols-[1fr_1fr]"
+        >
           {/* LEFT COLUMN */}
-          <div className="flex flex-col gap-6">
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
 
-            {/* 1. Availability badge */}
-            {siteConfig.openToWork && (
-              <motion.div
-                variants={prefersReduced ? undefined : fadeIn}
-                initial="hidden"
-                animate="visible"
-                transition={{ delay: 0.1 }}
-              >
-                <span className="inline-flex items-center gap-2 rounded-full border border-green-500/20 bg-green-500/10 px-3 py-1 text-sm font-medium text-green-600 dark:text-green-400">
-                  <span className="relative flex h-2 w-2">
-                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-75" />
-                    <span className="relative inline-flex h-2 w-2 rounded-full bg-green-500" />
-                  </span>
-                  Available for work
-                </span>
-              </motion.div>
-            )}
+            {/* Status badge */}
+            <div className="hero-status">
+              <StatusBadge />
+            </div>
 
-            {/* 2. Name */}
-            <motion.div
-              variants={prefersReduced ? undefined : fadeInUp}
-              initial="hidden"
-              animate="visible"
-              transition={{ delay: 0.2 }}
-            >
-              <h1
-                id="hero-heading"
-                className="text-5xl font-bold tracking-tight leading-[0.95] sm:text-6xl md:text-7xl lg:text-8xl"
-              >
-                <GradientText>{firstName}</GradientText>
-                {restName && <span className="text-foreground"> {restName}</span>}
-              </h1>
-            </motion.div>
-
-            {/* 3. Title with blinking cursor */}
-            <motion.div
-              variants={prefersReduced ? undefined : fadeInUp}
-              initial="hidden"
-              animate="visible"
-              transition={{ delay: 0.3 }}
-            >
-              <p className="text-2xl font-light text-muted-foreground sm:text-3xl md:text-4xl flex items-center gap-1">
-                {siteConfig.title}
+            {/* Name lines */}
+            <div>
+              <h1 id="hero-heading" style={{ margin: 0, padding: 0 }}>
                 <span
-                  aria-hidden="true"
-                  className="inline-block w-0.5 h-8 bg-primary ml-1 animate-[blink_1s_step-end_infinite]"
-                />
-              </p>
-            </motion.div>
+                  className="headline-hero hero-name"
+                  style={{ display: 'block' }}
+                  aria-label="HITARTH"
+                >
+                  {scrambledName}
+                </span>
+                <span
+                  className="headline-hero hero-name"
+                  style={{ display: 'block', color: 'var(--color-text-2)' }}
+                  aria-label="THESIA"
+                >
+                  {scrambledLast}
+                </span>
+              </h1>
+            </div>
 
-            {/* 4. Tagline */}
-            <motion.p
-              variants={prefersReduced ? undefined : fadeInUp}
-              initial="hidden"
-              animate="visible"
-              transition={{ delay: 0.4 }}
-              className="max-w-xl text-lg leading-relaxed text-muted-foreground md:text-xl"
+            {/* Role — editorial italic */}
+            <p
+              className="hero-role"
+              style={{
+                fontFamily: 'var(--font-editorial)',
+                fontStyle: 'italic',
+                fontWeight: 300,
+                fontSize: 'clamp(1.5rem, 3vw, 2.8rem)',
+                letterSpacing: 'var(--tracking-snug)',
+                color: 'var(--color-accent)',
+                margin: 0,
+                lineHeight: 1.2,
+              }}
+            >
+              Software Developer.
+            </p>
+
+            {/* Tagline */}
+            <p
+              className="hero-copy"
+              style={{
+                fontFamily: 'var(--font-body)',
+                fontWeight: 300,
+                fontSize: '0.92rem',
+                color: 'var(--color-text-2)',
+                lineHeight: 1.7,
+                maxWidth: '420px',
+                margin: 0,
+              }}
             >
               {siteConfig.tagline}
-            </motion.p>
+            </p>
 
-            {/* 5. CTA Buttons */}
-            <motion.div
-              variants={prefersReduced ? undefined : fadeInUp}
-              initial="hidden"
-              animate="visible"
-              transition={{ delay: 0.5 }}
-              className="flex flex-wrap items-center gap-3"
-            >
+            {/* CTAs */}
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem' }}>
               <button
+                ref={ctaViewRef}
                 onClick={handleViewWork}
-                className="group inline-flex items-center gap-2 rounded-lg bg-primary px-6 py-3 text-sm font-medium text-primary-foreground shadow-md transition-all duration-200 hover:opacity-90 hover:shadow-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+                data-cursor="magnetic"
+                className="btn-magnetic btn-filled hero-cta"
               >
-                View my work
-                <ArrowRight
-                  size={16}
-                  className="transition-transform duration-200 group-hover:translate-x-1"
-                />
+                <span>View my work ↗</span>
               </button>
-
               <Link
+                ref={ctaDownRef}
                 href="/resume"
-                className="inline-flex items-center gap-2 rounded-lg border border-border px-6 py-3 text-sm font-medium text-foreground transition-colors duration-200 hover:bg-muted focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+                data-cursor="magnetic"
+                className="btn-magnetic hero-cta"
               >
-                <FileText size={16} />
-                Resume
+                <span>Download CV</span>
               </Link>
+            </div>
 
-              <div className="flex items-center gap-2">
-                <a
-                  href={siteConfig.social.github}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="GitHub profile"
-                  className="flex h-10 w-10 items-center justify-center rounded-full border border-border text-muted-foreground transition-colors duration-200 hover:border-primary hover:text-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
-                >
-                  <GithubIcon size={18} />
-                </a>
-                <a
-                  href={siteConfig.social.linkedin}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="LinkedIn profile"
-                  className="flex h-10 w-10 items-center justify-center rounded-full border border-border text-muted-foreground transition-colors duration-200 hover:border-primary hover:text-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
-                >
-                  <LinkedinIcon size={18} />
-                </a>
-              </div>
-            </motion.div>
+            {/* Location & Time Info */}
+            <p
+              className="hero-location"
+              style={{
+                fontFamily: 'var(--font-mono)',
+                fontSize: '0.85rem',
+                fontWeight: 600,
+                color: 'var(--color-text-2)',
+                letterSpacing: 'var(--tracking-widest)',
+                textTransform: 'uppercase',
+                margin: 0,
+                marginTop: '1.25rem',
+              }}
+            >
+              Ahmedabad, India · IST UTC+5:30 · {clock}
+            </p>
           </div>
 
-          {/* RIGHT COLUMN — Terminal code card */}
-          <motion.div
-            variants={prefersReduced ? undefined : fadeIn}
-            initial="hidden"
-            animate="visible"
-            transition={{ delay: 0.6, duration: 0.6 }}
-            className="hidden lg:block"
+          {/* RIGHT COLUMN — Code block */}
+          <div
+            className="hero-code hidden lg:block"
             aria-hidden="true"
+            data-cursor="text"
           >
-            <motion.div
-              variants={prefersReduced ? undefined : floatVariants}
-              animate={prefersReduced ? undefined : 'animate'}
-              className="relative rounded-xl border border-primary/10 dark:border-zinc-800 bg-primary/[0.03] dark:bg-zinc-950/60 backdrop-blur-md shadow-2xl overflow-hidden"
-            >
-              {/* Terminal header */}
-              <div className="flex items-center gap-2 border-b border-primary/10 dark:border-zinc-800/60 bg-primary/[0.05] dark:bg-zinc-900/60 px-4 py-3">
-                <span className="h-3 w-3 rounded-full bg-red-500" />
-                <span className="h-3 w-3 rounded-full bg-yellow-500" />
-                <span className="h-3 w-3 rounded-full bg-green-500" />
-                <span className="ml-3 rounded-md border border-primary/10 dark:border-zinc-700 bg-primary/[0.02] dark:bg-zinc-800 px-3 py-0.5 text-xs font-semibold font-mono text-primary dark:text-zinc-400">
-                  developer.ts
-                </span>
+            <div className="code-block">
+              <div className="code-block__header">
+                <span className="dot" />
+                <span className="dot" />
+                <span className="dot" />
+                <span className="filename">developer.ts</span>
               </div>
-
-              {/* Code */}
-              <div className="p-5 font-mono text-sm leading-relaxed">
-                <p>
-                  <span className="text-violet-600 dark:text-violet-400">const</span>{' '}
-                  <span className="text-sky-600 dark:text-sky-400">developer</span>{' '}
-                  <span className="text-muted-foreground dark:text-zinc-500">= {'{'}</span>
-                </p>
-                <div className="ml-4 space-y-1">
-                  <CodeLine k="name" v={`"${siteConfig.name}"`} vClass="text-emerald-600 dark:text-emerald-400" />
-                  <CodeLine k="role" v={`"${siteConfig.title}"`} vClass="text-emerald-600 dark:text-emerald-400" />
-                  <p>
-                    <span className="text-sky-600 dark:text-sky-400">  stack</span>
-                    <span className="text-muted-foreground dark:text-zinc-500">: [</span>
-                    {['Next.js', 'TypeScript', 'Node.js'].map((t, i, arr) => (
-                      <span key={t}>
-                        <span className="text-emerald-600 dark:text-emerald-400">&quot;{t}&quot;</span>
-                        {i < arr.length - 1 && <span className="text-muted-foreground dark:text-zinc-500">, </span>}
-                      </span>
-                    ))}
-                    <span className="text-muted-foreground dark:text-zinc-500">],</span>
-                  </p>
-                  <CodeLine k="status" v='"open_to_work"' vClass="text-amber-600 dark:text-amber-400" />
-                  <CodeLine k="location" v={`"${siteConfig.location}"`} vClass="text-emerald-600 dark:text-emerald-400" />
-                  <CodeLine k="passion" v='"Building products people love"' vClass="text-emerald-600 dark:text-emerald-400" />
+              <div className="code-block__body">
+                <div>
+                  <span className="line-num">1</span>
+                  <span className="kw">const</span>{' '}
+                  <span className="fn">developer</span>{' '}
+                  <span className="pu">= {'{'}</span>
                 </div>
-                <p className="text-muted-foreground dark:text-zinc-500">{'}'}</p>
+                <div>
+                  <span className="line-num">2</span>
+                  <span className="fn" style={{ marginLeft: '1.5rem' }}>name</span>
+                  <span className="pu">: </span>
+                  <span className="str">&quot;{siteConfig.name}&quot;</span>
+                  <span className="pu">,</span>
+                </div>
+                <div>
+                  <span className="line-num">3</span>
+                  <span className="fn" style={{ marginLeft: '1.5rem' }}>role</span>
+                  <span className="pu">: </span>
+                  <span className="str">&quot;{siteConfig.title}&quot;</span>
+                  <span className="pu">,</span>
+                </div>
+                <div>
+                  <span className="line-num">4</span>
+                  <span className="fn" style={{ marginLeft: '1.5rem' }}>stack</span>
+                  <span className="pu">: [</span>
+                  <span className="str">&quot;Next.js&quot;</span>
+                  <span className="pu">, </span>
+                  <span className="str">&quot;TypeScript&quot;</span>
+                  <span className="pu">, </span>
+                  <span className="str">&quot;Node.js&quot;</span>
+                  <span className="pu">],</span>
+                </div>
+                <div>
+                  <span className="line-num">5</span>
+                  <span className="fn" style={{ marginLeft: '1.5rem' }}>status</span>
+                  <span className="pu">: </span>
+                  <span className="ac">&quot;open_to_work&quot;</span>
+                  <span className="pu">,</span>
+                </div>
+                <div>
+                  <span className="line-num">6</span>
+                  <span className="fn" style={{ marginLeft: '1.5rem' }}>location</span>
+                  <span className="pu">: </span>
+                  <span className="str">&quot;Ahmedabad, India&quot;</span>
+                  <span className="pu">,</span>
+                </div>
+                <div>
+                  <span className="line-num">7</span>
+                  <span className="fn" style={{ marginLeft: '1.5rem' }}>passion</span>
+                  <span className="pu">: </span>
+                  <span className="str">
+                    &quot;<TypedString text="Building products people love" />&quot;
+                  </span>
+                  <span className="pu">,</span>
+                </div>
+                <div>
+                  <span className="line-num">8</span>
+                  <span className="pu">{'}'}</span>
+                </div>
               </div>
-            </motion.div>
-          </motion.div>
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Scroll indicator */}
-      <AnimatePresence>
-        {!scrolled && (
-          <motion.div
-            initial={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.4 }}
-            className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
-            aria-hidden="true"
-          >
-            <p className="text-xs uppercase tracking-widest text-muted-foreground">
-              Scroll to explore
-            </p>
-            <ChevronDown size={20} className="text-muted-foreground animate-bounce" />
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {/* Bottom strip */}
+      <div
+        className="hero-bottom"
+        style={{
+          marginTop: 'auto',
+          paddingTop: '2rem',
+          paddingBottom: '2rem',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'flex-end',
+          width: '100%',
+        }}
+      >
+        <p
+          style={{
+            fontFamily: 'var(--font-mono)',
+            fontSize: 'var(--text-micro)',
+            color: 'var(--color-text-3)',
+            letterSpacing: 'var(--tracking-widest)',
+            textTransform: 'uppercase',
+            margin: 0,
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.5rem',
+          }}
+        >
+          <span className="animate-bob" style={{ display: 'inline-block' }}>↓</span>
+          {' '}Scroll to explore
+        </p>
+      </div>
     </section>
-  );
-}
-
-function CodeLine({ k, v, vClass }: { k: string; v: string; vClass: string }): ReactElement {
-  return (
-    <p>
-      <span className="text-sky-600 dark:text-sky-400">  {k}</span>
-      <span className="text-muted-foreground dark:text-zinc-500">: </span>
-      <span className={vClass}>{v}</span>
-      <span className="text-muted-foreground dark:text-zinc-500">,</span>
-    </p>
   );
 }

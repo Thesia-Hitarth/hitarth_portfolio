@@ -3,130 +3,105 @@
 /**
  * components/sections/ContactSection.tsx
  * ─────────────────────────────────────────────────────────
- * Contact section containing contact info cards and an
- * interactive message form posting to /api/contact.
+ * Full-viewport dark section: centred large Syne headline,
+ * huge italic Cormorant Garamond email link, social row,
+ * and the existing form restyled with new design tokens.
+ * Keeps all existing form logic intact.
  * ─────────────────────────────────────────────────────────
  */
 
 import { useState, type ReactElement, type FocusEvent, type FormEvent } from 'react';
-import {
-  Mail,
-  MapPin,
-  Clock,
-  AlertCircle,
-  CheckCircle2,
-  Send,
-  Loader2,
-  RefreshCw,
-  X
-} from 'lucide-react';
-import { SectionHeader } from '@/components/ui/SectionHeader';
-import { AnimatedSection } from '@/components/ui/AnimatedSection';
+import { AlertCircle, CheckCircle2, Send, Loader2, RefreshCw, X } from 'lucide-react';
+import { SectionLabel } from '@/components/shared/SectionLabel';
 import { siteConfig } from '@/config/site';
-import { GithubIcon, LinkedinIcon } from '@/components/ui/BrandIcons';
 import { contactFormSchema, type ContactFormData, type ContactFormErrors } from '@/lib/validations';
-import { cn } from '@/lib/utils';
+import { motion } from 'framer-motion';
+
+const inputStyle: React.CSSProperties = {
+  width: '100%',
+  background: 'var(--color-bg-3)',
+  border: '1px solid var(--color-border)',
+  borderRadius: '6px',
+  padding: '0.85rem 1rem',
+  fontFamily: 'var(--font-body)',
+  fontSize: 'var(--text-sm)',
+  fontWeight: 300,
+  color: 'var(--color-text-1)',
+  outline: 'none',
+  transition: 'border-color var(--dur-base) var(--ease-out-expo)',
+  boxSizing: 'border-box' as const,
+};
+
+const labelStyle: React.CSSProperties = {
+  fontFamily: 'var(--font-mono)',
+  fontSize: 'var(--text-micro)',
+  letterSpacing: 'var(--tracking-wider)',
+  textTransform: 'uppercase' as const,
+  color: 'var(--color-text-3)',
+  display: 'block',
+  marginBottom: '0.5rem',
+};
 
 export function ContactSection(): ReactElement {
-  const [formData, setFormData] = useState<ContactFormData>({
-    name: '',
-    email: '',
-    subject: '',
-    message: '',
-  });
-
+  const [formData, setFormData] = useState<ContactFormData>({ name: '', email: '', subject: '', message: '' });
   const [errors, setErrors] = useState<ContactFormErrors>({});
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState<string>('');
 
-  // Validate a single field on blur
   const handleBlur = (e: FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     const key = name as keyof ContactFormData;
-
-    // Run safeParse on the specific field schema by picking it
     const fieldSchema = contactFormSchema.shape[key];
     const result = fieldSchema.safeParse(value);
-
     if (!result.success) {
-      setErrors((prev) => ({
-        ...prev,
-        [key]: result.error.issues[0].message,
-      }));
+      setErrors((prev) => ({ ...prev, [key]: result.error.issues[0].message }));
     } else {
-      setErrors((prev) => {
-        const next = { ...prev };
-        delete next[key];
-        return next;
-      });
+      setErrors((prev) => { const next = { ...prev }; delete next[key]; return next; });
     }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-
-    // If there is an existing error, clear it as the user types
+    setFormData((prev) => ({ ...prev, [name]: value }));
     if (errors[name as keyof ContactFormData]) {
-      setErrors((prev) => {
-        const next = { ...prev };
-        delete next[name as keyof ContactFormData];
-        return next;
-      });
+      setErrors((prev) => { const next = { ...prev }; delete next[name as keyof ContactFormData]; return next; });
     }
   };
 
-  // Submit contact form to Next API endpoint
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setStatus('loading');
     setErrorMessage('');
-
-    // Validate entire form state with Zod
     const result = contactFormSchema.safeParse(formData);
     if (!result.success) {
       const fieldErrors: ContactFormErrors = {};
       result.error.issues.forEach((err) => {
         const fieldName = err.path[0] as keyof ContactFormData;
-        if (!fieldErrors[fieldName]) {
-          fieldErrors[fieldName] = err.message;
-        }
+        if (!fieldErrors[fieldName]) fieldErrors[fieldName] = err.message;
       });
       setErrors(fieldErrors);
       setStatus('error');
-      setErrorMessage('Please fix the validation errors in the form fields.');
+      setErrorMessage('Please fix the validation errors above.');
       return;
     }
-
     try {
       const response = await fetch('/api/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
       });
-
       const data = await response.json();
-
       if (!response.ok) {
-        if (response.status === 422 && data.fields) {
-          setErrors(data.fields);
-          throw new Error('Validation failed on server-side criteria.');
-        }
+        if (response.status === 422 && data.fields) { setErrors(data.fields); throw new Error('Validation failed on server.'); }
         throw new Error(data.error || 'Something went wrong. Please try again.');
       }
-
       setStatus('success');
-      // Clear form on success
       setFormData({ name: '', email: '', subject: '', message: '' });
       setErrors({});
     } catch (err: unknown) {
       const error = err as Error;
-      console.error('[contact] Form submission error: ', error);
       setStatus('error');
-      setErrorMessage(error.message || 'Failed to dispatch message. Please try again.');
+      setErrorMessage(error.message || 'Failed to send. Please try again.');
     }
   };
 
@@ -134,304 +109,311 @@ export function ContactSection(): ReactElement {
     <section
       id="contact"
       aria-labelledby="contact-heading"
-      className="py-24 lg:py-32 bg-muted/10 border-t border-border"
+      className="section"
+      style={{
+        background: 'var(--color-bg)',
+        position: 'relative',
+        minHeight: '80vh',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+      }}
     >
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-6xl">
-        <SectionHeader
-          id="contact-heading"
-          label="08 / Contact"
-          title="Let's work together"
-          subtitle="I'm currently open to full-time roles and freelance projects. Have something in mind? Send a message — I reply within 24 hours."
-          align="center"
-        />
+      {/* Radial amber gradient */}
+      <div aria-hidden="true" style={{
+        position: 'absolute', inset: 0,
+        background: 'radial-gradient(ellipse 80% 60% at 50% 120%, rgba(232,201,122,0.06) 0%, transparent 70%)',
+        pointerEvents: 'none',
+      }} />
 
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-12 mt-12">
-          {/* LEFT COLUMN: Contact Details & Status Info */}
-          <div className="lg:col-span-2 space-y-6">
-            {/* Availability Card */}
-            <div className="rounded-2xl border border-border bg-card p-6 shadow-sm">
-              <div className="flex items-center gap-2">
-                <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-                </span>
-                <span className="text-xs font-mono font-semibold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
-                  Available for work
-                </span>
-              </div>
-              <p className="mt-3 text-sm font-medium text-foreground">
-                Open to full-time roles in India (On-site, Hybrid, or Remote mode)
-              </p>
-            </div>
+      <div className="container-site" style={{ position: 'relative', zIndex: 1 }}>
+        <SectionLabel number="07" label="Contact" />
 
-            {/* Core Info Block */}
-            <div className="rounded-2xl border border-border bg-card p-6 shadow-sm space-y-4">
-              <h3 className="font-mono text-xs font-semibold text-primary uppercase tracking-widest mb-2">
-                Contact Details
+        {/* Large headline */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-80px' }}
+          transition={{ duration: 0.65, ease: [0.16, 1, 0.3, 1] }}
+        >
+          <h2
+            id="contact-heading"
+            style={{
+              fontFamily: 'var(--font-display)',
+              fontWeight: 600,
+              fontSize: 'var(--text-xl)',
+              letterSpacing: 'var(--tracking-tight)',
+              color: 'var(--color-text-1)',
+              lineHeight: 1.1,
+              marginBottom: '2rem',
+            }}
+          >
+            Let&rsquo;s build something<br />
+            <span style={{ color: 'var(--color-text-2)' }}>remarkable.</span>
+          </h2>
+
+          {/* Email link */}
+          <a
+            href={`mailto:${siteConfig.email}`}
+            data-cursor="link"
+            style={{
+              fontFamily: 'var(--font-editorial)',
+              fontStyle: 'italic',
+              fontWeight: 300,
+              fontSize: 'clamp(1.5rem, 3vw, 2.5rem)',
+              color: 'var(--color-text-1)',
+              letterSpacing: 'var(--tracking-snug)',
+              display: 'inline-block',
+              position: 'relative',
+              transition: 'color var(--dur-base) var(--ease-out-expo)',
+              textDecoration: 'none',
+              marginBottom: '1.5rem',
+            }}
+            className="link-underline"
+          >
+            {siteConfig.email}
+          </a>
+
+          {/* Social row */}
+          <div style={{ display: 'flex', gap: '2rem', marginBottom: '4rem' }}>
+            {[
+              { label: 'GitHub',   href: siteConfig.social.github },
+              { label: 'LinkedIn', href: siteConfig.social.linkedin },
+            ].map(({ label, href }) => (
+              <a
+                key={label}
+                href={href}
+                target="_blank"
+                rel="noopener noreferrer"
+                data-cursor="link"
+                style={{
+                  fontFamily: 'var(--font-mono)',
+                  fontSize: '0.75rem',
+                  letterSpacing: 'var(--tracking-wider)',
+                  textTransform: 'uppercase',
+                  color: 'var(--color-text-3)',
+                  transition: 'color var(--dur-base) var(--ease-out-expo), transform var(--dur-base) var(--ease-out-expo)',
+                  textDecoration: 'none',
+                }}
+                onMouseEnter={(e) => {
+                  const el = e.currentTarget as HTMLAnchorElement;
+                  el.style.color = 'var(--color-accent)';
+                  el.style.transform = 'translateX(2px)';
+                }}
+                onMouseLeave={(e) => {
+                  const el = e.currentTarget as HTMLAnchorElement;
+                  el.style.color = 'var(--color-text-3)';
+                  el.style.transform = 'translateX(0)';
+                }}
+              >
+                {label} ↗
+              </a>
+            ))}
+          </div>
+        </motion.div>
+
+        {/* Contact Form */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-60px' }}
+          transition={{ duration: 0.65, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
+          style={{ maxWidth: '560px' }}
+        >
+          {status === 'success' ? (
+            <div style={{
+              background: 'var(--color-bg-3)',
+              border: '1px solid var(--color-border)',
+              borderRadius: '10px',
+              padding: '3rem',
+              textAlign: 'center',
+            }}>
+              <CheckCircle2 size={40} color="#5A9E6F" style={{ margin: '0 auto 1rem' }} />
+              <h3 style={{
+                fontFamily: 'var(--font-display)',
+                fontSize: '1.2rem',
+                fontWeight: 500,
+                color: 'var(--color-text-1)',
+                letterSpacing: 'var(--tracking-snug)',
+                marginBottom: '0.5rem',
+              }}>
+                Message sent.
               </h3>
-
-              <div className="space-y-4">
-                <a
-                  href={`mailto:${siteConfig.email}`}
-                  className="flex items-center gap-3 text-sm text-muted-foreground hover:text-primary transition-colors py-1 focus:outline-none focus:underline"
-                >
-                  <Mail size={16} className="text-primary shrink-0" />
-                  <span>{siteConfig.email}</span>
-                </a>
-
-                <div className="flex items-center gap-3 text-sm text-muted-foreground py-1">
-                  <MapPin size={16} className="text-primary shrink-0" />
-                  <span>{siteConfig.location}</span>
-                </div>
-
-                <a
-                  href={siteConfig.social.linkedin}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-3 text-sm text-muted-foreground hover:text-primary transition-colors py-1 focus:outline-none focus:underline"
-                >
-                  <LinkedinIcon size={16} className="text-primary shrink-0" />
-                  <span>LinkedIn Profile</span>
-                </a>
-
-                <a
-                  href={siteConfig.social.github}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-3 text-sm text-muted-foreground hover:text-primary transition-colors py-1 focus:outline-none focus:underline"
-                >
-                  <GithubIcon size={16} className="text-primary shrink-0" />
-                  <span>GitHub Profile</span>
-                </a>
-              </div>
-            </div>
-
-            {/* Quick response note */}
-            <div className="flex items-center gap-2 rounded-xl bg-muted/40 p-4 border border-border/40">
-              <Clock size={14} className="text-primary shrink-0" />
-              <p className="text-xs text-muted-foreground">
-                Typical response time: <span className="font-semibold text-foreground">within 24 hours</span>
+              <p style={{
+                fontFamily: 'var(--font-body)',
+                fontWeight: 300,
+                fontSize: 'var(--text-sm)',
+                color: 'var(--color-text-2)',
+                lineHeight: 1.7,
+                marginBottom: '1.5rem',
+              }}>
+                I&apos;ve received your message and will reply within 24 hours.
               </p>
+              <button
+                onClick={() => setStatus('idle')}
+                className="btn-magnetic"
+                style={{ fontSize: '0.65rem' }}
+              >
+                <span>Send another</span>
+              </button>
             </div>
-          </div>
-
-          {/* RIGHT COLUMN: Form Submission Area */}
-          <div className="lg:col-span-3">
-            <AnimatedSection>
-              {status === 'success' ? (
-                // Success State Confirmation Banner
-                <div
-                  className={cn(
-                    'rounded-2xl border border-emerald-500/20 bg-emerald-500/5 p-8 text-center shadow-sm',
-                    'animate-in fade-in zoom-in duration-300'
-                  )}
-                >
-                  <div className="flex justify-center mb-4">
-                    <CheckCircle2 className="h-12 w-12 text-emerald-500 animate-bounce" />
-                  </div>
-                  <h3 className="text-xl font-bold text-foreground">Message sent!</h3>
-                  <p className="text-sm text-muted-foreground mt-2 max-w-sm mx-auto leading-relaxed">
-                    Thanks for reaching out. I have received your message and will read through it and reply within 24 hours.
-                  </p>
-                  
-                  <div className="mt-6 flex flex-wrap justify-center gap-3">
-                    <a
-                      href={siteConfig.social.linkedin}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 rounded-lg border border-border bg-card px-4 py-2 text-xs font-semibold text-foreground hover:bg-muted transition-colors focus:outline-none"
-                    >
-                      Connect on LinkedIn
-                    </a>
-                    <button
-                      onClick={() => setStatus('idle')}
-                      className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground hover:opacity-90 transition-opacity focus:outline-none"
-                    >
-                      Send another message
-                    </button>
-                  </div>
-                </div>
-              ) : (
-                // Interactive Form UI
-                <form onSubmit={handleSubmit} className="space-y-5">
-                  
-                  {/* Error Banner */}
-                  {status === 'error' && errorMessage && (
-                    <div className="relative flex items-start gap-3 rounded-lg border border-red-500/20 bg-red-500/5 p-4 text-sm text-red-600 dark:text-red-400 animate-in fade-in slide-in-from-top-2 duration-200">
-                      <AlertCircle size={16} className="shrink-0 mt-0.5" />
-                      <div className="flex-1 pr-6">{errorMessage}</div>
-                      <button
-                        type="button"
-                        onClick={() => setErrorMessage('')}
-                        className="absolute right-2 top-2 text-red-400 hover:text-red-600 cursor-pointer"
-                        aria-label="Dismiss error"
-                      >
-                        <X size={16} />
-                      </button>
-                    </div>
-                  )}
-
-                  {/* Name field */}
-                  <div className="space-y-1.5">
-                    <label htmlFor="form-name" className="text-sm font-semibold text-foreground">
-                      Your Name
-                    </label>
-                    <input
-                      id="form-name"
-                      type="text"
-                      name="name"
-                      placeholder="John Doe"
-                      value={formData.name}
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      disabled={status === 'loading'}
-                      required
-                      className={cn(
-                        'w-full bg-card border border-border rounded-lg px-4 py-3 text-sm text-foreground outline-none transition-all',
-                        'focus:border-primary focus:ring-2 focus:ring-primary/20',
-                        errors.name && 'border-red-500 focus:border-red-500 focus:ring-red-500/10'
-                      )}
-                    />
-                    {errors.name && (
-                      <p className="text-red-500 text-xs mt-1 flex items-center gap-1 animate-in fade-in duration-150">
-                        <AlertCircle size={12} />
-                        {errors.name}
-                      </p>
-                    )}
-                  </div>
-
-                  {/* Email field */}
-                  <div className="space-y-1.5">
-                    <label htmlFor="form-email" className="text-sm font-semibold text-foreground">
-                      Email Address
-                    </label>
-                    <input
-                      id="form-email"
-                      type="email"
-                      name="email"
-                      placeholder="your@email.com"
-                      value={formData.email}
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      disabled={status === 'loading'}
-                      required
-                      className={cn(
-                        'w-full bg-card border border-border rounded-lg px-4 py-3 text-sm text-foreground outline-none transition-all',
-                        'focus:border-primary focus:ring-2 focus:ring-primary/20',
-                        errors.email && 'border-red-500 focus:border-red-500 focus:ring-red-500/10'
-                      )}
-                    />
-                    {errors.email && (
-                      <p className="text-red-500 text-xs mt-1 flex items-center gap-1 animate-in fade-in duration-150">
-                        <AlertCircle size={12} />
-                        {errors.email}
-                      </p>
-                    )}
-                  </div>
-
-                  {/* Subject field */}
-                  <div className="space-y-1.5">
-                    <label htmlFor="form-subject" className="text-sm font-semibold text-foreground">
-                      Subject
-                    </label>
-                    <input
-                      id="form-subject"
-                      type="text"
-                      name="subject"
-                      placeholder="What's this about?"
-                      value={formData.subject}
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      disabled={status === 'loading'}
-                      required
-                      className={cn(
-                        'w-full bg-card border border-border rounded-lg px-4 py-3 text-sm text-foreground outline-none transition-all',
-                        'focus:border-primary focus:ring-2 focus:ring-primary/20',
-                        errors.subject && 'border-red-500 focus:border-red-500 focus:ring-red-500/10'
-                      )}
-                    />
-                    {errors.subject && (
-                      <p className="text-red-500 text-xs mt-1 flex items-center gap-1 animate-in fade-in duration-150">
-                        <AlertCircle size={12} />
-                        {errors.subject}
-                      </p>
-                    )}
-                  </div>
-
-                  {/* Message field */}
-                  <div className="space-y-1.5">
-                    <div className="flex justify-between items-center">
-                      <label htmlFor="form-message" className="text-sm font-semibold text-foreground">
-                        Message
-                      </label>
-                      <span
-                        className={cn(
-                          'text-[10px] font-mono text-muted-foreground',
-                          formData.message.length > 2000 && 'text-red-500 font-bold'
-                        )}
-                      >
-                        {formData.message.length} / 2000
-                      </span>
-                    </div>
-                    <textarea
-                      id="form-message"
-                      name="message"
-                      rows={5}
-                      placeholder="Tell me about your project, team, or opportunity..."
-                      value={formData.message}
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      disabled={status === 'loading'}
-                      required
-                      className={cn(
-                        'w-full bg-card border border-border rounded-lg px-4 py-3 text-sm text-foreground outline-none transition-all resize-none',
-                        'focus:border-primary focus:ring-2 focus:ring-primary/20',
-                        errors.message && 'border-red-500 focus:border-red-500 focus:ring-red-500/10'
-                      )}
-                    />
-                    {errors.message && (
-                      <p className="text-red-500 text-xs mt-1 flex items-center gap-1 animate-in fade-in duration-150">
-                        <AlertCircle size={12} />
-                        {errors.message}
-                      </p>
-                    )}
-                  </div>
-
-                  {/* Submit Button */}
+          ) : (
+            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+              {/* Error banner */}
+              {status === 'error' && errorMessage && (
+                <div style={{
+                  display: 'flex', alignItems: 'flex-start', gap: '0.75rem',
+                  background: 'rgba(184, 85, 85, 0.08)',
+                  border: '1px solid rgba(184, 85, 85, 0.2)',
+                  borderRadius: '6px',
+                  padding: '0.75rem 1rem',
+                  position: 'relative',
+                }}>
+                  <AlertCircle size={14} color="var(--color-error)" style={{ marginTop: '0.1rem', flexShrink: 0 }} />
+                  <span style={{ fontFamily: 'var(--font-body)', fontSize: 'var(--text-sm)', fontWeight: 300, color: 'var(--color-error)', flex: 1 }}>
+                    {errorMessage}
+                  </span>
                   <button
-                    type="submit"
-                    disabled={status === 'loading'}
-                    className={cn(
-                      'w-full py-3 px-6 rounded-lg font-semibold text-sm transition-all flex items-center justify-center gap-2 cursor-pointer shadow-sm select-none',
-                      'focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2',
-                      status === 'loading'
-                        ? 'bg-muted border border-border text-muted-foreground cursor-not-allowed'
-                        : 'bg-primary text-primary-foreground hover:opacity-90'
-                    )}
+                    type="button"
+                    onClick={() => setErrorMessage('')}
+                    style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-error)', position: 'absolute', right: '0.75rem', top: '0.75rem' }}
+                    aria-label="Dismiss error"
                   >
-                    {status === 'loading' ? (
-                      <>
-                        <Loader2 size={16} className="animate-spin" />
-                        <span>Sending Message...</span>
-                      </>
-                    ) : status === 'error' ? (
-                      <>
-                        <RefreshCw size={16} />
-                        <span>Try Again</span>
-                      </>
-                    ) : (
-                      <>
-                        <Send size={16} />
-                        <span>Send Message</span>
-                      </>
-                    )}
+                    <X size={14} />
                   </button>
-
-                </form>
+                </div>
               )}
-            </AnimatedSection>
-          </div>
-        </div>
+
+              {/* Name */}
+              <div>
+                <label htmlFor="form-name" style={labelStyle}>Your Name</label>
+                <input
+                  id="form-name"
+                  type="text"
+                  name="name"
+                  placeholder="John Doe"
+                  value={formData.name}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  disabled={status === 'loading'}
+                  required
+                  style={{ ...inputStyle, borderColor: errors.name ? 'var(--color-error)' : 'var(--color-border)' }}
+                  onFocus={(e) => { (e.currentTarget as HTMLInputElement).style.borderColor = errors.name ? 'var(--color-error)' : 'var(--color-accent)'; }}
+                  onBlurCapture={(e) => { (e.currentTarget as HTMLInputElement).style.borderColor = errors.name ? 'var(--color-error)' : 'var(--color-border)'; }}
+                />
+                {errors.name && (
+                  <p style={{ fontFamily: 'var(--font-mono)', fontSize: 'var(--text-micro)', color: 'var(--color-error)', marginTop: '0.3rem', letterSpacing: 'var(--tracking-wide)' }}>
+                    {errors.name}
+                  </p>
+                )}
+              </div>
+
+              {/* Email */}
+              <div>
+                <label htmlFor="form-email" style={labelStyle}>Email Address</label>
+                <input
+                  id="form-email"
+                  type="email"
+                  name="email"
+                  placeholder="your@email.com"
+                  value={formData.email}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  disabled={status === 'loading'}
+                  required
+                  style={{ ...inputStyle, borderColor: errors.email ? 'var(--color-error)' : 'var(--color-border)' }}
+                  onFocus={(e) => { (e.currentTarget as HTMLInputElement).style.borderColor = errors.email ? 'var(--color-error)' : 'var(--color-accent)'; }}
+                  onBlurCapture={(e) => { (e.currentTarget as HTMLInputElement).style.borderColor = errors.email ? 'var(--color-error)' : 'var(--color-border)'; }}
+                />
+                {errors.email && (
+                  <p style={{ fontFamily: 'var(--font-mono)', fontSize: 'var(--text-micro)', color: 'var(--color-error)', marginTop: '0.3rem' }}>
+                    {errors.email}
+                  </p>
+                )}
+              </div>
+
+              {/* Subject */}
+              <div>
+                <label htmlFor="form-subject" style={labelStyle}>Subject</label>
+                <input
+                  id="form-subject"
+                  type="text"
+                  name="subject"
+                  placeholder="What's this about?"
+                  value={formData.subject}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  disabled={status === 'loading'}
+                  required
+                  style={{ ...inputStyle, borderColor: errors.subject ? 'var(--color-error)' : 'var(--color-border)' }}
+                  onFocus={(e) => { (e.currentTarget as HTMLInputElement).style.borderColor = errors.subject ? 'var(--color-error)' : 'var(--color-accent)'; }}
+                  onBlurCapture={(e) => { (e.currentTarget as HTMLInputElement).style.borderColor = errors.subject ? 'var(--color-error)' : 'var(--color-border)'; }}
+                />
+              </div>
+
+              {/* Message */}
+              <div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <label htmlFor="form-message" style={labelStyle}>Message</label>
+                  <span style={{ fontFamily: 'var(--font-mono)', fontSize: 'var(--text-micro)', color: formData.message.length > 2000 ? 'var(--color-error)' : 'var(--color-text-3)' }}>
+                    {formData.message.length} / 2000
+                  </span>
+                </div>
+                <textarea
+                  id="form-message"
+                  name="message"
+                  rows={5}
+                  placeholder="Tell me about your project, team, or opportunity..."
+                  value={formData.message}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  disabled={status === 'loading'}
+                  required
+                  style={{ ...inputStyle, resize: 'none', borderColor: errors.message ? 'var(--color-error)' : 'var(--color-border)' }}
+                  onFocus={(e) => { (e.currentTarget as HTMLTextAreaElement).style.borderColor = errors.message ? 'var(--color-error)' : 'var(--color-accent)'; }}
+                  onBlurCapture={(e) => { (e.currentTarget as HTMLTextAreaElement).style.borderColor = errors.message ? 'var(--color-error)' : 'var(--color-border)'; }}
+                />
+              </div>
+
+              {/* Submit */}
+              <button
+                type="submit"
+                disabled={status === 'loading'}
+                className={status === 'loading' ? '' : 'btn-magnetic btn-filled'}
+                style={{
+                  width: '100%',
+                  padding: '0.85rem 2rem',
+                  borderRadius: '100px',
+                  fontFamily: 'var(--font-body)',
+                  fontSize: 'var(--text-xs)',
+                  fontWeight: 500,
+                  letterSpacing: 'var(--tracking-wider)',
+                  textTransform: 'uppercase',
+                  cursor: status === 'loading' ? 'not-allowed' : 'none',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '0.5rem',
+                  ...(status === 'loading' ? {
+                    background: 'var(--color-bg-4)',
+                    border: '1px solid var(--color-border)',
+                    color: 'var(--color-text-3)',
+                  } : {}),
+                }}
+              >
+                <span>
+                  {status === 'loading' ? (
+                    <><Loader2 size={14} style={{ display: 'inline', animation: 'spin 1s linear infinite' }} /> Sending…</>
+                  ) : status === 'error' ? (
+                    <><RefreshCw size={14} style={{ display: 'inline' }} /> Try Again</>
+                  ) : (
+                    <><Send size={14} style={{ display: 'inline' }} /> Send Message</>
+                  )}
+                </span>
+              </button>
+            </form>
+          )}
+        </motion.div>
       </div>
     </section>
   );

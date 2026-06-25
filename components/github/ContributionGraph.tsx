@@ -13,12 +13,12 @@ interface ContributionGraphProps {
   contributions: ContributionDay[];
 }
 
-const LEVEL_CLASSES: Record<number, string> = {
-  0: 'bg-zinc-100 dark:bg-zinc-900 border-zinc-200/40 dark:border-zinc-800/40',
-  1: 'bg-emerald-100 dark:bg-emerald-950/60 border-emerald-200/30 dark:border-emerald-900/20',
-  2: 'bg-emerald-300 dark:bg-emerald-800/70 border-emerald-400/30 dark:border-emerald-800/30',
-  3: 'bg-emerald-500 dark:bg-emerald-600 border-emerald-500/30 dark:border-emerald-600/30',
-  4: 'bg-emerald-700 dark:bg-emerald-400 border-emerald-700/30 dark:border-emerald-400/30',
+const LEVEL_STYLES: Record<number, React.CSSProperties> = {
+  0: { background: 'var(--color-bg-4)', border: '1px solid var(--color-border)' },
+  1: { background: 'rgba(232, 201, 122, 0.15)', border: '1px solid rgba(232, 201, 122, 0.1)' },
+  2: { background: 'rgba(232, 201, 122, 0.35)', border: '1px solid rgba(232, 201, 122, 0.2)' },
+  3: { background: 'rgba(232, 201, 122, 0.65)', border: '1px solid rgba(232, 201, 122, 0.4)' },
+  4: { background: 'var(--color-accent)',        border: '1px solid rgba(232, 201, 122, 0.6)' },
 };
 
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -97,63 +97,86 @@ export function ContributionGraph({ contributions }: ContributionGraphProps): Re
   }, [gridData]);
 
   return (
-    <div className="w-full rounded-2xl border border-border bg-card/40 p-6 shadow-sm">
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="text-sm font-semibold text-foreground">Contribution Activity</h3>
-        <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-          <span>Less</span>
-          <div className="flex gap-1">
-            {[0, 1, 2, 3, 4].map((lvl) => (
-              <div
-                key={lvl}
-                className={cn('h-3.5 w-3.5 rounded-sm border', LEVEL_CLASSES[lvl])}
-                aria-hidden="true"
-              />
-            ))}
-          </div>
-          <span>More</span>
+    <div
+      style={{
+        width: '100%',
+        overflow: 'hidden',
+      }}
+    >
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'flex-end',
+          gap: '0.5rem',
+          marginBottom: '0.75rem',
+        }}
+      >
+        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 'var(--text-micro)', color: 'var(--color-text-3)', letterSpacing: 'var(--tracking-wide)' }}>Less</span>
+        <div style={{ display: 'flex', gap: '3px' }}>
+          {[0, 1, 2, 3, 4].map((lvl) => (
+            <div
+              key={lvl}
+              style={{ width: '10px', height: '10px', borderRadius: '2px', ...LEVEL_STYLES[lvl] }}
+              aria-hidden="true"
+            />
+          ))}
         </div>
+        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 'var(--text-micro)', color: 'var(--color-text-3)', letterSpacing: 'var(--tracking-wide)' }}>More</span>
       </div>
 
-      {/* Heatmap Area */}
-      <div className="w-full overflow-x-auto select-none scrollbar-thin scrollbar-thumb-border">
-        <div className="min-w-[720px] pb-2 pt-1">
-          {/* Month Header Labels */}
-          <div className="relative h-6 text-xs text-muted-foreground mb-1 font-mono">
+      <div style={{ width: '100%', overflowX: 'auto' }} className="no-scrollbar">
+        <div style={{ minWidth: '720px', paddingBottom: '0.5rem', paddingTop: '0.25rem' }}>
+          {/* Month labels */}
+          <div style={{ position: 'relative', height: '1.25rem', marginBottom: '0.25rem' }}>
             {monthLabels.map(({ label, colIndex }) => (
               <span
                 key={`${label}-${colIndex}`}
-                className="absolute"
-                style={{ left: `${(colIndex * 13) + 30}px` }}
+                style={{
+                  position: 'absolute',
+                  left: `${(colIndex * 13) + 30}px`,
+                  fontFamily: 'var(--font-mono)',
+                  fontSize: 'var(--text-micro)',
+                  color: 'var(--color-text-3)',
+                  letterSpacing: 'var(--tracking-wide)',
+                }}
               >
                 {label}
               </span>
             ))}
           </div>
 
-          {/* Grid Layout (Columns of Weeks) */}
-          <div className="flex gap-[3px]">
-            {/* Days Indicator Sidebar */}
-            <div className="flex flex-col justify-between text-[10px] text-muted-foreground w-7 font-mono pr-2 py-0.5 select-none">
-              <span>Sun</span>
-              <span>Tue</span>
-              <span>Thu</span>
-              <span>Sat</span>
+          {/* Grid */}
+          <div style={{ display: 'flex', gap: '3px' }}>
+            {/* Day labels */}
+            <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', width: '28px', paddingBlock: '2px' }}>
+              {['Sun', 'Tue', 'Thu', 'Sat'].map((d) => (
+                <span key={d} style={{ fontFamily: 'var(--font-mono)', fontSize: '0.58rem', color: 'var(--color-text-3)' }}>{d}</span>
+              ))}
             </div>
 
-            {/* Heatmap Columns */}
-            <div className="flex gap-[3px] flex-1">
+            {/* Columns */}
+            <div style={{ display: 'flex', gap: '3px', flex: 1 }}>
               {gridData.map((week, colIdx) => (
-                <div key={colIdx} className="flex flex-col gap-[3px]">
+                <div key={colIdx} style={{ display: 'flex', flexDirection: 'column', gap: '3px' }}>
                   {week.map((day) => (
                     <div
                       key={day.date}
                       title={`${day.count} contributions on ${day.formattedDate}`}
-                      className={cn(
-                        'h-[10px] w-[10px] rounded-[2px] border cursor-crosshair transition-all duration-150',
-                        'hover:scale-125 hover:z-10 hover:shadow-[0_0_8px_rgba(16,185,129,0.3)]',
-                        LEVEL_CLASSES[day.level]
-                      )}
+                      style={{
+                        width: '10px', height: '10px', borderRadius: '2px',
+                        cursor: 'crosshair',
+                        transition: 'transform 150ms ease, box-shadow 150ms ease',
+                        ...LEVEL_STYLES[day.level],
+                      }}
+                      onMouseEnter={(e) => {
+                        (e.currentTarget as HTMLDivElement).style.transform = 'scale(1.3)';
+                        if (day.level > 0) (e.currentTarget as HTMLDivElement).style.boxShadow = '0 0 6px rgba(232,201,122,0.4)';
+                      }}
+                      onMouseLeave={(e) => {
+                        (e.currentTarget as HTMLDivElement).style.transform = 'scale(1)';
+                        (e.currentTarget as HTMLDivElement).style.boxShadow = 'none';
+                      }}
                     />
                   ))}
                 </div>

@@ -1,218 +1,240 @@
 /**
  * components/sections/GitHubSection.tsx
  * ─────────────────────────────────────────────────────────
- * GitHub activity dashboard section.
- * Fetches metrics, streaks, and pinned repos on the server.
+ * GitHub activity section — restyled for the premium dark theme.
+ * Server component. Hoverable UI elements are extracted into
+ * client sub-components to allow event handlers.
  * ─────────────────────────────────────────────────────────
  */
 
 import type { ReactElement } from 'react';
-import {
-  Flame,
-  GitBranch,
-  Star,
-  BookOpen,
-  Users,
-  Activity,
-  ArrowUpRight,
-  Trophy
-} from 'lucide-react';
+import { Flame, Activity, Trophy, BookOpen, ArrowUpRight } from 'lucide-react';
 import { siteConfig } from '@/config/site';
 import { getGitHubData } from '@/lib/github';
-import { SectionHeader } from '@/components/ui/SectionHeader';
 import { ContributionGraph } from '@/components/github/ContributionGraph';
+import { GitHubStatCard } from '@/components/github/GitHubStatCard';
+import { PinnedRepoCard } from '@/components/github/PinnedRepoCard';
+import { SectionLabel } from '@/components/shared/SectionLabel';
 
 export async function GitHubSection(): Promise<ReactElement> {
-  // Extract github username from siteConfig
   const username = siteConfig.social.github.split('/').pop() || 'Thesia-Hitarth';
-
-  // Load github profile, streaks, and contribution grid data
   const { stats, pinnedRepos, contributions, error } = await getGitHubData(username);
-
-  if (error) {
-    return (
-      <section
-        id="github"
-        aria-labelledby="github-heading"
-        className="py-24 lg:py-32 border-t border-border bg-muted/5"
-      >
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-6xl">
-          <SectionHeader
-            id="github-heading"
-            label="06 / GitHub"
-            title="Open-Source & Activity"
-            subtitle="A live view into my contributions, active coding streaks, and pinned projects."
-          />
-
-          <div className="mt-12 flex flex-col items-center justify-center rounded-2xl border border-dashed border-border bg-card/50 p-8 text-center max-w-2xl mx-auto shadow-sm">
-            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-amber-500/10 text-amber-500 mb-4 animate-pulse">
-              <Activity size={24} />
-            </div>
-            <h3 className="text-lg font-bold text-foreground">GitHub Data Offline</h3>
-            <p className="text-sm text-muted-foreground mt-2 leading-relaxed max-w-md">
-              We couldn&apos;t connect to the GitHub API to load stats right now (likely due to rate limiting). You can view my live contribution heatmap and repositories directly on my profile.
-            </p>
-            <div className="mt-6">
-              <a
-                href={siteConfig.social.github}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 rounded-lg bg-primary px-5 py-2.5 text-xs font-semibold text-primary-foreground transition-opacity hover:opacity-90 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
-              >
-                Visit GitHub Profile
-                <ArrowUpRight size={14} />
-              </a>
-            </div>
-          </div>
-        </div>
-      </section>
-    );
-  }
 
   return (
     <section
       id="github"
       aria-labelledby="github-heading"
-      className="py-24 lg:py-32 border-t border-border bg-muted/5"
+      className="section"
+      style={{ background: 'var(--color-bg)' }}
     >
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-6xl">
-        <SectionHeader
+      <div className="container-site">
+        <SectionLabel number="06" label="GitHub" />
+        <h2
           id="github-heading"
-          label="06 / GitHub"
-          title="Open-Source & Activity"
-          subtitle="A live view into my contributions, active coding streaks, and pinned projects."
-        />
+          style={{
+            fontFamily: 'var(--font-display)',
+            fontWeight: 500,
+            fontSize: 'var(--text-xl)',
+            letterSpacing: 'var(--tracking-tight)',
+            color: 'var(--color-text-1)',
+            marginBottom: '0.75rem',
+          }}
+        >
+          Open-Source &amp; Activity
+        </h2>
+        <p style={{
+          fontFamily: 'var(--font-body)',
+          fontWeight: 300,
+          fontSize: '0.92rem',
+          color: 'var(--color-text-2)',
+          marginBottom: '3rem',
+          maxWidth: '500px',
+        }}>
+          A live view into my contributions, active coding streaks, and pinned projects.
+        </p>
 
-        {/* ── Grid for Heatmap and Pinned Repos ── */}
-        <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
-          {/* Heatmap and Stats Column */}
-          <div className="lg:col-span-2 space-y-6">
-            <ContributionGraph contributions={contributions} />
+        {error ? (
+          /* Offline fallback */
+          <div style={{
+            border: '1px solid var(--color-border)',
+            borderRadius: '10px',
+            background: 'var(--color-bg-3)',
+            padding: '3rem',
+            textAlign: 'center',
+            maxWidth: '480px',
+            margin: '0 auto',
+          }}>
+            <div style={{
+              width: '48px', height: '48px',
+              borderRadius: '50%',
+              background: 'var(--color-accent-dim)',
+              border: '1px solid rgba(232,201,122,0.2)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              margin: '0 auto 1.25rem',
+            }}>
+              <Activity size={20} color="var(--color-accent)" />
+            </div>
+            <p style={{
+              fontFamily: 'var(--font-display)',
+              fontSize: '1.1rem',
+              fontWeight: 500,
+              color: 'var(--color-text-1)',
+              margin: '0 0 0.5rem',
+              letterSpacing: 'var(--tracking-snug)',
+            }}>
+              GitHub Data Offline
+            </p>
+            <p style={{
+              fontFamily: 'var(--font-body)',
+              fontWeight: 300,
+              fontSize: 'var(--text-sm)',
+              color: 'var(--color-text-2)',
+              lineHeight: 1.7,
+              margin: '0 0 1.5rem',
+            }}>
+              Couldn&apos;t reach the GitHub API (likely rate limiting). View my live
+              contribution graph and repositories directly on my profile.
+            </p>
+            <a
+              href={siteConfig.social.github}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.4rem',
+                padding: '0.7rem 1.5rem',
+                background: 'var(--color-accent)',
+                color: 'var(--color-bg)',
+                fontFamily: 'var(--font-body)',
+                fontSize: '0.65rem',
+                fontWeight: 500,
+                letterSpacing: 'var(--tracking-wider)',
+                textTransform: 'uppercase',
+                borderRadius: '100px',
+                textDecoration: 'none',
+              }}
+            >
+              Visit GitHub Profile
+              <ArrowUpRight size={12} />
+            </a>
+          </div>
+        ) : (
+          <div
+            style={{ display: 'grid', gap: '2rem' }}
+            className="grid-cols-1 lg:grid-cols-[3fr_2fr]"
+          >
+            {/* Left: heatmap + stats */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
 
-            {/* Stats Cards Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {/* Card 1: Total Contributions */}
-              <div className="rounded-2xl border border-border bg-card/40 p-5 shadow-sm transition-all duration-300 hover:border-primary/20">
-                <div className="flex items-center justify-between text-muted-foreground">
-                  <span className="text-xs font-mono uppercase tracking-wider">Contributions</span>
-                  <Activity className="h-4 w-4 text-emerald-500" />
-                </div>
-                <div className="mt-4">
-                  <span className="text-3xl font-bold text-foreground">
-                    {stats.totalContributions.toLocaleString()}
-                  </span>
-                  <p className="text-[11px] text-muted-foreground mt-1">Total in last 12 months</p>
-                </div>
+              {/* Contribution graph */}
+              <div style={{
+                background: 'var(--color-bg-3)',
+                border: '1px solid var(--color-border)',
+                borderRadius: '10px',
+                padding: '1.5rem',
+                overflow: 'hidden',
+              }}>
+                <p style={{
+                  fontFamily: 'var(--font-mono)',
+                  fontSize: 'var(--text-micro)',
+                  letterSpacing: 'var(--tracking-widest)',
+                  textTransform: 'uppercase',
+                  color: 'var(--color-text-3)',
+                  marginBottom: '1.25rem',
+                }}>
+                  Contribution Activity
+                </p>
+                <ContributionGraph contributions={contributions} />
               </div>
 
-              {/* Card 2: Current Streak */}
-              <div className="rounded-2xl border border-border bg-card/40 p-5 shadow-sm transition-all duration-300 hover:border-primary/20">
-                <div className="flex items-center justify-between text-muted-foreground">
-                  <span className="text-xs font-mono uppercase tracking-wider">Current Streak</span>
-                  <Flame className="h-4 w-4 text-orange-500 animate-pulse" />
-                </div>
-                <div className="mt-4">
-                  <span className="text-3xl font-bold text-foreground">{stats.currentStreak}</span>
-                  <span className="text-sm font-medium text-muted-foreground ml-1">days</span>
-                  <p className="text-[11px] text-muted-foreground mt-1">Consecutive active coding days</p>
-                </div>
-              </div>
-
-              {/* Card 3: Longest Streak */}
-              <div className="rounded-2xl border border-border bg-card/40 p-5 shadow-sm transition-all duration-300 hover:border-primary/20">
-                <div className="flex items-center justify-between text-muted-foreground">
-                  <span className="text-xs font-mono uppercase tracking-wider">Longest Streak</span>
-                  <Trophy className="h-4 w-4 text-amber-500" />
-                </div>
-                <div className="mt-4">
-                  <span className="text-3xl font-bold text-foreground">{stats.longestStreak}</span>
-                  <span className="text-sm font-medium text-muted-foreground ml-1">days</span>
-                  <p className="text-[11px] text-muted-foreground mt-1">All-time record streak</p>
-                </div>
-              </div>
-
-              {/* Card 4: Public Repos */}
-              <div className="rounded-2xl border border-border bg-card/40 p-5 shadow-sm transition-all duration-300 hover:border-primary/20">
-                <div className="flex items-center justify-between text-muted-foreground">
-                  <span className="text-xs font-mono uppercase tracking-wider">Public Repos</span>
-                  <BookOpen className="h-4 w-4 text-blue-500" />
-                </div>
-                <div className="mt-4">
-                  <span className="text-3xl font-bold text-foreground">{stats.publicRepos}</span>
-                  <p className="text-[11px] text-muted-foreground mt-1">Repositories on GitHub</p>
-                </div>
+              {/* 4-stat grid — using client GitHubStatCard */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1rem' }}>
+                <GitHubStatCard
+                  label="Contributions"
+                  value={stats.totalContributions.toLocaleString()}
+                  subtitle="Last 12 months"
+                  icon={<Activity size={14} color="#5A9E6F" />}
+                />
+                <GitHubStatCard
+                  label="Current Streak"
+                  value={`${stats.currentStreak} days`}
+                  subtitle="Consecutive coding days"
+                  icon={<Flame size={14} color="var(--color-accent)" />}
+                />
+                <GitHubStatCard
+                  label="Longest Streak"
+                  value={`${stats.longestStreak} days`}
+                  subtitle="All-time record"
+                  icon={<Trophy size={14} color="var(--color-accent)" />}
+                />
+                <GitHubStatCard
+                  label="Repositories"
+                  value={stats.publicRepos}
+                  subtitle="Public repositories"
+                  icon={<BookOpen size={14} color="var(--color-accent)" />}
+                />
               </div>
             </div>
-          </div>
 
-          {/* Pinned Repos Area */}
-          <div className="lg:col-span-1 flex flex-col justify-between">
-            <div className="rounded-2xl border border-border bg-card/40 p-6 shadow-sm h-full flex flex-col justify-between">
-              <div>
-                <h3 className="text-sm font-semibold text-foreground mb-4 flex items-center gap-2">
-                  <Users className="h-4 w-4 text-primary" />
-                  Pinned Repositories
-                </h3>
+            {/* Right: pinned repos */}
+            <div style={{
+              background: 'var(--color-bg-3)',
+              border: '1px solid var(--color-border)',
+              borderRadius: '10px',
+              padding: '1.5rem',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '1rem',
+            }}>
+              <p style={{
+                fontFamily: 'var(--font-mono)',
+                fontSize: 'var(--text-micro)',
+                letterSpacing: 'var(--tracking-widest)',
+                textTransform: 'uppercase',
+                color: 'var(--color-text-3)',
+              }}>
+                Pinned Repositories
+              </p>
 
-                <div className="space-y-4">
-                  {pinnedRepos.length > 0 ? (
-                    pinnedRepos.map((repo) => (
-                      <a
-                        key={repo.name}
-                        href={repo.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="group block rounded-xl border border-border bg-card p-4 transition-all duration-300 hover:border-primary/30 hover:shadow-sm"
-                      >
-                        <div className="flex items-center justify-between">
-                          <h4 className="text-sm font-bold text-foreground group-hover:text-primary transition-colors flex items-center gap-1.5">
-                            {repo.name}
-                            <ArrowUpRight className="h-3.5 w-3.5 opacity-0 group-hover:opacity-100 transition-opacity" />
-                          </h4>
-                        </div>
-                        <p className="text-xs text-muted-foreground mt-1.5 line-clamp-2">
-                          {repo.description}
-                        </p>
-                        
-                        <div className="mt-4 flex items-center gap-4 text-[10px] text-muted-foreground font-semibold">
-                          {repo.language && (
-                            <span className="flex items-center gap-1">
-                              <span className="h-2 w-2 rounded-full bg-primary" />
-                              {repo.language}
-                            </span>
-                          )}
-                          <span className="flex items-center gap-0.5">
-                            <Star className="h-3 w-3" />
-                            {repo.stars}
-                          </span>
-                          <span className="flex items-center gap-0.5">
-                            <GitBranch className="h-3 w-3" />
-                            {repo.forks}
-                          </span>
-                        </div>
-                      </a>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', flex: 1 }}>
+                {pinnedRepos.length > 0
+                  ? pinnedRepos.map((repo) => (
+                      <PinnedRepoCard key={repo.name} repo={repo} />
                     ))
-                  ) : (
-                    <p className="text-xs text-muted-foreground py-6 text-center">
+                  : (
+                    <p style={{ fontFamily: 'var(--font-mono)', fontSize: 'var(--text-xs)', color: 'var(--color-text-3)', textAlign: 'center', padding: '2rem 0' }}>
                       No pinned repositories found.
                     </p>
                   )}
-                </div>
               </div>
 
-              <div className="mt-6 pt-4 border-t border-border text-center">
+              {/* Profile link */}
+              <div style={{ borderTop: '1px solid var(--color-border)', paddingTop: '1rem' }}>
                 <a
                   href={siteConfig.social.github}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-xs font-semibold text-primary hover:underline"
+                  style={{
+                    fontFamily: 'var(--font-mono)',
+                    fontSize: 'var(--text-micro)',
+                    letterSpacing: 'var(--tracking-wider)',
+                    textTransform: 'uppercase',
+                    color: 'var(--color-text-3)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '0.5rem',
+                    textDecoration: 'none',
+                  }}
                 >
-                  View full profile on GitHub →
+                  github.com/Thesia-Hitarth
+                  <ArrowUpRight size={12} />
                 </a>
               </div>
             </div>
           </div>
-        </div>
+        )}
       </div>
     </section>
   );

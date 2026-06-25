@@ -2,216 +2,302 @@
 
 /**
  * components/sections/ProjectsSection.tsx
+ * ─────────────────────────────────────────────────────────
+ * Part A: Featured projects — full-width 55/45 editorial card
+ * Part B: Other projects — 3-column card grid
+ * ─────────────────────────────────────────────────────────
  */
 
 import { useState } from 'react';
-import { motion, useReducedMotion } from 'framer-motion';
-import Link from 'next/link';
 import Image from 'next/image';
-import { ExternalLink, CheckCircle2, ArrowRight } from 'lucide-react';
 import type { ReactElement } from 'react';
-import { SectionHeader } from '@/components/ui/SectionHeader';
-import { TechBadge } from '@/components/ui/TechBadge';
-import { AnimatedSection } from '@/components/ui/AnimatedSection';
-import { containerVariants, scaleIn } from '@/lib/animations';
+import { motion } from 'framer-motion';
+import Link from 'next/link';
+import { SectionLabel } from '@/components/shared/SectionLabel';
 import type { Project } from '@/lib/types';
-import { cn } from '@/lib/utils';
-import { GithubIcon } from '@/components/ui/BrandIcons';
-import { ProjectCard, ProjectImagePlaceholder } from '@/components/projects/ProjectCard';
-
-const STATUS_STYLES: Record<Project['status'], string> = {
-  live: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20',
-  'in-progress': 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20',
-  archived: 'bg-muted text-muted-foreground border border-border',
-};
-
-const STATUS_LABELS: Record<Project['status'], string> = {
-  live: '● Live',
-  'in-progress': '● In Progress',
-  archived: 'Archived',
-};
+import { useMagneticButton } from '@/hooks/useMagneticButton';
 
 interface ProjectsSectionProps {
   projects: Project[];
   featured: Project[];
 }
 
+const gridProjects = (projects: Project[]) => projects.filter((p) => !p.featured);
+
+function FeaturedCard({ project, index }: { project: Project; index: number }): ReactElement {
+  const [imgError, setImgError] = useState(false);
+  const liveRef = useMagneticButton<HTMLAnchorElement>();
+  const codeRef = useMagneticButton<HTMLAnchorElement>();
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 40 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: '-80px' }}
+      transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+      style={{
+        display: 'grid',
+        gap: 0,
+        border: '1px solid var(--color-border)',
+        borderRadius: '12px',
+        overflow: 'hidden',
+        marginBottom: '3rem',
+        background: 'var(--color-bg-3)',
+        transition: 'border-color var(--dur-base) var(--ease-out-expo)',
+      }}
+      className="grid-cols-1 lg:grid-cols-[55fr_45fr]"
+      onMouseEnter={(e) => {
+        (e.currentTarget as HTMLDivElement).style.borderColor = 'var(--color-border-hover)';
+      }}
+      onMouseLeave={(e) => {
+        (e.currentTarget as HTMLDivElement).style.borderColor = 'var(--color-border)';
+      }}
+    >
+      {/* Left: Image */}
+      <motion.div
+        initial={{ opacity: 0, x: -40 }}
+        whileInView={{ opacity: 1, x: 0 }}
+        viewport={{ once: true, margin: '-80px' }}
+        transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+        data-cursor="project"
+        style={{
+          position: 'relative',
+          aspectRatio: '16/9',
+          overflow: 'hidden',
+          background: 'var(--color-bg-4)',
+          minHeight: '280px',
+        }}
+        className="lg:aspect-auto lg:min-h-[420px]"
+      >
+        {project.coverImage && !imgError ? (
+          <Image
+            src={project.coverImage}
+            alt={project.title}
+            fill
+            sizes="(max-width: 1024px) 100vw, 55vw"
+            style={{ objectFit: 'cover', transition: 'transform var(--dur-slower) var(--ease-out-expo)' }}
+            onError={() => setImgError(true)}
+            className="group-hover:scale-[1.04]"
+          />
+        ) : (
+          <div style={{
+            position: 'absolute', inset: 0,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontFamily: 'var(--font-display)', fontSize: '3rem', fontWeight: 700,
+            color: 'var(--color-border-2)',
+          }}>
+            {project.title[0]}
+          </div>
+        )}
+        {/* Bottom gradient */}
+        <div style={{
+          position: 'absolute', bottom: 0, left: 0, right: 0, height: '40%',
+          background: 'linear-gradient(to top, rgba(12,12,12,0.6) 0%, transparent 100%)',
+          pointerEvents: 'none',
+        }} />
+      </motion.div>
+
+      {/* Right: Info */}
+      <motion.div
+        initial={{ opacity: 0, x: 40 }}
+        whileInView={{ opacity: 1, x: 0 }}
+        viewport={{ once: true, margin: '-80px' }}
+        transition={{ duration: 0.7, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
+        style={{
+          padding: '2rem',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          gap: '1rem',
+        }}
+      >
+        <p style={{ fontFamily: 'var(--font-mono)', fontSize: 'var(--text-micro)', color: 'var(--color-text-3)', letterSpacing: 'var(--tracking-wide)', margin: 0 }}>
+          {String(index + 1).padStart(2, '0')}
+        </p>
+
+        <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '1.8rem', fontWeight: 500, letterSpacing: 'var(--tracking-snug)', color: 'var(--color-text-1)', margin: 0 }}>
+          {project.title}
+        </h3>
+
+        <p style={{ fontFamily: 'var(--font-mono)', fontSize: 'var(--text-micro)', color: 'var(--color-text-3)', letterSpacing: 'var(--tracking-wider)', textTransform: 'uppercase', margin: 0 }}>
+          {project.tagline}
+        </p>
+
+        <p style={{ fontFamily: 'var(--font-body)', fontSize: 'var(--text-sm)', fontWeight: 300, color: 'var(--color-text-2)', lineHeight: 1.7, margin: 0 }}>
+          {project.description}
+        </p>
+
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem' }}>
+          {project.stack.map((tech) => (
+            <span key={tech} className="tag">{tech}</span>
+          ))}
+        </div>
+
+        <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', marginTop: '0.5rem' }}>
+          {project.liveUrl && (
+            <a
+              ref={liveRef}
+              href={project.liveUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              data-cursor="magnetic"
+              className="btn-magnetic btn-filled"
+              style={{ fontSize: '0.65rem' }}
+            >
+              <span>Live Demo ↗</span>
+            </a>
+          )}
+          {project.githubUrl && (
+            <a
+              ref={codeRef}
+              href={project.githubUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              data-cursor="magnetic"
+              className="btn-magnetic"
+              style={{ fontSize: '0.65rem' }}
+            >
+              <span>View Code ↗</span>
+            </a>
+          )}
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+}
+
+function GridCard({ project, index }: { project: Project; index: number }): ReactElement {
+  const [imgError, setImgError] = useState(false);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 40 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: '-40px' }}
+      transition={{ duration: 0.5, delay: index * 0.1, ease: [0.16, 1, 0.3, 1] }}
+      data-cursor="project"
+    >
+      <div className="project-card">
+        {/* Image */}
+        <div className="project-card__image-wrap">
+          {project.coverImage && !imgError ? (
+            <Image
+              src={project.coverImage}
+              alt={project.title}
+              fill
+              sizes="(max-width: 768px) 100vw, 33vw"
+              style={{ objectFit: 'cover' }}
+              onError={() => setImgError(true)}
+            />
+          ) : (
+            <div style={{
+              position: 'absolute', inset: 0,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontFamily: 'var(--font-display)', fontSize: '3rem', fontWeight: 700,
+              color: 'var(--color-border-2)',
+              background: 'var(--color-bg-4)',
+            }}>
+              {project.title[0]}
+            </div>
+          )}
+          <div className="project-card__overlay">
+            <span>View Project</span>
+          </div>
+        </div>
+
+        {/* Body */}
+        <div className="project-card__body">
+          <p className="project-card__index">{String(index + 1).padStart(2, '0')}</p>
+          <h3 className="project-card__title">{project.title}</h3>
+          <p className="project-card__desc">{project.description}</p>
+          <div className="project-card__tags">
+            {project.stack.slice(0, 4).map((tech) => (
+              <span key={tech} className="tag">{tech}</span>
+            ))}
+          </div>
+          <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
+            {project.liveUrl && (
+              <a href={project.liveUrl} target="_blank" rel="noopener noreferrer" className="link-underline" data-cursor="link">
+                Live ↗
+              </a>
+            )}
+            {project.githubUrl && (
+              <a href={project.githubUrl} target="_blank" rel="noopener noreferrer" className="link-underline" data-cursor="link">
+                Code ↗
+              </a>
+            )}
+          </div>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
 export function ProjectsSection({ projects, featured }: ProjectsSectionProps): ReactElement {
-  const prefersReduced = useReducedMotion();
-
-  const gridContainerProps = prefersReduced
-    ? {}
-    : {
-        variants: containerVariants,
-        initial: 'hidden' as const,
-        whileInView: 'visible' as const,
-        viewport: { once: true, amount: 0.1 },
-      };
-
-  const cardProps = prefersReduced ? {} : { variants: scaleIn };
-
-  const gridProjects = projects.filter((p) => !p.featured);
+  const grid = gridProjects(projects);
 
   return (
     <section
       id="projects"
       aria-labelledby="projects-heading"
-      className="py-24 lg:py-32"
+      className="section"
+      style={{ background: 'var(--color-bg-2)' }}
     >
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-6xl">
-        <SectionHeader
+      <div className="container-site">
+        <SectionLabel number="05" label="Projects" />
+        <h2
           id="projects-heading"
-          label="05 / Projects"
-          title="Things I've built"
-          subtitle="A selection of projects that show my range."
-        />
+          style={{
+            fontFamily: 'var(--font-display)',
+            fontWeight: 500,
+            fontSize: 'var(--text-xl)',
+            letterSpacing: 'var(--tracking-tight)',
+            color: 'var(--color-text-1)',
+            marginBottom: '3rem',
+          }}
+        >
+          Things I&rsquo;ve built
+        </h2>
 
-        {/* PART A: Featured spotlight */}
-        {featured.map((project) => (
-          <AnimatedSection key={project.slug} className="mb-12">
-            <div
-              className={cn(
-                'grid grid-cols-1 overflow-hidden rounded-2xl border border-border',
-                'hover:border-primary/40 transition-all duration-300 lg:grid-cols-2'
-              )}
-            >
-              {/* Left: Image */}
-              <div className="group relative aspect-video overflow-hidden lg:aspect-auto lg:min-h-[420px] bg-gradient-to-br from-primary/10 to-primary/5 dark:from-primary/20 dark:to-primary/5 border-b lg:border-b-0 lg:border-r border-border">
-                <FeaturedProjectImage project={project} />
-                <div
-                  aria-hidden="true"
-                  className="absolute inset-0 bg-gradient-to-t from-background/60 to-transparent pointer-events-none"
-                />
-              </div>
-
-              {/* Right: Content */}
-              <div className="flex flex-col justify-between bg-card p-6 md:p-8">
-                <div>
-                  <span
-                    className={cn(
-                      'inline-block rounded-full px-2.5 py-1 text-xs font-medium',
-                      STATUS_STYLES[project.status]
-                    )}
-                  >
-                    {STATUS_LABELS[project.status]}
-                  </span>
-
-                  <h3 className="mt-2 text-2xl font-bold text-foreground">{project.title}</h3>
-                  <p className="mt-1 text-muted-foreground">{project.tagline}</p>
-                  <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
-                    {project.description}
-                  </p>
-
-                  <ul className="mt-4 space-y-2" role="list">
-                    {project.highlights.map((h, i) => (
-                      <li key={i} className="flex items-start gap-2">
-                        <CheckCircle2 size={16} className="mt-0.5 shrink-0 text-primary" />
-                        <span className="text-sm text-muted-foreground">{h}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-
-                <div>
-                  <div className="mt-6 flex flex-wrap gap-2">
-                    {project.stack.map((tech) => (
-                      <TechBadge key={tech} name={tech} variant="default" />
-                    ))}
-                  </div>
-
-                  <div className="mt-auto pt-6 flex flex-wrap items-center gap-3">
-                    {project.liveUrl && (
-                      <a
-                        href={project.liveUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
-                      >
-                        <ExternalLink size={14} />
-                        Live demo
-                      </a>
-                    )}
-                    {project.githubUrl && (
-                      <a
-                        href={project.githubUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-2 rounded-lg border border-border px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-muted focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
-                      >
-                        <GithubIcon size={14} />
-                        View code
-                      </a>
-                    )}
-                    <Link
-                      href={`/projects/${project.slug}`}
-                      className="inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 rounded-sm"
-                    >
-                      Case study →
-                    </Link>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </AnimatedSection>
+        {/* Featured */}
+        {featured.map((project, i) => (
+          <FeaturedCard key={project.slug} project={project} index={i} />
         ))}
 
-        {/* PART B: Projects grid */}
-        {gridProjects.length > 0 && (
-          <motion.div
-            {...gridContainerProps}
-            className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 mt-12"
-          >
-            {gridProjects.map((project) => (
-              <ProjectCard
-                key={project.slug}
-                project={project}
-                cardProps={cardProps}
-              />
-            ))}
-          </motion.div>
+        {/* Grid */}
+        {grid.length > 0 && (
+          <>
+            <p style={{
+              fontFamily: 'var(--font-mono)',
+              fontSize: 'var(--text-micro)',
+              color: 'var(--color-text-3)',
+              letterSpacing: 'var(--tracking-widest)',
+              textTransform: 'uppercase',
+              marginBottom: '2rem',
+            }}>
+              Other Projects
+            </p>
+            <div
+              style={{
+                display: 'grid',
+                gap: '1.5rem',
+              }}
+              className="grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
+            >
+              {grid.map((project, i) => (
+                <GridCard key={project.slug} project={project} index={i} />
+              ))}
+            </div>
+          </>
         )}
 
         {/* View all */}
-        <div className="mt-12 text-center">
-          <Link
-            href="/projects"
-            className="inline-flex items-center gap-2 text-sm font-medium text-primary hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 rounded-sm"
-          >
-            View all projects
-            <ArrowRight size={16} />
+        <div style={{ marginTop: '3rem', textAlign: 'center' }}>
+          <Link href="/projects" className="link-underline" data-cursor="link" style={{ fontSize: 'var(--text-sm)' }}>
+            View all projects →
           </Link>
         </div>
       </div>
     </section>
   );
 }
-
-function FeaturedProjectImage({ project }: { project: Project }): ReactElement {
-  const [imgError, setImgError] = useState(false);
-
-  return (
-    <>
-      {project.coverImage && !imgError ? (
-        <div className="absolute inset-0 flex items-center justify-center p-8 lg:p-12">
-          <div className="relative w-full h-full">
-            <Image
-              src={project.coverImage}
-              alt={project.title}
-              fill
-              sizes="(max-width: 1024px) 100vw, 500px"
-              className="object-contain transition-transform duration-500 group-hover:scale-[1.03]"
-              priority
-              onError={() => setImgError(true)}
-            />
-          </div>
-        </div>
-      ) : (
-        <ProjectImagePlaceholder
-          title={project.title}
-          className="absolute inset-0 transition-transform duration-500 group-hover:scale-[1.03]"
-        />
-      )}
-    </>
-  );
-}
-

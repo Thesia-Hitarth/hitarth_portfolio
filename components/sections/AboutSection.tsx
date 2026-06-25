@@ -1,317 +1,267 @@
 'use client';
 
-import { motion, useReducedMotion } from 'framer-motion';
-import { MapPin, Clock, Music, ArrowUpRight, Sparkles, FileText, Code } from 'lucide-react';
+/**
+ * components/sections/AboutSection.tsx
+ * ─────────────────────────────────────────────────────────
+ * Premium About: editorial quote + bio (left 60%) · photo (right 40%)
+ * Stats row with count-up cards below.
+ * ─────────────────────────────────────────────────────────
+ */
+
 import Image from 'next/image';
-import Link from 'next/link';
-import profilePic from '../../public/Passportsize_Hitarth.png';
 import type { ReactElement } from 'react';
-import { SectionHeader } from '@/components/ui/SectionHeader';
+import { motion } from 'framer-motion';
+import { SectionLabel } from '@/components/shared/SectionLabel';
+import { StatCard } from '@/components/shared/StatCard';
 import { siteConfig } from '@/config/site';
-import { fadeInUp } from '@/lib/animations';
-import { GithubIcon, LinkedinIcon, TwitterIcon } from '@/components/ui/BrandIcons';
-import { skillCategories } from '@/data/skills';
-import { usePresence } from '@/context/PresenceContext';
+import { useMagneticButton } from '@/hooks/useMagneticButton';
+
+const PROFILE_IMG = '/Passportsize_Hitarth.png';
+
+const fadeUp = {
+  hidden: { opacity: 0, y: 30 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.65, ease: [0.16, 1, 0.3, 1] as const } },
+};
 
 const STATS = [
-  { value: '2', label: 'Dev Internships' },
-  { value: '6+', label: 'MERN & Next.js Apps' },
-  { value: '90+', label: 'Lighthouse Score' },
-];
-
-const BIO_PARAGRAPHS = [
-  siteConfig.description,
-  "I'm a firm believer that great software is built at the intersection of engineering rigour and product empathy. I care about the developer experience just as much as the end-user experience — because maintainable code is what keeps a product alive long after launch.",
+  { value: 2, suffix: '+', label: 'Dev Internships' },
+  { value: 6, suffix: '+', label: 'MERN & Next.js Apps' },
+  { value: 90, suffix: '+', label: 'Lighthouse Score' },
+  { value: 45, suffix: '%', label: 'Fewer Re-renders' },
 ];
 
 export function AboutSection(): ReactElement {
-  const prefersReduced = useReducedMotion();
-  const { data: activity, timeText } = usePresence();
-
-  const blockAnimation = prefersReduced ? {} : fadeInUp;
+  const ghRef = useMagneticButton<HTMLAnchorElement>();
+  const liRef = useMagneticButton<HTMLAnchorElement>();
 
   return (
     <section
       id="about"
       aria-labelledby="about-heading"
-      className="py-24 lg:py-32 bg-muted/10 border-t border-border"
+      className="section"
+      style={{ background: 'var(--color-bg)' }}
     >
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-6xl">
-        <SectionHeader
-          id="about-heading"
-          label="02 / About"
-          title="About & Presence"
-          subtitle="Explore my background, developer focus, and technical stack."
-        />
+      <div className="container-site">
+        <SectionLabel number="02" label="About" />
 
-        {/* Bento Grid layout */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
-          
-          {/* Block 1: Bio Narrative (Large: Spans 2 cols) */}
+        {/* Two-column grid */}
+        <div
+          style={{
+            display: 'grid',
+            gap: '4rem',
+            alignItems: 'start',
+          }}
+          className="grid-cols-1 lg:grid-cols-[3fr_2fr]"
+        >
+          {/* LEFT: text content */}
           <motion.div
-            variants={blockAnimation}
+            variants={fadeUp}
             initial="hidden"
             whileInView="visible"
-            viewport={{ once: true, amount: 0.15 }}
-            className="md:col-span-2 bg-card/65 backdrop-blur-md rounded-2xl border border-border p-6 md:p-8 flex flex-col justify-between shadow-sm relative overflow-hidden"
+            viewport={{ once: true, margin: '-80px' }}
+            style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}
           >
-            <div className="space-y-4 z-10">
-              <h3 className="text-lg font-bold text-foreground flex items-center gap-2">
-                <Sparkles size={16} className="text-primary" />
-                Engineering Philosophy
-              </h3>
-              {BIO_PARAGRAPHS.map((para, i) => (
-                <p
-                  key={i}
-                  className="text-sm md:text-base leading-relaxed text-muted-foreground"
-                >
-                  {para}
-                </p>
-              ))}
-            </div>
+            {/* Editorial quote */}
+            <blockquote
+              style={{
+                fontFamily: 'var(--font-editorial)',
+                fontStyle: 'italic',
+                fontWeight: 300,
+                fontSize: 'clamp(1.4rem, 2.5vw, 2rem)',
+                letterSpacing: 'var(--tracking-snug)',
+                color: 'var(--color-text-2)',
+                lineHeight: 1.4,
+                margin: 0,
+                borderLeft: '2px solid var(--color-accent)',
+                paddingLeft: '1.5rem',
+              }}
+            >
+              &ldquo;I&rsquo;m a firm believer that great software is built at the intersection of engineering rigour and product empathy.&rdquo;
+            </blockquote>
 
-            {/* Social Links Row */}
-            <div className="flex flex-wrap items-center gap-4 pt-6 border-t border-border/60 mt-6 z-10">
+            {/* Body copy */}
+            <p
+              style={{
+                fontFamily: 'var(--font-body)',
+                fontWeight: 300,
+                fontSize: '0.92rem',
+                color: 'var(--color-text-2)',
+                lineHeight: 1.8,
+                margin: 0,
+              }}
+            >
+              {siteConfig.description}
+            </p>
+            <p
+              style={{
+                fontFamily: 'var(--font-body)',
+                fontWeight: 300,
+                fontSize: '0.92rem',
+                color: 'var(--color-text-2)',
+                lineHeight: 1.8,
+                margin: 0,
+              }}
+            >
+              I care about the developer experience just as much as the end-user experience — because maintainable code is what keeps a product alive long after launch. Currently interning at{' '}
+              <span style={{ color: 'var(--color-text-1)' }}>Codage Habitation</span>,
+              building a multi-module tax-management platform.
+            </p>
+
+            {/* Social CTA buttons */}
+            <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
               <a
+                ref={ghRef}
                 href={siteConfig.social.github}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors duration-250 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-sm"
+                data-cursor="magnetic"
+                className="btn-magnetic"
               >
-                <GithubIcon size={14} />
-                GitHub
+                <span>GitHub ↗</span>
               </a>
               <a
+                ref={liRef}
                 href={siteConfig.social.linkedin}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors duration-250 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-sm"
+                data-cursor="magnetic"
+                className="btn-magnetic"
               >
-                <LinkedinIcon size={14} />
-                LinkedIn
+                <span>LinkedIn ↗</span>
               </a>
-              {siteConfig.social.twitter && (
-                <a
-                  href={siteConfig.social.twitter}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors duration-250 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-sm"
-                >
-                  <TwitterIcon size={14} />
-                  Twitter
-                </a>
-              )}
             </div>
-            <div className="absolute top-0 right-0 w-24 h-24 bg-primary/5 rounded-bl-full pointer-events-none" />
           </motion.div>
 
-          {/* Block 2: Profile Photo (Spans 1 col) */}
+          {/* RIGHT: Profile photo */}
           <motion.div
-            variants={blockAnimation}
+            variants={fadeUp}
             initial="hidden"
             whileInView="visible"
-            viewport={{ once: true, amount: 0.15 }}
-            className="md:col-span-1 bg-card/65 backdrop-blur-md rounded-2xl border border-border p-6 flex flex-col items-center justify-center shadow-sm relative overflow-hidden"
+            viewport={{ once: true, margin: '-80px' }}
+            transition={{ delay: 0.15 }}
+            className="w-full max-w-[340px] mx-auto lg:mx-0 lg:ml-auto"
+            style={{ position: 'relative' }}
           >
-            <div className="relative w-full aspect-[4/5] max-w-[200px] rounded-xl overflow-hidden border border-border bg-gradient-to-br from-primary/10 to-indigo-500/5 shadow-sm">
+            <div
+              style={{
+                position: 'relative',
+                borderRadius: '12px',
+                overflow: 'hidden',
+                border: '1px solid var(--color-border)',
+                aspectRatio: '4/5',
+              }}
+            >
               <Image
-                src={profilePic}
-                alt={`${siteConfig.name} profile`}
+                src={PROFILE_IMG}
+                alt={`${siteConfig.name} — Software Developer`}
                 fill
-                sizes="200px"
+                sizes="(max-width: 1024px) 90vw, 360px"
                 priority
-                className="object-cover transition-transform duration-500 hover:scale-103"
+                style={{
+                  objectFit: 'cover',
+                  filter: 'grayscale(20%)',
+                  transition: 'filter var(--dur-slower) var(--ease-out-expo)',
+                }}
+                onMouseEnter={(e) => {
+                  (e.currentTarget as HTMLImageElement).style.filter = 'grayscale(0%)';
+                }}
+                onMouseLeave={(e) => {
+                  (e.currentTarget as HTMLImageElement).style.filter = 'grayscale(20%)';
+                }}
               />
-            </div>
-            <div className="mt-4 text-center">
-              <h4 className="text-sm font-bold text-foreground leading-tight">{siteConfig.name}</h4>
-              <p className="text-xs text-muted-foreground mt-1">{siteConfig.title}</p>
-            </div>
-          </motion.div>
 
-          {/* Block 3: Ahmedabad Clock (Spans 1 col) */}
-          <motion.div
-            variants={blockAnimation}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, amount: 0.15 }}
-            className="md:col-span-1 bg-card/65 backdrop-blur-md rounded-2xl border border-border p-6 flex flex-col justify-between shadow-sm relative overflow-hidden"
-          >
-            <div>
-              <span className="font-mono text-[9px] font-bold text-primary uppercase tracking-widest block mb-4">
-                Local Time
-              </span>
-              <div className="flex items-center gap-2 text-muted-foreground">
-                <MapPin size={14} className="text-primary shrink-0 animate-bounce" />
-                <span className="text-xs font-semibold text-foreground">Ahmedabad, India</span>
-              </div>
-            </div>
+              {/* Gradient bottom shadow */}
+              <div
+                aria-hidden="true"
+                style={{
+                  position: 'absolute',
+                  bottom: 0, left: 0, right: 0,
+                  height: '40%',
+                  background: 'linear-gradient(to top, rgba(12,12,12,0.8) 0%, transparent 100%)',
+                  pointerEvents: 'none',
+                }}
+              />
 
-            <div className="my-6">
-              <div className="text-3xl font-extrabold font-mono text-foreground tracking-tight">
-                {timeText || '12:00:00 PM'}
-              </div>
-              <div className="flex items-center gap-1.5 mt-2 text-[10px] text-muted-foreground font-semibold uppercase tracking-wider">
-                <Clock size={12} />
-                <span>IST Zone (UTC+5:30)</span>
-              </div>
-            </div>
-
-            <div className="text-[10px] text-muted-foreground bg-muted/40 border border-border/40 rounded-xl p-2.5">
-              Ahmedabad coordinates: 23.0225° N, 72.5714° E
-            </div>
-          </motion.div>
-
-          {/* Block 4: Live Focus & Activity Widget (Spans 1 col) */}
-          <motion.div
-            variants={blockAnimation}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, amount: 0.15 }}
-            className="md:col-span-1 bg-card/65 backdrop-blur-md rounded-2xl border border-border p-6 flex flex-col justify-between shadow-sm relative overflow-hidden"
-          >
-            <div>
-              <span className="font-mono text-[9px] font-bold text-primary uppercase tracking-widest block mb-4">
-                Active Focus
-              </span>
-              <div className="flex items-center gap-2">
-                <span className="relative flex h-2.5 w-2.5">
-                  <span className="absolute inline-flex h-full w-full rounded-full opacity-75 animate-ping bg-emerald-400" />
-                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500" />
-                </span>
-                <span className="text-xs font-semibold text-foreground">
-                  {activity?.activity?.status || '💻 Developing applications'}
-                </span>
-              </div>
-            </div>
-
-            {/* Spotify fallback showcase */}
-            <div className="mt-4 pt-4 border-t border-border/60">
-              <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center gap-1.5">
-                  <Music size={12} className={activity?.spotify?.isPlaying ? 'text-emerald-500 animate-spin [animation-duration:8s]' : 'text-muted-foreground'} />
-                  <span className="font-mono text-[8px] font-bold text-muted-foreground uppercase tracking-wider">
-                    {activity?.spotify?.isPlaying ? 'Now Playing' : 'Spotify Status'}
+              {/* Glassmorphism overlay card */}
+              <div
+                style={{
+                  position: 'absolute',
+                  bottom: '1rem',
+                  left: '1rem',
+                  right: '1rem',
+                  background: 'rgba(12, 12, 12, 0.7)',
+                  backdropFilter: 'blur(12px)',
+                  WebkitBackdropFilter: 'blur(12px)',
+                  border: '1px solid var(--color-border)',
+                  borderRadius: '8px',
+                  padding: '0.75rem 1rem',
+                }}
+              >
+                <p style={{
+                  fontFamily: 'var(--font-display)',
+                  fontSize: '0.9rem',
+                  fontWeight: 500,
+                  color: 'var(--color-text-1)',
+                  margin: 0,
+                  letterSpacing: 'var(--tracking-snug)',
+                }}>
+                  {siteConfig.name}
+                </p>
+                <p style={{
+                  fontFamily: 'var(--font-mono)',
+                  fontSize: 'var(--text-micro)',
+                  color: 'var(--color-text-3)',
+                  margin: '0.15rem 0 0',
+                  letterSpacing: 'var(--tracking-wide)',
+                }}>
+                  Software Developer
+                </p>
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.4rem',
+                  marginTop: '0.4rem',
+                }}>
+                  <span style={{
+                    width: '6px', height: '6px',
+                    borderRadius: '50%',
+                    background: '#5A9E6F',
+                    display: 'inline-block',
+                  }} />
+                  <span style={{
+                    fontFamily: 'var(--font-mono)',
+                    fontSize: 'var(--text-micro)',
+                    color: 'var(--color-accent)',
+                    letterSpacing: 'var(--tracking-wider)',
+                    textTransform: 'uppercase',
+                  }}>
+                    Available
                   </span>
                 </div>
               </div>
-
-              {activity?.spotify && (
-                <div className="flex items-center gap-2.5 rounded-xl border border-border/30 bg-muted/30 p-2">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={activity.spotify.albumArt || "/Music.png"}
-                    alt="album cover"
-                    className="h-8 w-8 rounded-lg object-cover"
-                  />
-                  <div className="min-w-0">
-                    <p className="text-xs font-bold text-foreground truncate max-w-[120px]">{activity.spotify.title}</p>
-                    <p className="text-[9px] text-muted-foreground truncate max-w-[120px] mt-0.5">{activity.spotify.artist}</p>
-                  </div>
-                </div>
-              )}
             </div>
           </motion.div>
-
-          {/* Block 5: Core stats counter (Spans 1 col) */}
-          <motion.div
-            variants={blockAnimation}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, amount: 0.15 }}
-            className="md:col-span-1 bg-card/65 backdrop-blur-md rounded-2xl border border-border p-6 flex flex-col justify-between shadow-sm relative overflow-hidden"
-          >
-            <span className="font-mono text-[9px] font-bold text-primary uppercase tracking-widest block">
-              Stats Dashboard
-            </span>
-
-            <div className="grid grid-cols-3 gap-2 my-auto py-2">
-              {STATS.map((stat) => (
-                <div key={stat.label} className="text-center">
-                  <div className="text-2xl font-extrabold text-primary">{stat.value}</div>
-                  <div className="text-[9px] text-muted-foreground mt-0.5 leading-tight">{stat.label}</div>
-                </div>
-              ))}
-            </div>
-
-            <div className="text-[10px] text-muted-foreground flex gap-2 items-center bg-muted/40 border border-border/40 rounded-xl p-2.5">
-              <Code size={13} className="text-primary shrink-0" />
-              <span>Full-Stack MERN, Next.js & REST API profiles active</span>
-            </div>
-          </motion.div>
-
-          {/* Block 6: Resume PDF and print CTA (Spans 1 col) */}
-          <motion.div
-            variants={blockAnimation}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, amount: 0.15 }}
-            className="md:col-span-1 bg-gradient-to-br from-primary/10 to-indigo-500/5 rounded-2xl border border-primary/25 p-6 flex flex-col justify-between shadow-sm group cursor-pointer hover:border-primary/50 transition-all duration-300 relative overflow-hidden"
-          >
-            <div className="z-10">
-              <span className="font-mono text-[9px] font-bold text-primary uppercase tracking-widest block mb-4">
-                Career Resume
-              </span>
-              <h4 className="text-base font-bold text-foreground flex items-center gap-1.5 group-hover:text-primary transition-colors">
-                <FileText size={16} />
-                Interactive Resume
-              </h4>
-              <p className="text-xs text-muted-foreground mt-2 leading-relaxed">
-                Open my digital print-optimized resume page. Perfect for physical PDF generation and sharing.
-              </p>
-            </div>
-
-            <Link
-              href="/resume"
-              className="mt-6 inline-flex items-center gap-1 text-xs font-bold text-primary group-hover:underline z-10"
-            >
-              Open Resume page
-              <ArrowUpRight size={13} className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-            </Link>
-            <div className="absolute -bottom-6 -right-6 w-20 h-20 bg-primary/10 rounded-full blur-xl pointer-events-none group-hover:scale-125 transition-transform" />
-          </motion.div>
-
-          {/* Block 7: Comfort Stack pills (Spans 2 cols) */}
-          <motion.div
-            variants={blockAnimation}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, amount: 0.15 }}
-            className="md:col-span-2 bg-card/65 backdrop-blur-md rounded-2xl border border-border p-6 flex flex-col justify-between shadow-sm relative overflow-hidden"
-          >
-            <div>
-              <span className="font-mono text-[9px] font-bold text-primary uppercase tracking-widest block mb-4">
-                Core Technologies
-              </span>
-              
-              <div className="space-y-4">
-                {skillCategories.slice(0, 3).map((cat) => (
-                  <div key={cat.name} className="space-y-1">
-                    <span className="text-[10px] font-bold text-foreground/80 uppercase tracking-wide">
-                      {cat.name}
-                    </span>
-                    <div className="flex flex-wrap gap-1.5">
-                      {cat.skills.map((skill) => (
-                        <span
-                          key={skill.name}
-                          className="inline-flex items-center rounded-full bg-muted/60 border border-border px-2.5 py-0.5 text-xs text-muted-foreground font-medium"
-                        >
-                          {skill.name}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-            
-            <div className="absolute bottom-4 right-4 text-[10px] text-muted-foreground font-semibold flex items-center gap-1 select-none opacity-50">
-              <Sparkles size={11} />
-              Verified Stack
-            </div>
-          </motion.div>
-
         </div>
+
+        {/* Stats row */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-60px' }}
+          transition={{ duration: 0.6, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(2, 1fr)',
+            gap: '1rem',
+            marginTop: '4rem',
+          }}
+          className="md:grid-cols-4"
+        >
+          {STATS.map(({ value, suffix, label }) => (
+            <StatCard key={label} value={value} suffix={suffix} label={label} />
+          ))}
+        </motion.div>
+
       </div>
     </section>
   );

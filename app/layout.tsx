@@ -1,39 +1,55 @@
 /**
  * app/layout.tsx
  * ─────────────────────────────────────────────────────────
- * Root layout — applies fonts, theme provider, global SEO
- * metadata, and wraps all pages with Navbar and Footer.
+ * Root layout — new typography, LoaderProvider, CustomCursor,
+ * Loader. Dark-mode only. All existing metadata preserved.
  * ─────────────────────────────────────────────────────────
  */
 
 import type { Metadata } from 'next';
-import { Inter, JetBrains_Mono } from 'next/font/google';
-import { ThemeProvider } from '@/components/layout/ThemeProvider';
-import { Navbar } from '@/components/layout/Navbar';
-import { Footer } from '@/components/layout/Footer';
+import { DM_Sans, DM_Mono, Syne, Cormorant_Garamond } from 'next/font/google';
 import { siteConfig } from '@/config/site';
 import { getAbsoluteUrl } from '@/lib/utils';
 import { Analytics } from '@vercel/analytics/react';
-import { LiveActivity } from '@/components/ui/LiveActivity';
-import { CommandPalette } from '@/components/ui/CommandPalette';
-import { PresenceProvider } from '@/context/PresenceContext';
+import { LoaderProvider } from '@/providers/LoaderProvider';
+import { Loader } from '@/components/ui/Loader';
+import { CustomCursor } from '@/components/ui/CustomCursor';
+import { Navbar } from '@/components/layout/Navbar';
+import { Footer } from '@/components/layout/Footer';
 import '@/app/globals.css';
 
-// ── Google Fonts ───────────────────────────────────────
+// ── Google Fonts ────────────────────────────────────────
 
-const inter = Inter({
+const dmSans = DM_Sans({
   subsets: ['latin'],
-  variable: '--font-inter',
+  weight: ['300', '400', '500'],
+  variable: '--font-body',
   display: 'swap',
 });
 
-const jetbrainsMono = JetBrains_Mono({
+const dmMono = DM_Mono({
   subsets: ['latin'],
-  variable: '--font-jetbrains-mono',
+  weight: ['300', '400'],
+  variable: '--font-mono',
   display: 'swap',
 });
 
-// ── Root Metadata ──────────────────────────────────────
+const syne = Syne({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700'],
+  variable: '--font-display',
+  display: 'swap',
+});
+
+const cormorant = Cormorant_Garamond({
+  subsets: ['latin'],
+  weight: ['300', '400'],
+  style: ['italic'],
+  variable: '--font-editorial',
+  display: 'swap',
+});
+
+// ── Root Metadata ───────────────────────────────────────
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
@@ -43,7 +59,7 @@ export const metadata: Metadata = {
   },
   description: siteConfig.description,
   keywords: [
-    'Full-Stack Developer',
+    'Software Developer',
     'Next.js',
     'React',
     'TypeScript',
@@ -93,7 +109,7 @@ export const metadata: Metadata = {
   },
 };
 
-// ── Root Layout ────────────────────────────────────────
+// ── Root Layout ─────────────────────────────────────────
 
 interface RootLayoutProps {
   children: React.ReactNode;
@@ -103,28 +119,21 @@ export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html
       lang="en"
-      className={`${inter.variable} ${jetbrainsMono.variable}`}
-      suppressHydrationWarning /* Required for next-themes to avoid FOUC */
+      className={`${dmSans.variable} ${dmMono.variable} ${syne.variable} ${cormorant.variable}`}
     >
-      <body className="flex min-h-dvh flex-col">
-        {/* Skip-to-content accessibility anchor */}
-        <div id="top" />
+      <body className="noise">
+        <LoaderProvider>
+          {/* Page loader overlay */}
+          <Loader />
 
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <PresenceProvider>
-            <Navbar />
-            <main className="flex-1">{children}</main>
-            <Footer />
-            <LiveActivity />
-            <CommandPalette />
-            <Analytics />
-          </PresenceProvider>
-        </ThemeProvider>
+          {/* Custom cursor (portal, disabled on touch) */}
+          <CustomCursor />
+
+          <Navbar />
+          <main id="main-content">{children}</main>
+          <Footer />
+          <Analytics />
+        </LoaderProvider>
       </body>
     </html>
   );

@@ -118,7 +118,7 @@ export function generateConfirmationHTML({ name }: { name: string }): string {
         <div style="font-size: 13px; color: #6b7280; line-height: 1.5;">
           Best regards,<br>
           <strong style="color: #111827;">Hitarth Thesia</strong><br>
-          <span style="font-size: 12px;">Full-Stack Developer</span><br>
+          <span style="font-size: 12px;">Software Developer</span><br>
           <a href="${siteConfig.social.linkedin}" style="color: ${PRIMARY_COLOR}; text-decoration: none; font-size: 12px; font-weight: 500;">Connect on LinkedIn</a>
         </div>
 
@@ -142,7 +142,7 @@ Thanks for reaching out! I have successfully received your message and will get 
 In the meantime, feel free to view my projects here: ${getAbsoluteUrl('/projects')}
 
 — Hitarth Thesia
-Full-Stack Developer
+Software Developer
 LinkedIn: ${siteConfig.social.linkedin}
   `.trim();
 }

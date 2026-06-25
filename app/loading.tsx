@@ -1,53 +1,59 @@
 'use client';
 
-import { motion } from 'framer-motion';
+/**
+ * app/loading.tsx
+ * ─────────────────────────────────────────────────────────
+ * Next.js route-level loading state.
+ * Shows a minimal premium spinner — no "Loading..." text.
+ * ─────────────────────────────────────────────────────────
+ */
+
 import type { ReactElement } from 'react';
 
 export default function Loading(): ReactElement {
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-background px-6 py-24 select-none relative overflow-hidden">
-      {/* Background radial spotlight */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] bg-primary/5 rounded-full blur-[100px] pointer-events-none" />
+    <div
+      style={{
+        minHeight: '100dvh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        background: 'var(--color-bg)',
+        flexDirection: 'column',
+        gap: '1.5rem',
+      }}
+    >
+      {/* Spinner ring */}
+      <div
+        style={{
+          width: '40px',
+          height: '40px',
+          borderRadius: '50%',
+          border: '1px solid var(--color-border-2)',
+          borderTopColor: 'var(--color-accent)',
+          animation: 'spin 0.8s linear infinite',
+        }}
+      />
 
-      <div className="relative z-10 flex flex-col items-center gap-6 max-w-sm text-center">
-        {/* Animated Custom Loader */}
-        <div className="relative h-16 w-16">
-          {/* Inner pulse */}
-          <motion.div
-            animate={{
-              scale: [1, 1.2, 1],
-              opacity: [0.3, 0.8, 0.3],
-            }}
-            transition={{
-              duration: 2,
-              repeat: Infinity,
-              ease: 'easeInOut',
-            }}
-            className="absolute inset-2 rounded-xl bg-primary/20"
-          />
+      {/* Monogram */}
+      <span
+        style={{
+          fontFamily: 'var(--font-display)',
+          fontWeight: 600,
+          fontSize: '0.75rem',
+          color: 'var(--color-text-3)',
+          letterSpacing: 'var(--tracking-widest)',
+          textTransform: 'uppercase',
+        }}
+      >
+        HT
+      </span>
 
-          {/* Spinning borders */}
-          <motion.div
-            animate={{ rotate: 360 }}
-            transition={{
-              duration: 1.2,
-              repeat: Infinity,
-              ease: 'linear',
-            }}
-            className="h-full w-full rounded-2xl border-[3px] border-primary/10 border-t-primary"
-          />
-        </div>
-
-        {/* Text */}
-        <div className="space-y-1">
-          <p className="text-sm font-semibold text-foreground font-mono uppercase tracking-widest animate-pulse">
-            Loading...
-          </p>
-          <p className="text-xs text-muted-foreground">
-            Assembling components & fetching data
-          </p>
-        </div>
-      </div>
+      <style>{`
+        @keyframes spin {
+          to { transform: rotate(360deg); }
+        }
+      `}</style>
     </div>
   );
 }

@@ -29,59 +29,59 @@
  */
 
 export const siteConfig = {
-  /** Full legal / display name */
-  name: "Hitarth Thesia",
+   /** Full legal / display name */
+   name: "Hitarth Thesia",
 
-  /** Short professional title shown in browser tab / OG */
-  title: "Full-Stack Developer",
+   /** Short professional title shown in browser tab / OG */
+   title: "Software Developer",
 
-  /** Punchy one-liner shown in the hero section */
-  tagline: "I build fast, production-ready web products.",
+   /** Punchy one-liner shown in the hero section */
+   tagline: "I build fast, production-ready web products.",
 
-  /** 2-sentence bio used as SEO meta description */
-  description:
-    "Full-stack developer with a track record of delivering 90+ Lighthouse scores and 45% fewer re-renders. " +
-    "Skilled across both frontend and backend, from custom React components to scalable REST APIs and database design.",
+   /** 2-sentence bio used as SEO meta description */
+   description:
+      "Software Developer with a track record of delivering 90+ Lighthouse scores and 45% fewer re-renders. " +
+      "Skilled across both frontend and backend, from custom React components to scalable REST APIs and database design.",
 
-  /** Canonical production URL — update before deploying */
-  url: "https://hitarththesia.vercel.app/",
+   /** Canonical production URL — update before deploying */
+   url: "https://hitarththesia.vercel.app/",
 
-  /** Path to Open Graph image inside /public */
-  ogImage: "/og-image.png",
+   /** Path to Open Graph image inside /public */
+   ogImage: "/og-image.png",
 
-  /** Primary contact e-mail */
-  email: "hitarththesia123@gmail.com",
+   /** Primary contact e-mail */
+   email: "hitarththesia123@gmail.com",
 
-  /** Physical / time-zone location */
-  location: "Ahmedabad, Gujarat, India",
+   /** Physical / time-zone location */
+   location: "Ahmedabad, Gujarat, India",
 
-  /** When true, an "Open to work" badge appears in the hero */
-  openToWork: true,
+   /** When true, an "Open to work" badge appears in the hero */
+   openToWork: true,
 
-  /** Path to downloadable résumé inside /public */
-  resumeUrl: "/Resume_Thesia_Hitarth.pdf",
+   /** Path to downloadable résumé inside /public */
+   resumeUrl: "/Resume_Thesia_Hitarth.pdf",
 
-  /** Social media handles / profile URLs */
-  social: {
-    github: "https://github.com/Thesia-Hitarth",
-    linkedin: "https://www.linkedin.com/in/hitarth-thesia-2043b0170/",
-    twitter: "" as string,
-  },
+   /** Social media handles / profile URLs */
+   social: {
+      github: "https://github.com/Thesia-Hitarth",
+      linkedin: "https://www.linkedin.com/in/hitarth-thesia-2043b0170/",
+      twitter: "" as string,
+   },
 
-  /**
-   * Primary navigation links.
-   * hrefs must match the section id attributes in app/page.tsx.
-   */
-  nav: [
-    { label: "Home", href: "#hero" },
-    { label: "About", href: "#about" },
-    { label: "Skills", href: "#skills" },
-    { label: "Experience", href: "#experience" },
-    { label: "Projects", href: "#projects" },
-    { label: "GitHub", href: "#github" },
-    { label: "Blog", href: "#blog" },
-    { label: "Contact", href: "#contact" },
-  ] as Array<{ label: string; href: string }>,
+   /**
+    * Primary navigation links.
+    * hrefs must match the section id attributes in app/page.tsx.
+    */
+   nav: [
+      { label: "Home", href: "#hero" },
+      { label: "About", href: "#about" },
+      { label: "Skills", href: "#skills" },
+      { label: "Experience", href: "#experience" },
+      { label: "Projects", href: "#projects" },
+      { label: "GitHub", href: "#github" },
+      { label: "Blog", href: "#blog" },
+      { label: "Contact", href: "#contact" },
+   ] as Array<{ label: string; href: string }>,
 } as const;
 
 export type SiteConfig = typeof siteConfig;

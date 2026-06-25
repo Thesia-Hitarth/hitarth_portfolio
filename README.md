@@ -5,7 +5,7 @@
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4-38bdf8?logo=tailwind-css)](https://tailwindcss.com)
 [![Vercel](https://img.shields.io/badge/Deploy-Vercel-black?logo=vercel)](https://vercel.com)
 
-A world-class full-stack developer portfolio built with Next.js 15 App Router, TypeScript (strict mode), Tailwind CSS v4, and next-themes. Every piece of content lives in the `data/` directory — no hardcoded strings in components.
+A world-class Software Developer portfolio built with Next.js 15 App Router, TypeScript (strict mode), Tailwind CSS v4, and next-themes. Every piece of content lives in the `data/` directory — no hardcoded strings in components.
 
 ---
 

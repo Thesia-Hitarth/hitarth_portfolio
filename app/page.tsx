@@ -1,9 +1,8 @@
 /**
  * app/page.tsx
  * ─────────────────────────────────────────────────────────
- * Homepage — assembles all section components in order.
- * Data is fetched here (server component) and passed
- * as props; no data access inside leaf components.
+ * Homepage — redesigned section order. Blog, Testimonials,
+ * and LiveActivity removed; GitHubSection kept and restyled.
  * ─────────────────────────────────────────────────────────
  */
 
@@ -15,9 +14,7 @@ import { SkillsSection } from '@/components/sections/SkillsSection';
 import { ExperienceSection } from '@/components/sections/ExperienceSection';
 import { ProjectsSection } from '@/components/sections/ProjectsSection';
 import { GitHubSection } from '@/components/sections/GitHubSection';
-import { BlogSection } from '@/components/sections/BlogSection';
 import { ContactSection } from '@/components/sections/ContactSection';
-import { TestimonialsSection } from '@/components/sections/TestimonialsSection';
 import { projects, featuredProjects } from '@/data/projects';
 import { skillCategories } from '@/data/skills';
 import { experiences } from '@/data/experience';
@@ -62,9 +59,7 @@ export default function HomePage(): ReactElement {
       <ExperienceSection experiences={experiences} />
       <ProjectsSection projects={projects} featured={featuredProjects} />
       <GitHubSection />
-      <BlogSection />
       <ContactSection />
-      <TestimonialsSection />
     </>
   );
 }

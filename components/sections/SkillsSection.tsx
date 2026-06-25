@@ -2,133 +2,137 @@
 
 /**
  * components/sections/SkillsSection.tsx
+ * ─────────────────────────────────────────────────────────
+ * Part A: Infinite scrolling marquee (two rows, opposite directions)
+ * Part B: Three-column categorized skill list with animated bars
+ * ─────────────────────────────────────────────────────────
  */
 
-import {
-  Monitor,
-  Server,
-  Database,
-  Wrench,
-  Sparkles,
-  Terminal,
-} from 'lucide-react';
-import type { LucideIcon } from 'lucide-react';
 import type { ReactElement } from 'react';
-import { SectionHeader } from '@/components/ui/SectionHeader';
-import type { SkillCategory, Skill } from '@/lib/types';
-import { cn } from '@/lib/utils';
-
-const ICON_MAP: Record<string, LucideIcon> = {
-  Monitor,
-  Server,
-  Database,
-  Wrench,
-  Sparkles,
-  Terminal,
-};
-
-const LEVEL_LABEL: Record<string, string> = {
-  learning: 'Learning',
-  comfortable: 'Comfortable',
-  proficient: 'Proficient',
-  expert: 'Expert',
-};
-
-interface SkillWithIcon extends Skill {
-  icon: string;
-}
+import { motion } from 'framer-motion';
+import { SectionLabel } from '@/components/shared/SectionLabel';
+import { SkillMarquee } from '@/components/shared/SkillMarquee';
+import { SkillRow } from '@/components/shared/SkillRow';
+import type { SkillCategory } from '@/lib/types';
 
 interface SkillsSectionProps {
   categories: SkillCategory[];
 }
 
+const fadeUp = {
+  hidden: { opacity: 0, y: 30 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.65, ease: [0.16, 1, 0.3, 1] as const } },
+};
+
 export function SkillsSection({ categories }: SkillsSectionProps): ReactElement {
-  const uniqueSkillsMap = new Map();
-  categories.forEach((cat) => {
-    cat.skills.forEach((skill) => {
-      if (!uniqueSkillsMap.has(skill.name)) {
-        uniqueSkillsMap.set(skill.name, {
-          ...skill,
-          icon: cat.icon,
-        });
-      }
-    });
-  });
-  const allSkills = Array.from(uniqueSkillsMap.values());
+  // Use first 3 categories for 3-column layout
+  const [frontend, backend, tools] = [
+    categories.find((c) => c.name === 'Frontend'),
+    categories.find((c) => c.name === 'Backend'),
+    categories.find((c) => c.name === 'CMS & Tools'),
+  ];
 
-  const midpoint = Math.ceil(allSkills.length / 2);
-  const row1 = allSkills.slice(0, midpoint);
-  const row2 = allSkills.slice(midpoint);
-
-  const renderSkillCard = (skill: SkillWithIcon, index: number, isCopy: boolean) => {
-    const Icon = ICON_MAP[skill.icon] ?? Monitor;
-    const isLearning = skill.level === 'learning';
-    return (
-      <div
-        key={`${skill.name}-${isCopy ? 'copy' : 'orig'}-${index}`}
-        className={cn(
-          'flex items-center gap-4 rounded-2xl border bg-card py-4 px-7 md:py-5 md:px-8 shrink-0',
-          'transition-all duration-300 hover:scale-103 hover:shadow-md',
-          isLearning
-            ? 'border-dashed border-primary/30 hover:border-primary/50'
-            : 'border-border hover:border-primary/40'
-        )}
-      >
-        <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-primary/10 text-primary">
-          <Icon size={20} className="shrink-0" />
-        </div>
-        <div className="flex flex-col gap-0.5">
-          <span className="text-base font-bold text-foreground whitespace-nowrap">{skill.name}</span>
-          <span className="text-[11px] font-mono text-muted-foreground uppercase tracking-wider whitespace-nowrap">
-            {isLearning ? 'Exploring' : LEVEL_LABEL[skill.level] ?? skill.level}
-          </span>
-        </div>
-      </div>
-    );
-  };
+  const cols = [
+    { title: 'Frontend', cat: frontend },
+    { title: 'Backend',  cat: backend },
+    { title: 'Tools & Other', cat: tools },
+  ].filter((c) => c.cat);
 
   return (
     <section
       id="skills"
       aria-labelledby="skills-heading"
-      className="py-32 lg:py-40 overflow-hidden"
+      className="section"
+      style={{ background: 'var(--color-bg-2)' }}
     >
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-6xl">
-        <SectionHeader
+      <div className="container-site">
+        <SectionLabel number="03" label="Skills" />
+        <h2
           id="skills-heading"
-          label="03 / Skills"
-          title="What I work with"
-          subtitle="Technologies and tools I use to build things."
+          style={{
+            fontFamily: 'var(--font-display)',
+            fontWeight: 500,
+            fontSize: 'var(--text-xl)',
+            letterSpacing: 'var(--tracking-tight)',
+            color: 'var(--color-text-1)',
+            marginBottom: '3rem',
+          }}
+        >
+          What I work with
+        </h2>
+      </div>
+
+      {/* Part A: Marquee — edge to edge */}
+      <div style={{ position: 'relative', overflow: 'hidden', marginBottom: '5rem' }}>
+        {/* Fade edges */}
+        <div
+          aria-hidden="true"
+          style={{
+            position: 'absolute',
+            insetBlock: 0,
+            left: 0,
+            width: '10vw',
+            background: 'linear-gradient(to right, var(--color-bg-2), transparent)',
+            zIndex: 2,
+            pointerEvents: 'none',
+          }}
         />
+        <div
+          aria-hidden="true"
+          style={{
+            position: 'absolute',
+            insetBlock: 0,
+            right: 0,
+            width: '10vw',
+            background: 'linear-gradient(to left, var(--color-bg-2), transparent)',
+            zIndex: 2,
+            pointerEvents: 'none',
+          }}
+        />
+        <SkillMarquee />
+      </div>
 
-        <div className="relative mt-16 w-full">
-          {/* Gradient overlay masks on left and right for fade effect */}
-          <div className="absolute inset-y-0 left-0 w-16 md:w-32 bg-gradient-to-r from-background to-transparent z-10 pointer-events-none" />
-          <div className="absolute inset-y-0 right-0 w-16 md:w-32 bg-gradient-to-l from-background to-transparent z-10 pointer-events-none" />
-
-          {/* Marquee rows wrapped in a flex-col container with gap to prevent vertical clipping */}
-          <div className="flex flex-col gap-8 py-3">
-            {/* Row 1: Left to Right / Reverse Marquee */}
-            <div className="flex overflow-hidden w-full py-3 -my-3">
-              <div className="flex shrink-0 gap-6 pr-6 animate-marquee">
-                {row1.map((skill, idx) => renderSkillCard(skill, idx, false))}
-              </div>
-              <div className="flex shrink-0 gap-6 pr-6 animate-marquee" aria-hidden="true">
-                {row1.map((skill, idx) => renderSkillCard(skill, idx, true))}
+      {/* Part B: Categorized lists */}
+      <div className="container-site">
+        <motion.div
+          variants={fadeUp}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: '-80px' }}
+          style={{
+            display: 'grid',
+            gap: '3rem',
+          }}
+          className="grid-cols-1 md:grid-cols-3"
+        >
+          {cols.map(({ title, cat }) => (
+            <div key={title}>
+              <h3
+                style={{
+                  fontFamily: 'var(--font-mono)',
+                  fontSize: 'var(--text-micro)',
+                  fontWeight: 400,
+                  letterSpacing: 'var(--tracking-widest)',
+                  textTransform: 'uppercase',
+                  color: 'var(--color-accent)',
+                  marginBottom: '1.5rem',
+                }}
+              >
+                {title}
+              </h3>
+              <div>
+                {cat?.skills.map((skill, i) => (
+                  <SkillRow
+                    key={skill.name}
+                    name={skill.name}
+                    level={skill.level === 'learning' ? 'comfortable' : skill.level}
+                    delay={i * 0.08}
+                  />
+                ))}
               </div>
             </div>
-
-            {/* Row 2: Right to Left / Forward Marquee */}
-            <div className="flex overflow-hidden w-full py-3 -my-3">
-              <div className="flex shrink-0 gap-6 pr-6 animate-marquee-reverse">
-                {row2.map((skill, idx) => renderSkillCard(skill, idx, false))}
-              </div>
-              <div className="flex shrink-0 gap-6 pr-6 animate-marquee-reverse" aria-hidden="true">
-                {row2.map((skill, idx) => renderSkillCard(skill, idx, true))}
-              </div>
-            </div>
-          </div>
-        </div>
+          ))}
+        </motion.div>
       </div>
     </section>
   );
