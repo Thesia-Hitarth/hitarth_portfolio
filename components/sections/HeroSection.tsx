@@ -3,9 +3,8 @@
 /**
  * components/sections/HeroSection.tsx
  * ─────────────────────────────────────────────────────────
- * Premium hero: HITARTH / THESIA big display type,
- * italic editorial role, code block right column,
- * bottom strip with live clock, GSAP entrance.
+ * Premium hero: HITARTH / THESIA display type on left,
+ * animated orbital tech-stack visualization on right.
  * ─────────────────────────────────────────────────────────
  */
 
@@ -20,24 +19,6 @@ import { useMagneticButton } from '@/hooks/useMagneticButton';
 import { useLoader } from '@/providers/LoaderProvider';
 import gsap from 'gsap';
 
-// Typing animation component for code block
-function TypedString({ text }: { text: string }): ReactElement {
-  const ref = useRef<HTMLSpanElement | null>(null);
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    let i = 0;
-    el.textContent = '';
-    const id = setInterval(() => {
-      el.textContent += text[i];
-      i++;
-      if (i >= text.length) clearInterval(id);
-    }, 35);
-    return () => clearInterval(id);
-  }, [text]);
-  return <span ref={ref} />;
-}
-
 export function HeroSection(): ReactElement {
   const clock = useLiveClock();
   const { isLoaded } = useLoader();
@@ -47,10 +28,8 @@ export function HeroSection(): ReactElement {
   const ctaDownRef = useMagneticButton<HTMLAnchorElement>();
   const sectionRef = useRef<HTMLElement | null>(null);
 
-  // GSAP entrance after loader
   useEffect(() => {
     if (!isLoaded) return;
-
     const tl = gsap.timeline({ delay: 0.1 });
     tl.from('.hero-status', { opacity: 0, y: 10, duration: 0.5, ease: 'power3.out' })
       .from('.hero-name', { opacity: 0, y: 30, duration: 0.7, stagger: 0.08, ease: 'power3.out' }, '-=0.2')
@@ -82,7 +61,7 @@ export function HeroSection(): ReactElement {
         overflow: 'hidden',
       }}
     >
-      {/* Subtle amber radial gradient */}
+      {/* Subtle bg gradient */}
       <div
         aria-hidden="true"
         style={{
@@ -93,9 +72,8 @@ export function HeroSection(): ReactElement {
         }}
       />
 
-      {/* Main grid wrapper to center it and prevent overlap */}
+      {/* Main grid */}
       <div style={{ flex: 1, display: 'flex', alignItems: 'center', width: '100%', padding: '2rem 0' }}>
-        {/* Main grid */}
         <div
           style={{
             maxWidth: 'var(--container-max)',
@@ -107,35 +85,25 @@ export function HeroSection(): ReactElement {
           }}
           className="grid-cols-1 lg:grid-cols-[1fr_1fr]"
         >
-          {/* LEFT COLUMN */}
+
+          {/* ── LEFT COLUMN ── */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
 
-            {/* Status badge */}
             <div className="hero-status">
               <StatusBadge />
             </div>
 
-            {/* Name lines */}
             <div>
               <h1 id="hero-heading" style={{ margin: 0, padding: 0 }}>
-                <span
-                  className="headline-hero hero-name"
-                  style={{ display: 'block' }}
-                  aria-label="HITARTH"
-                >
+                <span className="headline-hero hero-name" style={{ display: 'block' }} aria-label="HITARTH">
                   {scrambledName}
                 </span>
-                <span
-                  className="headline-hero hero-name"
-                  style={{ display: 'block', color: 'var(--color-text-2)' }}
-                  aria-label="THESIA"
-                >
+                <span className="headline-hero hero-name" style={{ display: 'block', color: 'var(--color-text-2)' }} aria-label="THESIA">
                   {scrambledLast}
                 </span>
               </h1>
             </div>
 
-            {/* Role — editorial italic */}
             <p
               className="hero-role"
               style={{
@@ -152,7 +120,6 @@ export function HeroSection(): ReactElement {
               Software Developer.
             </p>
 
-            {/* Tagline */}
             <p
               className="hero-copy"
               style={{
@@ -168,7 +135,6 @@ export function HeroSection(): ReactElement {
               {siteConfig.tagline}
             </p>
 
-            {/* CTAs */}
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem' }}>
               <button
                 ref={ctaViewRef}
@@ -188,7 +154,6 @@ export function HeroSection(): ReactElement {
               </Link>
             </div>
 
-            {/* Location & Time Info */}
             <p
               className="hero-location"
               style={{
@@ -206,81 +171,48 @@ export function HeroSection(): ReactElement {
             </p>
           </div>
 
-          {/* RIGHT COLUMN — Code block */}
-          <div
-            className="hero-code hidden lg:block"
-            aria-hidden="true"
-            data-cursor="text"
-          >
-            <div className="code-block">
-              <div className="code-block__header">
-                <span className="dot" />
-                <span className="dot" />
-                <span className="dot" />
-                <span className="filename">developer.ts</span>
+          {/* ── RIGHT COLUMN — Animated Tech Orbit ── */}
+          <div className="hero-code hidden lg:block" aria-hidden="true">
+            <div className="techsphere-wrapper">
+              <div className="techsphere">
+
+                {/* Ambient purple/blue glow blob */}
+                <div className="techsphere__glow" />
+
+                {/* Orbital ring paths (visual only) */}
+                <div className="techsphere__ring ts-ring--inner" />
+                <div className="techsphere__ring ts-ring--mid" />
+                <div className="techsphere__ring ts-ring--outer" />
+
+                {/* Center core with pulsing halo */}
+                <div className="techsphere__core">
+                  <span className="techsphere__core-icon">&lt;/&gt;</span>
+                  <div className="techsphere__core-halo" />
+                </div>
+
+                {/* Inner orbit (r = 70px, 14s CW) */}
+                <div className="ts-node ts-node--1"><span>React</span></div>
+                <div className="ts-node ts-node--2"><span>Git</span></div>
+
+                {/* Middle orbit (r = 145px, 22s CCW) */}
+                <div className="ts-node ts-node--3"><span>Next</span></div>
+                <div className="ts-node ts-node--4"><span>Node</span></div>
+
+                {/* Outer orbit (r = 220px, 34s CW) */}
+                <div className="ts-node ts-node--5"><span>TypeScript</span></div>
+                <div className="ts-node ts-node--6"><span>Tailwind</span></div>
+                <div className="ts-node ts-node--7"><span>MongoDB</span></div>
+
               </div>
-              <div className="code-block__body">
-                <div>
-                  <span className="line-num">1</span>
-                  <span className="kw">const</span>{' '}
-                  <span className="fn">developer</span>{' '}
-                  <span className="pu">= {'{'}</span>
-                </div>
-                <div>
-                  <span className="line-num">2</span>
-                  <span className="fn" style={{ marginLeft: '1.5rem' }}>name</span>
-                  <span className="pu">: </span>
-                  <span className="str">&quot;{siteConfig.name}&quot;</span>
-                  <span className="pu">,</span>
-                </div>
-                <div>
-                  <span className="line-num">3</span>
-                  <span className="fn" style={{ marginLeft: '1.5rem' }}>role</span>
-                  <span className="pu">: </span>
-                  <span className="str">&quot;{siteConfig.title}&quot;</span>
-                  <span className="pu">,</span>
-                </div>
-                <div>
-                  <span className="line-num">4</span>
-                  <span className="fn" style={{ marginLeft: '1.5rem' }}>stack</span>
-                  <span className="pu">: [</span>
-                  <span className="str">&quot;Next.js&quot;</span>
-                  <span className="pu">, </span>
-                  <span className="str">&quot;TypeScript&quot;</span>
-                  <span className="pu">, </span>
-                  <span className="str">&quot;Node.js&quot;</span>
-                  <span className="pu">],</span>
-                </div>
-                <div>
-                  <span className="line-num">5</span>
-                  <span className="fn" style={{ marginLeft: '1.5rem' }}>status</span>
-                  <span className="pu">: </span>
-                  <span className="ac">&quot;open_to_work&quot;</span>
-                  <span className="pu">,</span>
-                </div>
-                <div>
-                  <span className="line-num">6</span>
-                  <span className="fn" style={{ marginLeft: '1.5rem' }}>location</span>
-                  <span className="pu">: </span>
-                  <span className="str">&quot;Ahmedabad, India&quot;</span>
-                  <span className="pu">,</span>
-                </div>
-                <div>
-                  <span className="line-num">7</span>
-                  <span className="fn" style={{ marginLeft: '1.5rem' }}>passion</span>
-                  <span className="pu">: </span>
-                  <span className="str">
-                    &quot;<TypedString text="Building products people love" />&quot;
-                  </span>
-                  <span className="pu">,</span>
-                </div>
-                <div>
-                  <span className="line-num">8</span>
-                  <span className="pu">{'}'}</span>
-                </div>
-              </div>
+
+              {/* Caption label — placed below the sphere container to avoid overlapping */}
+              <p className="techsphere__caption">
+                <span className="techsphere__caption-dot" />
+                Tech Stack Orbit
+              </p>
             </div>
           </div>
+
         </div>
       </div>
 
