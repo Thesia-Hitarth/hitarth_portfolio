@@ -105,7 +105,6 @@ export function CustomCursor(): ReactElement | null {
           transform: 'translate(-50%, -50%)',
           pointerEvents: 'none',
           zIndex: 99999,
-          mixBlendMode: 'difference',
           opacity: dotVisible ? 1 : 0,
           transition: 'opacity 200ms ease',
           left: '-100px',
