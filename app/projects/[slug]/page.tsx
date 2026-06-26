@@ -148,7 +148,7 @@ export default async function ProjectDetailPage({ params }: Props) {
             {/* Back Nav Link */}
             <Link
               href="/projects"
-              className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-primary transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded-md mb-8"
+              className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-primary transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 rounded-md mb-8"
             >
               <ArrowLeft size={16} />
               <span>Back to projects</span>
@@ -297,7 +297,7 @@ export default async function ProjectDetailPage({ params }: Props) {
                       href={project.liveUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex w-full items-center justify-center gap-2 rounded-lg bg-primary py-3 text-sm font-semibold text-primary-foreground transition-opacity hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-primary"
+                      className="flex w-full items-center justify-center gap-2 rounded-lg bg-primary py-3 text-sm font-semibold text-primary-foreground transition-opacity hover:opacity-90 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                     >
                       <ExternalLink size={16} />
                       Launch Live Demo
@@ -316,7 +316,7 @@ export default async function ProjectDetailPage({ params }: Props) {
                       href={project.githubUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex w-full items-center justify-center gap-2 rounded-lg border border-border bg-background py-3 text-sm font-semibold text-foreground transition-colors hover:bg-muted focus:outline-none focus:ring-2 focus:ring-primary"
+                      className="flex w-full items-center justify-center gap-2 rounded-lg border border-border bg-background py-3 text-sm font-semibold text-foreground transition-colors hover:bg-muted focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                     >
                       <GithubIcon size={16} />
                       Browse Repository

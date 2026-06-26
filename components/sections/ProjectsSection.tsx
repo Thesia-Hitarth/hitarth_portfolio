@@ -16,6 +16,8 @@ import Link from 'next/link';
 import { SectionLabel } from '@/components/shared/SectionLabel';
 import type { Project } from '@/lib/types';
 import { useMagneticButton } from '@/hooks/useMagneticButton';
+import { GithubIcon } from '@/components/ui/BrandIcons';
+import { Monitor } from 'lucide-react';
 
 interface ProjectsSectionProps {
   featured: Project[];
@@ -143,8 +145,9 @@ function FeaturedCard({ project, index }: { project: Project; index: number }): 
               rel="noopener noreferrer"
               data-cursor="magnetic"
               className="btn-magnetic btn-filled"
-              style={{ fontSize: '0.65rem' }}
+              style={{ fontSize: '0.65rem', display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}
             >
+              <Monitor size={12} />
               <span>Live Demo ↗</span>
             </a>
           )}
@@ -156,8 +159,9 @@ function FeaturedCard({ project, index }: { project: Project; index: number }): 
               rel="noopener noreferrer"
               data-cursor="magnetic"
               className="btn-magnetic"
-              style={{ fontSize: '0.65rem' }}
+              style={{ fontSize: '0.65rem', display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}
             >
+              <GithubIcon size={12} />
               <span>View Code ↗</span>
             </a>
           )}

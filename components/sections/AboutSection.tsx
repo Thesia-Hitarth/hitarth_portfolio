@@ -15,6 +15,7 @@ import { SectionLabel } from '@/components/shared/SectionLabel';
 import { StatCard } from '@/components/shared/StatCard';
 import { siteConfig } from '@/config/site';
 import { useMagneticButton } from '@/hooks/useMagneticButton';
+import { GithubIcon, LinkedinIcon } from '@/components/ui/BrandIcons';
 
 const PROFILE_IMG = '/Passportsize_Hitarth.png';
 
@@ -116,7 +117,9 @@ export function AboutSection(): ReactElement {
                 rel="noopener noreferrer"
                 data-cursor="magnetic"
                 className="btn-magnetic"
+                style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}
               >
+                <GithubIcon size={14} />
                 <span>GitHub ↗</span>
               </a>
               <a
@@ -126,7 +129,9 @@ export function AboutSection(): ReactElement {
                 rel="noopener noreferrer"
                 data-cursor="magnetic"
                 className="btn-magnetic"
+                style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}
               >
+                <LinkedinIcon size={14} />
                 <span>LinkedIn ↗</span>
               </a>
             </div>

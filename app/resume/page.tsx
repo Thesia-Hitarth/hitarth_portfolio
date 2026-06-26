@@ -22,7 +22,7 @@ export default function ResumePage(): ReactElement {
       <div className="max-w-4xl mx-auto mb-8 flex justify-between items-center print:hidden">
         <Link
           href="/"
-          className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-primary transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded-md"
+          className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-primary transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 rounded-md"
         >
           <ArrowLeft size={16} />
           Back to home
@@ -30,7 +30,7 @@ export default function ResumePage(): ReactElement {
         <a
           href={siteConfig.resumeUrl}
           download={siteConfig.resumeUrl.split('/').pop()}
-          className="inline-flex items-center gap-2 text-sm font-semibold text-primary-foreground bg-primary hover:opacity-90 transition-opacity focus:outline-none focus:ring-2 focus:ring-primary rounded-md px-4 py-2 shadow-sm"
+          className="inline-flex items-center gap-2 text-sm font-semibold text-primary-foreground bg-primary hover:opacity-90 transition-opacity focus:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-md px-4 py-2 shadow-sm"
         >
           <Download size={16} />
           Download Resume
@@ -108,7 +108,7 @@ export default function ResumePage(): ReactElement {
               <div className="space-y-6 print:space-y-4">
                 {resumeData.experience.map((job, index) => (
                   <div key={index} className="space-y-2">
-                    <div className="flex justify-between items-start">
+                    <div className="flex flex-col sm:flex-row justify-between items-start gap-1 sm:gap-4">
                       <div>
                         <h3 className="font-bold text-foreground print:text-black print:text-sm">
                           {job.role}
@@ -117,7 +117,7 @@ export default function ResumePage(): ReactElement {
                           {job.company}
                         </p>
                       </div>
-                      <div className="text-right text-xs text-muted-foreground print:text-zinc-500 font-mono">
+                      <div className="text-left sm:text-right text-xs text-muted-foreground print:text-zinc-500 font-mono">
                         <p>{job.startDate} — {job.endDate}</p>
                         <p>{job.location}</p>
                       </div>
@@ -152,13 +152,13 @@ export default function ResumePage(): ReactElement {
               <div className="space-y-6 print:space-y-4">
                 {resumeData.projects.map((project, index) => (
                   <div key={index} className="space-y-2">
-                    <div className="flex justify-between items-start">
+                    <div className="flex flex-col sm:flex-row justify-between items-start gap-1 sm:gap-4">
                       <div>
                         <h3 className="font-bold text-foreground print:text-black print:text-sm">
                           {project.title} — <span className="text-xs font-normal text-muted-foreground">{project.subtitle}</span>
                         </h3>
                       </div>
-                      <div className="text-right text-xs text-muted-foreground print:text-zinc-500 font-mono">
+                      <div className="text-left sm:text-right text-xs text-muted-foreground print:text-zinc-500 font-mono">
                         <p>{project.year}</p>
                       </div>
                     </div>

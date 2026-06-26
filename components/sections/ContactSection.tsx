@@ -11,9 +11,10 @@
  */
 
 import { useState, type ReactElement, type FocusEvent, type FormEvent } from 'react';
-import { AlertCircle, CheckCircle2, Send, Loader2, RefreshCw, X } from 'lucide-react';
+import { AlertCircle, CheckCircle2, Send, Loader2, RefreshCw, X, Mail, MapPin } from 'lucide-react';
 import { SectionLabel } from '@/components/shared/SectionLabel';
 import { siteConfig } from '@/config/site';
+import { GithubIcon, LinkedinIcon } from '@/components/ui/BrandIcons';
 import { contactFormSchema, type ContactFormData, type ContactFormErrors } from '@/lib/validations';
 import { useMagneticButton } from '@/hooks/useMagneticButton';
 
@@ -133,7 +134,7 @@ export function ContactSection(): ReactElement {
         <SectionLabel number="07" label="Contact" />
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start" style={{ marginTop: '3rem' }}>
-          
+
           {/* Left Column: Info & Details */}
           <div className="lg:col-span-5" style={{ display: 'flex', flexDirection: 'column', gap: '2.5rem' }}>
             <div>
@@ -254,14 +255,7 @@ export function ContactSection(): ReactElement {
                 { label: 'LinkedIn', value: 'hitarth-thesia ↗', href: siteConfig.social.linkedin },
                 { label: 'GitHub', value: 'Thesia-Hitarth ↗', href: siteConfig.social.github },
               ].map(({ label, value, href }) => (
-                <div key={label} style={{
-                  borderBottom: '1px solid var(--color-border)',
-                  paddingBottom: '0.75rem',
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'baseline',
-                  gap: '1rem',
-                }}>
+                <div key={label} className="contact-detail-row">
                   <span style={{
                     fontFamily: 'var(--font-mono)',
                     fontSize: 'var(--text-micro)',
@@ -285,6 +279,9 @@ export function ContactSection(): ReactElement {
                         color: 'var(--color-text-1)',
                         textDecoration: 'none',
                         transition: 'color var(--dur-base) var(--ease-out-expo), transform var(--dur-base) var(--ease-out-expo)',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '0.4rem',
                       }}
                       onMouseEnter={(e) => {
                         e.currentTarget.style.color = 'var(--color-text-3)';
@@ -293,6 +290,9 @@ export function ContactSection(): ReactElement {
                         e.currentTarget.style.color = 'var(--color-text-1)';
                       }}
                     >
+                      {label === 'LinkedIn' && <LinkedinIcon size={14} />}
+                      {label === 'GitHub' && <GithubIcon size={14} />}
+                      {label === 'Email' && <Mail size={14} />}
                       {value}
                     </a>
                   ) : (
@@ -302,7 +302,11 @@ export function ContactSection(): ReactElement {
                       fontSize: '0.88rem',
                       color: 'var(--color-text-1)',
                       textAlign: 'right',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '0.4rem',
                     }}>
+                      {label === 'Location' && <MapPin size={14} />}
                       {value}
                     </span>
                   )}
@@ -327,7 +331,6 @@ export function ContactSection(): ReactElement {
                 {[
                   'Full-time roles',
                   'Freelance',
-                  'Contract',
                   'Remote / Hybrid',
                   'On-site (India)',
                 ].map((tag) => (
@@ -589,10 +592,16 @@ export function ContactSection(): ReactElement {
                       textDecoration: 'underline',
                       textUnderlineOffset: '3px',
                       transition: 'color var(--dur-base) var(--ease-out-expo)',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '0.4rem',
                     }}
                     onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--color-text-3)'; }}
                     onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--color-text-1)'; }}
                   >
+                    {label === 'LinkedIn' && <LinkedinIcon size={12} />}
+                    {label === 'GitHub' && <GithubIcon size={12} />}
+                    {label === 'Email me' && <Mail size={12} />}
                     {label}
                   </a>
                 ))}

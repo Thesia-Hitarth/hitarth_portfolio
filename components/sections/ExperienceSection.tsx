@@ -225,12 +225,9 @@ function WorkRow({ item, isOpen, onToggle }: WorkRowProps): ReactElement {
         onClick={onToggle}
         onMouseEnter={() => { if (!isOpen) onToggle(); }}
         data-cursor="link"
+        className="exp-row-header"
         style={{
           width: '100%',
-          display: 'grid',
-          gridTemplateColumns: '3.5rem 1fr auto',
-          alignItems: 'center',
-          gap: '1.5rem',
           padding: '2rem 0',
           background: 'none',
           border: 'none',
@@ -314,10 +311,8 @@ function WorkRow({ item, isOpen, onToggle }: WorkRowProps): ReactElement {
       {isOpen && (
         <ExpandedPanel>
           <div
+            className="exp-row-body"
             style={{
-              display: 'grid',
-              gridTemplateColumns: '3.5rem 1fr',
-              gap: '1.5rem',
               paddingBottom: '2.5rem',
             }}
           >
@@ -444,12 +439,9 @@ function EduRow({ item, isOpen, onToggle }: EduRowProps): ReactElement {
         onClick={onToggle}
         onMouseEnter={() => { if (!isOpen) onToggle(); }}
         data-cursor="link"
+        className="exp-row-header"
         style={{
           width: '100%',
-          display: 'grid',
-          gridTemplateColumns: '3.5rem 1fr auto',
-          alignItems: 'center',
-          gap: '1.5rem',
           padding: '2rem 0',
           background: 'none',
           border: 'none',
@@ -531,10 +523,8 @@ function EduRow({ item, isOpen, onToggle }: EduRowProps): ReactElement {
       {isOpen && (
         <ExpandedPanel>
           <div
+            className="exp-row-body"
             style={{
-              display: 'grid',
-              gridTemplateColumns: '3.5rem 1fr',
-              gap: '1.5rem',
               paddingBottom: '2.5rem',
             }}
           >

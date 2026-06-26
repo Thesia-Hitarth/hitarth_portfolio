@@ -11,6 +11,7 @@
 import { useEffect, useRef } from 'react';
 import type { ReactElement } from 'react';
 import Link from 'next/link';
+import { Briefcase, FileText } from 'lucide-react';
 import { siteConfig } from '@/config/site';
 import { StatusBadge } from '@/components/shared/StatusBadge';
 import { useLiveClock } from '@/hooks/useLiveClock';
@@ -141,7 +142,9 @@ export function HeroSection(): ReactElement {
                 onClick={handleViewWork}
                 data-cursor="magnetic"
                 className="btn-magnetic btn-filled hero-cta"
+                style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}
               >
+                <Briefcase size={14} />
                 <span>View my work ↗</span>
               </button>
               <Link
@@ -149,8 +152,10 @@ export function HeroSection(): ReactElement {
                 href="/resume"
                 data-cursor="magnetic"
                 className="btn-magnetic hero-cta"
+                style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}
               >
-                <span> Resume </span>
+                <FileText size={14} />
+                <span>Resume</span>
               </Link>
             </div>
 

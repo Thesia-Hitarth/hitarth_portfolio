@@ -120,6 +120,17 @@ export const resumeData: ResumeData = {
   ],
   projects: [
     {
+      title: "Cartza E-Commerce",
+      subtitle: "Full Stack MERN Application",
+      techStack: ["MongoDB", "Express.js", "React.js", "Node.js", "Third-party Payment API"],
+      year: "2025",
+      bullets: [
+        "A complete online shopping platform with product browsing, cart management, and secure payment checkout.",
+        "Built a complete e-commerce site with product listing, cart, and secure payment integration",
+        "Added JWT-based login with protected routes on both frontend and backend"
+      ]
+    },
+    {
       title: "Developer Taskflows",
       subtitle: "Interactive Developer Roadmap & Career Guidance",
       techStack: ["Next.js", "React.js", "TypeScript", "Tailwind CSS", "Prisma", "NextAuth"],
@@ -139,17 +150,6 @@ export const resumeData: ResumeData = {
         "A developer Q&A community platform with upvoting, answer ranking, and user profiles — similar to Stack Overflow.",
         "Built a Q&A platform with upvoting, answer ranking using MongoDB aggregation, and Firebase login",
         "Designed REST APIs for questions, answers, and votes with proper error handling"
-      ]
-    },
-    {
-      title: "Cartza E-Commerce",
-      subtitle: "Full Stack MERN Application",
-      techStack: ["MongoDB", "Express.js", "React.js", "Node.js", "Third-party Payment API"],
-      year: "2025",
-      bullets: [
-        "A complete online shopping platform with product browsing, cart management, and secure payment checkout.",
-        "Built a complete e-commerce site with product listing, cart, and secure payment integration",
-        "Added JWT-based login with protected routes on both frontend and backend"
       ]
     },
     {

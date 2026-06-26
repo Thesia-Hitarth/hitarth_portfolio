@@ -35,7 +35,7 @@ export default function ProjectsPage() {
         <header className="mb-12 max-w-2xl">
           <Link
             href="/"
-            className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-primary transition-colors mb-6 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded-md"
+            className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-primary transition-colors mb-6 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 rounded-md"
           >
             <ArrowLeft size={16} />
             <span>Back to home</span>

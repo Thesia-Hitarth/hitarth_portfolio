@@ -75,9 +75,14 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps): ReactElement {
               border: 'none',
               color: 'var(--color-text-2)',
               fontFamily: 'var(--font-mono)',
-              fontSize: '1rem',
+              fontSize: '1.25rem',
               cursor: 'pointer',
               letterSpacing: 'var(--tracking-wide)',
+              width: '44px',
+              height: '44px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
             }}
           >
             ✕

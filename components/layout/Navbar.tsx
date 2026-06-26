@@ -18,6 +18,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import type { ReactElement } from 'react';
 import { MobileMenu } from '@/components/ui/MobileMenu';
+import { MessageCircle } from 'lucide-react';
 import { useMagneticButton } from '@/hooks/useMagneticButton';
 
 const NAV_LINKS = [
@@ -179,8 +180,9 @@ export function Navbar(): ReactElement {
           onClick={(e) => { e.preventDefault(); handleNavClick('#contact'); }}
           data-cursor="magnetic"
           className="btn-magnetic hidden md:inline-flex"
-          style={{ marginLeft: '2rem', fontSize: '0.7rem' }}
+          style={{ marginLeft: '2rem', fontSize: '0.7rem', display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}
         >
+          <MessageCircle size={12} />
           <span>Let&apos;s talk ↗</span>
         </a>
 
@@ -196,7 +198,10 @@ export function Navbar(): ReactElement {
             display: 'flex',
             flexDirection: 'column',
             gap: '6px',
-            padding: '0.5rem',
+            width: '44px',
+            height: '44px',
+            alignItems: 'center',
+            justifyContent: 'center',
           }}
         >
           <span style={{ display: 'block', width: '24px', height: '1px', background: 'var(--color-text-1)', transition: 'all 300ms' }} />
