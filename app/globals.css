@@ -30,7 +30,7 @@
   /* near-black primary */
   --color-text-2: #525252;
   /* mid-gray secondary */
-  --color-text-3: #737373;
+  --color-text-3: #595959;
   /* muted / ghost */
   --color-text-inv: #ffffff;
   /* inverted â€” on dark buttons */
@@ -249,6 +249,7 @@
   /* — Magnetic button — */
   .btn-magnetic {
     position: relative;
+    isolation: isolate;           /* ← creates clean stacking context */
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -274,21 +275,23 @@
     content: '';
     position: absolute;
     inset: 0;
+    z-index: 0;               /* ← explicit: below icons */
+    pointer-events: none;
     background: var(--color-text-1);
-    /* near-black fill on hover */
     border-radius: inherit;
     transform: scale(0) translateZ(0);
     transition: transform var(--dur-slow) var(--ease-out-expo);
   }
 
-  .btn-magnetic span {
+  /* Both text spans AND SVG icons must sit above the ::before fill */
+  .btn-magnetic span,
+  .btn-magnetic svg {
     position: relative;
-    z-index: 1;
+    z-index: 1;               /* ← explicit: above ::before */
   }
 
   .btn-magnetic:hover {
     color: var(--color-text-inv);
-    /* white text on dark fill */
     border-color: var(--color-text-1);
   }
 
@@ -296,20 +299,17 @@
     transform: scale(1.05) translateZ(0);
   }
 
-  /* Filled variant — dark button on white bg (Snellenberg CTA style) */
+  /* Filled variant — dark button on white bg */
   .btn-filled {
     background: var(--color-text-1);
-    /* near-black */
     border-color: var(--color-text-1);
     color: var(--color-text-inv);
-    /* white text */
   }
 
   .btn-filled::before {
     background: var(--color-text-2);
   }
 
-  /* slightly lighter on hover */
   .btn-filled:hover {
     color: var(--color-text-inv);
   }
@@ -1304,4 +1304,34 @@
     }
   }
 
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-delay: -1ms !important;
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0s !important;
+    transition-delay: 0s !important;
+  }
+  .skill-marquee,
+  .skill-marquee-reverse,
+  .ts-ring--inner,
+  .ts-ring--mid,
+  .ts-ring--outer,
+  .ts-node--1,
+  .ts-node--2,
+  .ts-node--3,
+  .ts-node--4,
+  .ts-node--5,
+  .ts-node--6,
+  .ts-node--7,
+  .techsphere__glow,
+  .techsphere__core-halo,
+  .animate-bob,
+  .status-badge .dot,
+  .techsphere__caption-dot {
+    animation: none !important;
+  }
 }

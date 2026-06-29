@@ -16,6 +16,7 @@ import { Loader } from '@/components/ui/Loader';
 import { CustomCursor } from '@/components/ui/CustomCursor';
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
+import { SmoothScroll } from '@/components/shared/SmoothScroll';
 import '@/app/globals.css';
 
 // ── Google Fonts ────────────────────────────────────────
@@ -122,7 +123,18 @@ export default function RootLayout({ children }: RootLayoutProps) {
       className={`${dmSans.variable} ${dmMono.variable} ${syne.variable} ${cormorant.variable}`}
     >
       <body className="noise">
+        {/* Skip to main content link for keyboard accessibility */}
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[99999] focus:bg-[var(--color-bg)] focus:text-[var(--color-text-1)] focus:p-4 focus:border focus:border-[var(--color-border)] focus:rounded-md"
+        >
+          Skip to main content
+        </a>
+
         <LoaderProvider>
+          {/* Initialize Lenis smooth scroll */}
+          <SmoothScroll />
+
           {/* Page loader overlay */}
           <Loader />
 

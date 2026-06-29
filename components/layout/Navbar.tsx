@@ -101,6 +101,7 @@ export function Navbar(): ReactElement {
           href="/#hero"
           data-cursor="link"
           onClick={(e) => { e.preventDefault(); handleNavClick('#hero'); }}
+          className="transition-[letter-spacing,color] duration-300 hover:tracking-[0.35em] hover:text-[var(--color-accent)]"
           style={{
             fontFamily: 'var(--font-display)',
             fontWeight: 600,
@@ -108,16 +109,7 @@ export function Navbar(): ReactElement {
             color: 'var(--color-text-1)',
             letterSpacing: '0.2em',
             textTransform: 'uppercase',
-            transition: 'letter-spacing 400ms cubic-bezier(0.16,1,0.3,1)',
             marginRight: 'auto',
-          }}
-          onMouseEnter={(e) => {
-            (e.currentTarget as HTMLAnchorElement).style.letterSpacing = '0.35em';
-            (e.currentTarget as HTMLAnchorElement).style.color = 'var(--color-accent)';
-          }}
-          onMouseLeave={(e) => {
-            (e.currentTarget as HTMLAnchorElement).style.letterSpacing = '0.2em';
-            (e.currentTarget as HTMLAnchorElement).style.color = 'var(--color-text-1)';
           }}
         >
           HT
@@ -146,6 +138,7 @@ export function Navbar(): ReactElement {
                 <button
                   onClick={() => handleNavClick(href)}
                   data-cursor="link"
+                  className={`transition-colors duration-300 ${isActive ? 'text-[var(--color-accent)]' : 'text-[var(--color-text-2)] hover:text-[var(--color-text-1)]'}`}
                   style={{
                     background: 'none',
                     border: 'none',
@@ -153,17 +146,9 @@ export function Navbar(): ReactElement {
                     fontWeight: 400,
                     fontSize: '0.72rem',
                     letterSpacing: 'var(--tracking-wide)',
-                    color: isActive ? 'var(--color-accent)' : 'var(--color-text-2)',
                     cursor: 'none',
-                    padding: '0.25rem 0.5rem',
+                    padding: '0.5rem 0.75rem',
                     position: 'relative',
-                    transition: 'color var(--dur-base) var(--ease-out-expo)',
-                  }}
-                  onMouseEnter={(e) => {
-                    if (!isActive) (e.currentTarget as HTMLButtonElement).style.color = 'var(--color-text-1)';
-                  }}
-                  onMouseLeave={(e) => {
-                    (e.currentTarget as HTMLButtonElement).style.color = isActive ? 'var(--color-accent)' : 'var(--color-text-2)';
                   }}
                 >
                   {label}

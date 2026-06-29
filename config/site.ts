@@ -10,11 +10,9 @@
      data/projects.ts
   5. Fill the "Currently exploring" skills in data/skills.ts
      with technologies you are genuinely learning right now
-  6. Once you have real testimonials, populate
-     data/testimonials.ts
-  7. Replace /public/og-image.png with a real OG image
+  6. Replace /public/og-image.png with a real OG image
      (1200×630px) — use a tool like Figma or og-image.vercel.app
-  8. Add company logo images if available:
+  7. Add company logo images if available:
      /public/images/companies/codage.png
      /public/images/companies/zikasha.png
      /public/images/companies/charusat.png

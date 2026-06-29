@@ -18,7 +18,7 @@ const nextConfig: NextConfig = {
   // ── Image optimisation ────────────────────────────────
   images: {
     remotePatterns: [
-      // GitHub user avatars (for testimonials / about section)
+      // GitHub user avatars (for about section)
       {
         protocol: 'https',
         hostname: 'avatars.githubusercontent.com',

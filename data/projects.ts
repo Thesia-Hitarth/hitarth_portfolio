@@ -92,6 +92,10 @@ By employing MongoDB aggregation pipelines, we implemented high-performance quer
     ],
     liveUrl: "https://querious-hitarth.vercel.app/",
     githubUrl: "https://github.com/Thesia-Hitarth/Querious",
+    challenges: [
+      "Designing low-latency queries to score and rank developer questions dynamically by community votes and recency in MongoDB.",
+      "Securing route boundaries by parsing and validating stateless JWT payloads in custom Express authentication middleware."
+    ],
   },
 
   // ── 3. TaskFlow (Featured Project) ──────────────────────
@@ -132,6 +136,10 @@ Developer Taskflows (taskflow.sh) is a community-driven career guidance and road
     ],
     liveUrl: "https://task-flow-by-hitarth.vercel.app/",
     githubUrl: "https://github.com/Thesia-Hitarth/TaskFlow-By-Hitarth-",
+    challenges: [
+      "Orchestrating state boundaries to persist user diagnosis outcomes without causing excessive re-renders across long multi-step quiz forms.",
+      "Optimizing response limits during search index lookups inside dynamic Next.js API endpoints to guarantee instant query updates."
+    ],
   },
 
   // ── 4. Daily Dose ──────────────────────────────────────

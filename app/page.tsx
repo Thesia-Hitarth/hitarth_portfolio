@@ -1,8 +1,8 @@
 /**
  * app/page.tsx
  * ─────────────────────────────────────────────────────────
- * Homepage — redesigned section order. Blog, Testimonials,
- * and LiveActivity removed; GitHubSection kept and restyled.
+ * Homepage — redesigned section order.
+ * GitHubSection kept and restyled.
  * ─────────────────────────────────────────────────────────
  */
 

@@ -1,10 +1,6 @@
 'use client';
 
-/**
- * components/github/ContributionGraph.tsx
- */
-
-import { useMemo } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import type { ReactElement } from 'react';
 import type { ContributionDay } from '@/lib/github';
 
@@ -23,6 +19,12 @@ const LEVEL_STYLES: Record<number, React.CSSProperties> = {
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
 export function ContributionGraph({ contributions }: ContributionGraphProps): ReactElement {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   // Create a map for quick contribution lookups
   const contributionMap = useMemo(() => {
     const map = new Map<string, ContributionDay>();
@@ -36,6 +38,7 @@ export function ContributionGraph({ contributions }: ContributionGraphProps): Re
 
   // Generate 53 weeks (Sunday-aligned) ending today
   const gridData = useMemo(() => {
+    if (!mounted) return [];
     const endDate = new Date();
     const startDate = new Date();
     // 52 weeks ago
@@ -74,10 +77,11 @@ export function ContributionGraph({ contributions }: ContributionGraphProps): Re
       cols.push(week);
     }
     return cols;
-  }, [contributionMap]);
+  }, [contributionMap, mounted]);
 
   // Calculate Month label columns
   const monthLabels = useMemo(() => {
+    if (!mounted) return [];
     const labels: Array<{ label: string; colIndex: number }> = [];
     let prevMonth = '';
 
@@ -93,7 +97,11 @@ export function ContributionGraph({ contributions }: ContributionGraphProps): Re
     });
 
     return labels;
-  }, [gridData]);
+  }, [gridData, mounted]);
+
+  if (!mounted) {
+    return <div style={{ width: '100%', minHeight: '172px' }} />;
+  }
 
   return (
     <div

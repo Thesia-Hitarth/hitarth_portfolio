@@ -200,7 +200,7 @@ export const MDXComponents = {
       <div className="relative aspect-video w-full overflow-hidden rounded-xl border border-border bg-muted">
         <Image
           src={src || ''}
-          alt={alt || 'Blog illustration'}
+          alt={alt || 'Illustration'}
           fill
           className="object-cover"
           sizes="(max-width: 768px) 100vw, 800px"

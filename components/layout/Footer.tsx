@@ -47,20 +47,15 @@ export function Footer(): ReactElement {
             target="_blank"
             rel="noopener noreferrer"
             data-cursor="link"
+            className="transition-colors duration-300 text-[var(--color-text-3)] hover:text-[var(--color-accent)]"
             style={{
               fontFamily: 'var(--font-mono)',
               fontWeight: 300,
               fontSize: 'var(--text-xs)',
-              color: 'var(--color-text-3)',
               letterSpacing: 'var(--tracking-wide)',
               textTransform: 'uppercase',
-              transition: 'color var(--dur-base) var(--ease-out-expo)',
-            }}
-            onMouseEnter={(e) => {
-              (e.currentTarget as HTMLAnchorElement).style.color = 'var(--color-accent)';
-            }}
-            onMouseLeave={(e) => {
-              (e.currentTarget as HTMLAnchorElement).style.color = 'var(--color-text-3)';
+              padding: '0.75rem 0',
+              display: 'inline-block',
             }}
           >
             {label}
